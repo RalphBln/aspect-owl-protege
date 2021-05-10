@@ -1,5 +1,6 @@
 package de.fuberlin.csw.aspectowl.protege.editor.core.ui;
 
+import com.google.common.html.HtmlEscapers;
 import de.fuberlin.csw.aspectowl.owlapi.model.OWLOntologyAspectManager;
 import org.protege.editor.core.ui.list.MListButton;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
@@ -7,6 +8,8 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.awt.*;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 public class AspectButton extends MListButton {
 
@@ -60,7 +63,10 @@ public class AspectButton extends MListButton {
     @Override
     public String getName() {
         if (aspectManager.hasAssertedAspects(ontology, axiom)) {
-            return "View or edit aspects referencing this axiom.";
+            StringBuilder buf = new StringBuilder("<html><b>View or edit aspects referencing this axiom.</b><ul>");
+            aspectManager.getAssertedAspects(ontology, axiom).forEach(aspect -> buf.append("<li>").append(HtmlEscapers.htmlEscaper().escape(aspect.toString())));
+            buf.append("</ul></html>");
+            return buf.toString();
         }
         return "This axiom is not target of any aspect. Click to add aspects.";
     }
