@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -178,18 +179,12 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 		String className = wovenClass.getClassName();
 
-		// add aspect buttons to frame section rows
-		if (frameSectionRowClassesForAspectButtons.contains(className)) {
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
+		try {
 
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
+			// add aspect buttons to frame section rows
+			if (frameSectionRowClassesForAspectButtons.contains(className)) {
 
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 //				CtMethod ctMethod = ctClass.getMethod("getAdditionalButtons", "()Ljava/util/List;"); // throws NotFoundException if method does not exist
 				CtMethod ctMethod = ctClass.getMethod("getButtons", "(Ljava/lang/Object;)Ljava/util/List;"); // throws NotFoundException if method does not exist
@@ -203,33 +198,16 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 				ctMethod.insertAfter("if (value instanceof org.protege.editor.owl.ui.frame.OWLFrameSectionRow) return de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.getButtonsWithAspectButton($_, (org.protege.editor.owl.ui.frame.OWLFrameSectionRow)value, editorKit);");
 
-				byte[] bytes = ctClass.toBytecode();
-				ctClass.detach();
-				wovenClass.setBytes(bytes);
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
+			} else if (className.equals("org.protege.editor.owl.model.io.OntologyLoader")) {
 
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
-		} else if (className.equals("org.protege.editor.owl.model.io.OntologyLoader")) {
+				// Each time an ontology is loaded, Protege creates a new OWLOntologyManager. This ontology manager is used
+				// for the loading process. After the ontology (and potential imports) are loaded, the ontologies are copied
+				// to the main ontology manager (the one stored in the single OWLModelManager instance). Then, the loading
+				// OWLOntologyManger is discarded. Anyway, we need to add our ParserFactory to each loading ontology manager.
 
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
-
-			// Each time an ontology is loaded, Protege creates a new OWLOntologyManager. This ontology manager is used
-			// for the loading process. After the ontology (and potential imports) are loaded, the ontologies are copied
-			// to the main ontology manager (the one stored in the single OWLModelManager instance). Then, the loading
-			// OWLOntologyManger is discarded. Anyway, we need to add our ParserFactory to each loading ontology manager.
-
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
-
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
-
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtMethod ctMethod = ctClass.getMethod("loadOntologyInternal", "(Ljava/net/URI;)Ljava/util/Optional;"); // throws NotFoundException if method does not exist
 
@@ -240,35 +218,18 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 					ctClass.addMethod(ctMethod);
 				}
 
-				ctMethod.insertAt(103,"de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(loadingManager, modelManager);");
+				ctMethod.insertAt(103, "de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(loadingManager, modelManager);");
 
-				byte[] bytes = ctClass.toBytecode();
-				ctClass.detach();
-				wovenClass.setBytes(bytes);
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
+			} else if (className.equals("org.protege.editor.owl.model.OntologyReloader")) {
 
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
-		} else if (className.equals("org.protege.editor.owl.model.OntologyReloader")) {
+				// Each time an ontology is loaded, Protege creates a new OWLOntologyManager. This ontology manager is used
+				// for the loading process. After the ontology (and potential imports) are loaded, the ontologies are copied
+				// to the main ontology manager (the one stored in the single OWLModelManager instance). Then, the loading
+				// OWLOntologyManger is discarded. Anyway, we need to add our ParserFactory to each loading ontology manager.
 
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
-
-			// Each time an ontology is loaded, Protege creates a new OWLOntologyManager. This ontology manager is used
-			// for the loading process. After the ontology (and potential imports) are loaded, the ontologies are copied
-			// to the main ontology manager (the one stored in the single OWLModelManager instance). Then, the loading
-			// OWLOntologyManger is discarded. Anyway, we need to add our ParserFactory to each loading ontology manager.
-
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
-
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
-
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtMethod ctMethod = ctClass.getMethod("performReloadAndGetPatch", "()Ljava/util/List;"); // throws NotFoundException if method does not exist
 
@@ -279,30 +240,13 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 					ctClass.addMethod(ctMethod);
 				}
 
-				ctMethod.insertAt(99,"de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(reloadingManager, modelManager);");
+				ctMethod.insertAt(99, "de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(reloadingManager, modelManager);");
 
-				byte[] bytes = ctClass.toBytecode();
-				ctClass.detach();
-				wovenClass.setBytes(bytes);
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
+			} else if (className.equals("org.protege.editor.owl.ui.OntologyFormatPanel")) {
 
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
-		} else if (className.equals("org.protege.editor.owl.ui.OntologyFormatPanel")) {
-
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
-
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
-
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
-
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtConstructor ctConstructor = ctClass.getConstructor("()V");
 				ctConstructor.insertAt(39, "de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addOntologyFormat(formats);");
@@ -310,63 +254,30 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				CtMethod ctMethod = ctClass.getMethod("isFormatOk", "(Lorg/protege/editor/owl/OWLEditorKit;Lorg/semanticweb/owlapi/model/OWLDocumentFormat;)Z"); // throws NotFoundException if method does not exist
 				ctMethod.insertBefore("if (!(de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.alternativeFormatIfAspectOriented(format, editorKit))) return false;");
 
-				byte[] bytes = ctClass.toBytecode();
-				ctClass.detach();
-				wovenClass.setBytes(bytes);
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
+			} else if (className.equals("org.protege.editor.owl.ui.view.dataproperty.OWLDataPropertyCharacteristicsViewComponent")) {
 
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
-		} else if (className.equals("org.protege.editor.owl.ui.view.dataproperty.OWLDataPropertyCharacteristicsViewComponent")) {
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
-
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
-
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
-
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
-
+				// TODO ?
 				CtMethod ctMethod = ctClass.getDeclaredMethod("initialiseView");
 
 //				ctMethod.insertAfter();
 
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
-		} else if (className.equals("org.protege.editor.owl.model.OWLWorkspace")) {
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-			log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
+			} else if (className.equals("org.protege.editor.owl.model.OWLWorkspace")) {
 
-			ClassPool pool = ClassPool.getDefault();
-			pool.appendSystemPath();
-			pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
-			pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
-
-
-			try {
-				CtClass ctClass = pool.getCtClass(className);
 				CtField ctIconProviderField = ctClass.getField("iconProvider");
 				int modifiers = ctIconProviderField.getModifiers();
 				int notFinalModifier = Modifier.clear(modifiers, Modifier.FINAL);
 				ctIconProviderField.setModifiers(notFinalModifier);
 
-				byte[] bytes = ctClass.toBytecode();
-				ctClass.detach();
-				wovenClass.setBytes(bytes);
+				finalizeClassForWeaving(wovenClass, ctClass);
 
-				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
-
-			} catch (Throwable t) {
-				log.error("Weaving failed for class {}: {}.", className, t.getMessage());
-			}
 //		} else if (className.equals("org.semanticweb.owlapi.model.AxiomType$1")) {
 //			try {
 //				BundleWiring bundleWiring = wovenClass.getBundleWiring();
@@ -379,12 +290,32 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
-		}
+			}
 //		} else if (OWLObject.class.isAssignableFrom(wovenClass.getDefinedClass())) {
 //			System.out.println("OWLObject subclass: " + className);
 //			// do proxying
 //		}
+		} catch (Throwable t) {
+			log.error("Weaving failed for class {}: {}.", className, t.getMessage());
+		}
 
+	}
+
+	private CtClass prepareClassForWeaving(WovenClass wovenClass) throws NotFoundException {
+		String className = wovenClass.getClassName();
+		log.debug("Weaving class: {}, Classloader: {}", className, wovenClass.getBundleWiring().getClassLoader().getClass().getName());
+		ClassPool pool = ClassPool.getDefault();
+		pool.appendSystemPath();
+		pool.appendClassPath(new ClassClassPath(AspectOWLEditorKitHook.class));
+		pool.insertClassPath(new ByteArrayClassPath(wovenClass.getClassName(), wovenClass.getBytes()));
+		return pool.getCtClass(className);
+	}
+
+	private void finalizeClassForWeaving(WovenClass wovenClass, CtClass ctClass) throws IOException, CannotCompileException {
+		byte[] bytes = ctClass.toBytecode();
+		ctClass.detach();
+		wovenClass.setBytes(bytes);
+		wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
 	}
 
 //	private static final OWLAspect testAspect = new OWLNamedAspectImpl(IRI.create("http://www.example.org/aspectowl/FunnyAspect"));
