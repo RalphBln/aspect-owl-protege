@@ -1,10 +1,8 @@
 package de.fuberlin.csw.aspectowl.owlapi.model;
 
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.OWLOntologyChangeVisitorEx;
-import org.semanticweb.owlapi.model.RemoveAxiom;
-
 import javax.annotation.Nonnull;
+
+import org.semanticweb.owlapi.model.OWLOntologyChangeVisitorEx;
 
 public interface AspectOWLOntologyChangeVisitorEx<O> extends OWLOntologyChangeVisitorEx<O> {
 

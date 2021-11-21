@@ -213,15 +213,22 @@ public class OWLOntologyAspectManager extends OWLOntologyChangeVisitorAdapter im
         if (axiom instanceof OWLAspectAssertionAxiom) {
             OWLAspectAssertionAxiom aspectAssertionAxiom = (OWLAspectAssertionAxiom)axiom;
             addAspect(change.getOntology(), aspectAssertionAxiom);
+            aspectAssertionAxiom.getSignature();
         } else if (axiom instanceof OWLClassAxiom) {
         	// issue #11
+        } else if (axiom instanceof OWLDeclarationAxiom) {
+            // An entity has been renamed.
+            // This concerns us if the entity is in the signature of an advice.
+           OWLEntity renamedEntity = ((OWLDeclarationAxiom) axiom).getEntity();
+
         }
+        lastRemovedAxiom = null;
     }
 
     @Override
     public void visit(RemoveAxiom change) {
         OWLAxiom axiom = change.getAxiom();
-        lastRemovedAxiom = axiom; // store last removed axiom in case it is re-added with annotations (this is how adding an annotation works: remove axiom and re-add with annotations)
+        lastRemovedAxiom = axiom; // store last removed axiom in case it is re-added with annotations (this is how adding an annotation works: remove axiom and re-add with annotations). Also needed in case of renaming (renaming = removing of declaration axiom + adding of new declaration axiom)
         if (axiom instanceof OWLAspectAssertionAxiom) {
             removeAspectAssertionAxiom(change.getOntology(), ((OWLAspectAssertionAxiom) axiom));
         } else {

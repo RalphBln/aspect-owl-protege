@@ -94,6 +94,13 @@
         </dependency>
 
 		<dependency>
+			<groupId>com.github.vsonnier</groupId>
+			<artifactId>hppcrt</artifactId>
+			<version>0.7.5</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>edu.stanford.protege</groupId>
 			<artifactId>explanation-workbench</artifactId>
 			<version>3.0.1</version>
@@ -301,7 +308,8 @@
 							xml-apis,
 							telemetry,
 							javassist,
-							owlexplanation
+							owlexplanation,
+							hppcrt
 						</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 						<Embed-Transitive>true</Embed-Transitive>

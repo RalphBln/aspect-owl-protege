@@ -25,8 +25,11 @@ import org.protege.editor.core.ui.list.MListButton;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.UIHelper;
+import org.protege.editor.owl.ui.action.ProtegeOWLAction;
+import org.protege.editor.owl.ui.action.SelectedOWLEntityAction;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLEntityRenamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,6 +281,53 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 
+			} else if (className.equals("org.protege.editor.owl.model.merge.MergeEntitiesChangeListGenerator")) {
+
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod ctMethod = ctClass.getMethod("replaceUsage", "(Lcom/google/common/collect/ImmutableList/Builder<Lorg/semanticweb/owlapi/model/OWLOntologyChange;>;)V");
+				ctMethod.insertAt(96, "renamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(rootOntology.getOWLOntologyManager(), rootOntology.getImportsClosure());");
+
+				finalizeClassForWeaving(wovenClass, ctClass);
+
+			} else if (className.equals("org.protege.editor.owl.ui.action.RenameEntityAction")) {
+
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod ctMethod = ctClass.getMethod("actionPerformed", "(Lorg/semanticweb/owlapi/model/OWLEntity;)V");
+				ctMethod.insertAt(22, "owlEntityRenamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(this.getOWLModelManager().getOWLOntologyManager(), this.getOWLModelManager().getOntologies());");
+
+				finalizeClassForWeaving(wovenClass, ctClass);
+
+			} else if (className.equals("org.protege.editor.owl.model.refactor.ontology.EntityIRIUpdaterOntologyChangeStrategy")) {
+
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod ctMethod = ctClass.getMethod("getChangesForRename", "(Lorg/semanticweb/owlapi/model/OWLOntology;Lorg/semanticweb/owlapi/model/OWLOntologyID;Lorg/semanticweb/owlapi/model/OWLOntologyID;)Ljava/util/List<Lorg/semanticweb/owlapi/model/OWLOntologyChange;>;");
+				ctMethod.insertAt(23, "entityRenamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(ontology.getOWLOntologyManager(), Collections.singleton(ontology));");
+
+				finalizeClassForWeaving(wovenClass, ctClass);
+
+			} else if (className.equals("org.protege.editor.owl.ui.rename.RenameEntitiesPanel")) {
+
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod ctMethod = ctClass.getMethod("getChanges", "()Ljava/util/List<Lorg/semanticweb/owlapi/model/OWLOntologyChange;>;");
+				ctMethod.insertAt(179, "renamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(mngr, getOntologies());");
+
+				finalizeClassForWeaving(wovenClass, ctClass);
+
+			} else if (className.equals("org.semanticweb.owlapi.util.OWLEntityRenamer")) {
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod getOMMethod = CtMethod.make("public org.semanticweb.owlapi.model.OWLOntologyManager getOWLOntologyManager() {return this.owlOntologyManager;}", ctClass);
+				ctClass.addMethod(getOMMethod);
+				CtMethod getOntologiesMethod = CtMethod.make("public java.util.Set<org.semanticweb.owlapi.model.OWLOntology> getOntologies() {return this.ontologies;}", ctClass);
+				ctClass.addMethod(getOntologiesMethod);
+				finalizeClassForWeaving(wovenClass, ctClass);
+
+			}
+
 //		} else if (className.equals("org.semanticweb.owlapi.model.AxiomType$1")) {
 //			try {
 //				BundleWiring bundleWiring = wovenClass.getBundleWiring();
@@ -290,13 +340,14 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
-			}
+
 //		} else if (OWLObject.class.isAssignableFrom(wovenClass.getDefinedClass())) {
 //			System.out.println("OWLObject subclass: " + className);
 //			// do proxying
 //		}
 		} catch (Throwable t) {
 			log.error("Weaving failed for class {}: {}.", className, t.getMessage());
+			t.printStackTrace();
 		}
 
 	}
