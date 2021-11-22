@@ -26,6 +26,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.UIHelper;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
+import org.protege.editor.owl.ui.action.RenameEntityAction;
 import org.protege.editor.owl.ui.action.SelectedOWLEntityAction;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
 import org.semanticweb.owlapi.model.*;
@@ -154,6 +155,10 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		Field ipField = poorLittleClass.getDeclaredField("workspace");
 		ipField.setAccessible(true);
 		ipField.set(getEditorKit(), workspaceReplacement);
+
+		ProtegeOWLAction.class.getClass();
+		SelectedOWLEntityAction.class.getClass();
+		RenameEntityAction.class.getClass();
 	}
 
 	/* (non-Javadoc)
@@ -289,15 +294,17 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				ctMethod.insertAt(96, "renamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(rootOntology.getOWLOntologyManager(), rootOntology.getImportsClosure());");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.protege.util");
 
 			} else if (className.equals("org.protege.editor.owl.ui.action.RenameEntityAction")) {
 
 				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtMethod ctMethod = ctClass.getMethod("actionPerformed", "(Lorg/semanticweb/owlapi/model/OWLEntity;)V");
-				ctMethod.insertAt(22, "owlEntityRenamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(this.getOWLModelManager().getOWLOntologyManager(), this.getOWLModelManager().getOntologies());");
+				ctMethod.insertAt(22, "owlEntityRenamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(getOWLModelManager().getOWLOntologyManager(), getOWLModelManager().getOntologies());");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.protege.util");
 
 			} else if (className.equals("org.protege.editor.owl.model.refactor.ontology.EntityIRIUpdaterOntologyChangeStrategy")) {
 
@@ -307,24 +314,26 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				ctMethod.insertAt(23, "entityRenamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(ontology.getOWLOntologyManager(), Collections.singleton(ontology));");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.protege.util");
 
 			} else if (className.equals("org.protege.editor.owl.ui.rename.RenameEntitiesPanel")) {
 
 				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
-				CtMethod ctMethod = ctClass.getMethod("getChanges", "()Ljava/util/List<Lorg/semanticweb/owlapi/model/OWLOntologyChange;>;");
+				CtMethod ctMethod = ctClass.getMethod("getChanges", "()Ljava/util/List;");
 				ctMethod.insertAt(179, "renamer = new de.fuberlin.csw.aspectowl.protege.util.AspectOWLEntityRenamer(mngr, getOntologies());");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.protege.util");
 
-			} else if (className.equals("org.semanticweb.owlapi.util.OWLEntityRenamer")) {
-				CtClass ctClass = prepareClassForWeaving(wovenClass);
-
-				CtMethod getOMMethod = CtMethod.make("public org.semanticweb.owlapi.model.OWLOntologyManager getOWLOntologyManager() {return this.owlOntologyManager;}", ctClass);
-				ctClass.addMethod(getOMMethod);
-				CtMethod getOntologiesMethod = CtMethod.make("public java.util.Set<org.semanticweb.owlapi.model.OWLOntology> getOntologies() {return this.ontologies;}", ctClass);
-				ctClass.addMethod(getOntologiesMethod);
-				finalizeClassForWeaving(wovenClass, ctClass);
+//			} else if (className.equals("org.semanticweb.owlapi.util.OWLEntityRenamer")) {
+//				CtClass ctClass = prepareClassForWeaving(wovenClass);
+//
+//				CtMethod getOMMethod = CtMethod.make("public org.semanticweb.owlapi.model.OWLOntologyManager getOWLOntologyManager() {return this.owlOntologyManager;}", ctClass);
+//				ctClass.addMethod(getOMMethod);
+//				CtMethod getOntologiesMethod = CtMethod.make("public java.util.Set<org.semanticweb.owlapi.model.OWLOntology> getOntologies() {return this.ontologies;}", ctClass);
+//				ctClass.addMethod(getOntologiesMethod);
+//				finalizeClassForWeaving(wovenClass, ctClass);
 
 			}
 
