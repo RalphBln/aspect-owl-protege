@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 public class OWLOntologyAspectManager extends OWLOntologyChangeVisitorAdapter implements OWLOntologyChangeListener {
 
     private ConcurrentHashMap<OntologyObjectTuple<OWLPointcut>, Set<OWLAspectAssertionAxiom>> aspectsForPointcut = CollectionFactory.createSyncMap();
+    private ConcurrentHashMap<OWLObject, Set<OWLAspectAssertionAxiom>> axiomsBySignature = CollectionFactory.createSyncMap();
 
     /**
      * Creates and returns a new OWLAspect constructed from the given ontology, join point and advice class expression.
@@ -189,11 +190,10 @@ public class OWLOntologyAspectManager extends OWLOntologyChangeVisitorAdapter im
             aspectsForPointcut.put(key, aspects);
         }
         aspects.add(aspectAssertionAxiom);
-        
-        
-        // TODO github issue #9: When an aspect assertion axiom is added, its aspect may have nested aspects.
-        // We need to traverse the tree of nested aspects and add an aspect assertion axiom for each nested aspect.
-        // The question is whether this is the best place to do that or whether this should be handled outside of the manager.
+
+        // TODO continue here... (store referenced entities)
+        aspectAssertionAxiom.getPointcut();
+
     }
 
     @Override
@@ -213,7 +213,6 @@ public class OWLOntologyAspectManager extends OWLOntologyChangeVisitorAdapter im
         if (axiom instanceof OWLAspectAssertionAxiom) {
             OWLAspectAssertionAxiom aspectAssertionAxiom = (OWLAspectAssertionAxiom)axiom;
             addAspect(change.getOntology(), aspectAssertionAxiom);
-            aspectAssertionAxiom.getSignature();
         } else if (axiom instanceof OWLClassAxiom) {
         	// issue #11
         } else if (axiom instanceof OWLDeclarationAxiom) {
