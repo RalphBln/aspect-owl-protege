@@ -298,6 +298,7 @@
 						</Import-Package>
 						<Export-Package>
 							de.fuberlin.csw.aspectowl.protege,
+							de.fuberlin.csw.aspectowl.owlapi.model,
 							de.fuberlin.csw.aspectowl.owlapi.protege,
 							de.fuberlin.csw.aspectowl.protege.editor.core.ui,
 							de.fuberlin.csw.aspectowl.parser,

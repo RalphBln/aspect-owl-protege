@@ -17,7 +17,6 @@ import de.fuberlin.csw.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory
 import javassist.*;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
-import org.protege.editor.core.ModelManager;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.editorkit.plugin.EditorKitHook;
 import org.protege.editor.core.plugin.PluginUtilities;
@@ -30,7 +29,6 @@ import org.protege.editor.owl.ui.action.RenameEntityAction;
 import org.protege.editor.owl.ui.action.SelectedOWLEntityAction;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.util.OWLEntityRenamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,9 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	private final HashSet<String> axiomTypeClasses = new HashSet<>();
 
 	private final OWLOntologyAspectManager am = new OWLOntologyAspectManager();
-	private final static Map<ModelManager, OWLOntologyAspectManager> aspectManagers = new HashMap<>();
+	private final static Map<OWLModelManager, OWLOntologyAspectManager> aspectManagers = new HashMap<>();
+	private final static Map<OWLOntologyManager, OWLOntologyAspectManager> aspectManagersByOntologyManager = new HashMap<>();
+
 
 	public static AxiomType<OWLAspectAssertionAxiom> OWL_ASPECT_ASSERTION_AXIOM_TYPE;
 
@@ -77,7 +77,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		try {
 			Constructor<AxiomType> constr = axiomTypeClass.getDeclaredConstructor(Class.class, Integer.TYPE, String.class, Boolean.TYPE, Boolean.TYPE, Boolean.TYPE);
 			constr.setAccessible(true);
-			OWL_ASPECT_ASSERTION_AXIOM_TYPE = (AxiomType<OWLAspectAssertionAxiom>)constr.newInstance(OWLAspectAssertionAxiom.class, 38, "AspectAssertion", true, true, true);
+			OWL_ASPECT_ASSERTION_AXIOM_TYPE = (AxiomType<OWLAspectAssertionAxiom>) constr.newInstance(OWLAspectAssertionAxiom.class, 38, "AspectAssertion", true, true, true);
 			AxiomType.AXIOM_TYPES.add(OWL_ASPECT_ASSERTION_AXIOM_TYPE);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -92,7 +92,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public AspectOWLEditorKitHook() {
 		// Add classes that need to be woven here. Used to be more than one, hence the sets. Right now it's only one for
@@ -107,7 +107,8 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	@Override
 	protected void setup(EditorKit editorKit) {
 		super.setup(editorKit);
-		aspectManagers.put(editorKit.getModelManager(), am);
+		aspectManagers.put(((OWLEditorKit)editorKit).getModelManager(), am);
+		aspectManagersByOntologyManager.put(((OWLEditorKit) editorKit).getModelManager().getOWLOntologyManager(), am);
 	}
 
 	/* Sneaks in our preprocessor for aspect-oriented ontologies
@@ -127,7 +128,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 		PluginUtilities.getInstance().getApplicationContext().registerService(WeavingHook.class.getName(), this, new Hashtable<>());
 
-		OWLModelManager mm = ((OWLEditorKit)getEditorKit()).getOWLModelManager();
+		OWLModelManager mm = ((OWLEditorKit) getEditorKit()).getOWLModelManager();
 
 		mm.addOntologyChangeListener(am);
 
@@ -166,9 +167,10 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	 */
 	@Override
 	public void dispose() throws Exception {
-		OWLModelManager modelManager = ((OWLEditorKit)getEditorKit()).getOWLModelManager();
+		OWLModelManager modelManager = ((OWLEditorKit) getEditorKit()).getOWLModelManager();
 		modelManager.removeOntologyChangeListener(am);
 		aspectManagers.remove(modelManager);
+		aspectManagersByOntologyManager.remove(modelManager.getOWLOntologyManager());
 	}
 
 	public static OWLOntologyAspectManager getAspectManager(EditorKit editorKit) {
@@ -179,7 +181,9 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		return aspectManagers.get(modelManager);
 	}
 
-
+	public static OWLOntologyAspectManager getAspectManager(OWLOntologyManager ontologyManager) {
+		return aspectManagersByOntologyManager.get(ontologyManager);
+	}
 
 
 	@Override
@@ -387,14 +391,14 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	@SuppressWarnings("unused")
 	public static List<MListButton> getButtonsWithAspectButton(List<MListButton> original, OWLFrameSectionRow frameSectionRow, OWLEditorKit editorKit) {
 
-		for(MListButton button : original) {
+		for (MListButton button : original) {
 			if (button instanceof AspectButton) {
 				// sometimes classes get woven multiple times, make sure not to add another aspect button
 				return original;
 			}
 		}
 
-        List<MListButton> additionalButtons = new ArrayList<>(original); // original may be an immutable list, so we need to create a mutable clone
+		List<MListButton> additionalButtons = new ArrayList<>(original); // original may be an immutable list, so we need to create a mutable clone
 
 		OWLAxiom axiom = frameSectionRow.getAxiom();
 		OWLOntology ontology = frameSectionRow.getOntology();
