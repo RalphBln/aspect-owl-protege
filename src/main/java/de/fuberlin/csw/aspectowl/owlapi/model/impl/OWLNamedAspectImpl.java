@@ -51,6 +51,6 @@ public class OWLNamedAspectImpl extends OWLClassImpl implements OWLNamedAspect {
 
     @Override
     public OWLClassExpression asClassExpression() {
-        return delegate.asClassExpression();
+        return (OWLClassExpression)this;
     }
 }
