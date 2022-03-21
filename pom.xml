@@ -377,7 +377,7 @@
 						<configuration>
 							<executable>osascript</executable>
 							<!--commandlineArgs>-e 'tell application "Terminal" to do script "/Applications/Protégé-5.2.app/Contents/MacOS/JavaAppLauncher ${project.basedir}/src/main/resources/test.owl"'</commandlineArgs-->
-							<commandlineArgs>-e 'tell application "Terminal" to do script "${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"'</commandlineArgs>
+							<commandlineArgs>-e 'tell application "iTerm" to create window with default profile command "${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"'</commandlineArgs>
 							<async>true</async>
 							<asyncDestroyOnShutdown>false</asyncDestroyOnShutdown>
 						</configuration>
