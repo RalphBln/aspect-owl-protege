@@ -74,6 +74,16 @@ public class OWLOntologyAspectManager extends OWLOntologyChangeVisitorAdapter im
         return CollectionFactory.getCopyOnRequestSet(Optional.ofNullable(aspectsForPointcut.get(new OntologyObjectTuple(ontology, new OWLJoinPointAxiomPointcut(potentialJoinPoint.getAxiomWithoutAnnotations())))).orElse(Collections.emptySet()));
     }
 
+    /**
+     * Returns a set containing all aspect assertion axioms with the given aspect for the given ontology and potentially its imports.
+     * @param ontology the contology containing the object declaration
+     * @param aspect aspect for filtering the axioms
+     * @return a stream containing all aspects asserted for the given join point
+     */
+    public Set<OWLAspectAssertionAxiom> getAspectAssertionAxioms(OWLOntology ontology, OWLAspect aspect, Imports includeImportsClosure) {
+        return CollectionFactory.getCopyOnRequestSet(aspectsForPointcut.values().stream().flatMap(a -> a.stream()).filter(axiom -> axiom.getAspect().equals(aspect)).collect(Collectors.toCollection(HashSet<OWLAspectAssertionAxiom>::new)));
+    }
+
     public void removeAspectAssertionAxiom(OWLOntology ontology, OWLAspectAssertionAxiom aspectAssertionAxiom) {
         Optional.ofNullable(aspectsForPointcut.get(new OntologyObjectTuple(ontology, aspectAssertionAxiom.getPointcut()))).orElse(Collections.emptySet()).remove(aspectAssertionAxiom);
     }

@@ -36,7 +36,11 @@ public class OWLJoinPointAxiomPointcut extends OWLAxiomPointcut {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(joinPointAxiom);
+    }
+
+    @Override
+    public String toString() {
+        return joinPointAxiom.toString();
     }
 }

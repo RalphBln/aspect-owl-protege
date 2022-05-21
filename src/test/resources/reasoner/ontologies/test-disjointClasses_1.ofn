@@ -1,0 +1,58 @@
+Prefix(:=<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectIntersectionOf_1#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1>
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncStar(X) && ncDwarfPlanet(X)))")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncStar(X)))")
+
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#CelestialBody>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Earth>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Morty>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Pluto>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Sun>))
+
+############################
+#   Classes
+############################
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet>)
+
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#CelestialBody>)
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet>)
+
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#CelestialBody>)
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star>)
+
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#CelestialBody>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Earth> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Earth>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Earth>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Pluto> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Pluto>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Pluto>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Sun> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Sun>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Sun>)
+
+
+DisjointClasses(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Planet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointClasses_1#Star>)
+)

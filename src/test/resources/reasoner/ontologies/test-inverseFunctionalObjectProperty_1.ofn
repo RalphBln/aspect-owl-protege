@@ -1,0 +1,47 @@
+Prefix(:=<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectIntersectionOf_1#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1>
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niBeth == niMortysMother")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niBeth == niRicksDaughter")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niMortysMother == niRicksDaughter")
+
+Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Beth>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Morty>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#MortysMother>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#RicksDaughter>))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf>)
+
+InverseFunctionalObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Beth> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Beth>)
+
+ObjectPropertyAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Beth> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Morty>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#MortysMother> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#MortysMother>)
+
+ObjectPropertyAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#MortysMother> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Morty>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#RicksDaughter> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#RicksDaughter>)
+
+ObjectPropertyAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#isBiologicalMotherOf> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#RicksDaughter> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inverseFunctionalObjectProperty_1#Morty>)
+
+
+)

@@ -1,0 +1,55 @@
+Prefix(:=<http://ontology.aspectowl.xyz/planets#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/planets>
+Import(<http://ontology.aspectowl.xyz>)
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncDwarfPlanet(X)))"^^xsd:string)
+
+Declaration(Class(:DwarfPlanet))
+Declaration(Class(:Planet))
+Declaration(ObjectProperty(:after))
+Declaration(ObjectProperty(:before))
+Declaration(NamedIndividual(:Date_19300218))
+Declaration(NamedIndividual(:Date_20060824))
+Declaration(NamedIndividual(:IAO))
+Declaration(NamedIndividual(:Pluto))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: :after (:after)
+
+AsymmetricObjectProperty(:after)
+TransitiveObjectProperty(:after)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: :DwarfPlanet (:DwarfPlanet)
+
+DisjointClasses(:DwarfPlanet :Planet)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: :Pluto (:Pluto)
+
+ClassAssertion(Aspect(ObjectUnionOf(ObjectOneOf(:Date_20060824) ObjectHasValue(:after :Date_20060824))) :DwarfPlanet :Pluto)
+ClassAssertion(Aspect(ObjectIntersectionOf(ObjectUnionOf(ObjectOneOf(:Date_19300218) ObjectHasValue(:after :Date_19300218)) ObjectHasValue(:before :Date_20060824))) :Planet :Pluto)
+
+
+
+
+)

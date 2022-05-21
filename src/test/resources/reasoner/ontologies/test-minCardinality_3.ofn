@@ -1,0 +1,52 @@
+Prefix(:=<http://ontology.aspectowl.xyz/untitled-ontology-463#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3>
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(ncChild(niMorty))")
+
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Child>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person>))
+Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#hasBiologicalParent>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty>))
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Child> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Child>)
+
+EquivalentClasses(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Child> ObjectMinCardinality(3 <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#hasBiologicalParent> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person>))
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Child> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>)
+ClassAssertion(ObjectAllValuesFrom(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#hasBiologicalParent> ObjectOneOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>)) <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty>)
+ObjectPropertyAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#hasBiologicalParent> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth>)
+ObjectPropertyAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#hasBiologicalParent> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>)
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Person> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Morty>)
+
+
+DifferentIndividuals(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Beth> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectMinCardinality_3#Jerry>)
+)

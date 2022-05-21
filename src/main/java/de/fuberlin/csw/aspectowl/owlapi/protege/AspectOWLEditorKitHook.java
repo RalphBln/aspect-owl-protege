@@ -6,6 +6,8 @@ package de.fuberlin.csw.aspectowl.owlapi.protege;
 import de.fuberlin.csw.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
 import de.fuberlin.csw.aspectowl.owlapi.model.OWLOntologyAspectManager;
 import de.fuberlin.csw.aspectowl.owlapi.model.impl.OWLAxiomInstance;
+import de.fuberlin.csw.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
+import de.fuberlin.csw.aspectowl.owlapi.protege.visitor.ProtegeAspectOWLVisitorProvider;
 import de.fuberlin.csw.aspectowl.owlapi.vocab.AspectOWLVocabulary;
 import de.fuberlin.csw.aspectowl.parser.AspectOrientedFunctionalSyntaxDocumentFormat;
 import de.fuberlin.csw.aspectowl.parser.AspectOrientedOWLFunctionalSyntaxParserFactory;
@@ -29,6 +31,7 @@ import org.protege.editor.owl.ui.action.RenameEntityAction;
 import org.protege.editor.owl.ui.action.SelectedOWLEntityAction;
 import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +92,8 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 			e.printStackTrace();
 		}
 		AspectOWLVocabulary.ASPECT.getIRI(); // Workaround for https://github.com/protegeproject/protege/issues/336
+
+		AspectOWLVisitorMap.setProvider(new ProtegeAspectOWLVisitorProvider());
 	}
 
 	/**
@@ -339,6 +344,14 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 //				ctClass.addMethod(getOntologiesMethod);
 //				finalizeClassForWeaving(wovenClass, ctClass);
 
+			} else if (className.equals("uk.ac.manchester.cs.owl.owlapi.OWLImmutableOntologyImpl")) {
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+
+				CtMethod ctMethod = ctClass.getMethod("getReferencingAxioms", "(Lorg/semanticweb/owlapi/model/OWLPrimitive;Lorg/semanticweb/owlapi/model/parameters/Imports;)Ljava/util/Set;");
+				ctMethod.insertAfter("de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook.fillInAxiomsReferencedByAspect(owlEntity, includeImportsClosure, this, $_);");
+
+				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.protege.util");
 			}
 
 //		} else if (className.equals("org.semanticweb.owlapi.model.AxiomType$1")) {
@@ -455,6 +468,14 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				"Warning",
 				JOptionPane.YES_NO_OPTION);
 		return userSaysOk == JOptionPane.YES_OPTION;
+	}
+
+	public static void fillInAxiomsReferencedByAspect(OWLPrimitive owlEntity, Imports includeImportsClosure, OWLOntology ontology, Set<OWLAxiom> axioms) {
+		if (!(owlEntity instanceof OWLClass))
+			return;
+
+		OWLOntologyAspectManager am = getAspectManager(ontology.getOWLOntologyManager());
+		axioms.addAll(am.getAspectAssertionAxioms(ontology, am.getAspect((OWLClass)owlEntity, Collections.EMPTY_SET, Collections.EMPTY_SET), includeImportsClosure));
 	}
 
 }

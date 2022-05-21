@@ -1,8 +1,12 @@
 package de.fuberlin.csw.aspectowl.owlapi.model.impl;
 
 import de.fuberlin.csw.aspectowl.owlapi.model.*;
+import de.fuberlin.csw.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
+import de.fuberlin.csw.aspectowl.owlapi.model.visitor.MissingAspectVisitorMappingException;
 import de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLLogicalAxiomImplWithEntityAndAnonCaching;
 
 import javax.annotation.Nonnull;
@@ -10,6 +14,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAndAnonCaching implements OWLAspectAssertionAxiom {
+
+    private static final Logger log = LoggerFactory.getLogger(OWLAspectAssertionAxiomImpl.class);
 
     private OWLOntology ontology;
     private OWLPointcut pointcut;
@@ -36,6 +42,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
     public void accept(@Nonnull OWLAxiomVisitor visitor) {
         if (visitor instanceof OWLAspectAxiomVisitor) {
             ((OWLAspectAxiomVisitor)visitor).visit(this);
+        } else {
+            AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).ifPresentOrElse(v -> v.visit(this), () -> log.warn("No aspect visitor defined for visitor {}", visitor));
         }
     }
 
@@ -45,7 +53,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
         if (visitor instanceof OWLAspectAxiomVisitorEx) {
             return ((OWLAspectAxiomVisitorEx<O>)visitor).visit(this);
         }
-        return null;
+        return (O) AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).map(v -> v.visit(this)).orElseThrow(() -> new MissingAspectVisitorMappingException(this, visitor));
+
     }
 
     @Nonnull
@@ -82,6 +91,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
     public void accept(@Nonnull OWLObjectVisitor visitor) {
         if (visitor instanceof OWLAspectAxiomVisitor) {
             ((OWLAspectAxiomVisitor) visitor).visit(this);
+        } else {
+            AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).get().visit(this);
         }
     }
 
@@ -90,8 +101,9 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
     public <O> O accept(@Nonnull OWLObjectVisitorEx<O> visitor) {
         if (visitor instanceof OWLAspectAxiomVisitorEx) {
             return ((OWLAspectAxiomVisitorEx<O>) visitor).visit(this);
+        } else {
+            return ((OWLAspectAxiomVisitorEx<O>)AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).get()).visit(this);
         }
-        return null;
     }
 
     @Override
@@ -110,4 +122,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
         return Objects.hash(super.hashCode(), ontology, pointcut, aspect);
     }
 
+    @Override
+    public String toString() {
+        return String.format("Aspect(%s %s)", pointcut, aspect);
+    }
 }

@@ -1,0 +1,27 @@
+Prefix(:=<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectIntersectionOf_1#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectIntersectionOf_1>
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "ncHighSchoolStudent(niMorty) && ncInterdimensionalTraveler(niMorty)")
+
+Declaration(Class(:HighSchoolStudent))
+Declaration(Class(:InterdimensionalTraveler))
+Declaration(NamedIndividual(:Morty))
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: :Morty (:Morty)
+
+ClassAssertion(ObjectIntersectionOf(:HighSchoolStudent :InterdimensionalTraveler) :Morty)
+
+
+)

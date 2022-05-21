@@ -1,0 +1,63 @@
+Prefix(:=<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/objectIntersectionOf_1#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1>
+Import(<http://ontology.aspectowl.xyz>)
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncDwarfPlanet(X)))")
+
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#CelestialBody>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet>))
+Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after>))
+Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Date_20060824>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Pluto>))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after>)
+
+InverseObjectProperties(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before>)
+TransitiveObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after>)
+
+# Object Property: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before>)
+
+TransitiveObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before>)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet>)
+
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#CelestialBody>)
+DisjointClasses(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet>)
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet>)
+
+SubClassOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#CelestialBody>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Pluto> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Pluto>)
+
+ClassAssertion(Aspect(ObjectUnionOf(ObjectOneOf(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Date_20060824>) ObjectHasValue(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#after> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Date_20060824>))) <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#DwarfPlanet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Pluto>)
+ClassAssertion(Aspect(ObjectHasValue(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#before> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Date_20060824>)) <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Planet> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_1#Pluto>)
+
+
+
+
+)
