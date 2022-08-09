@@ -60,7 +60,17 @@
 
 	<packaging>bundle</packaging>
 
-	
+	<repositories>
+		<repository>
+			<id>tweety</id>
+			<url>https://tweetyproject.org/mvn/</url>
+		</repository>
+		<repository>
+			<id>jspf</id>
+			<url>https://korpling.german.hu-berlin.de/maven2/</url>
+		</repository>
+	</repositories>
+
 	
 	<dependencies>
 
@@ -228,6 +238,57 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.tweety</groupId>
+			<artifactId>commons</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.tweety</groupId>
+			<artifactId>math</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.math</groupId>
+			<artifactId>jama</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ojalgo</groupId>
+			<artifactId>ojalgo</artifactId>
+			<version>35.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.tweety.logics</groupId>
+			<artifactId>commons</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.tweety.logics</groupId>
+			<artifactId>fol</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.tweety</groupId>
+			<artifactId>plugin</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>jspf</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
 <!-- for debugging. TODO remove -->
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -237,16 +298,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>xyz.aspectowl</groupId>
-			<artifactId>owl2tptp</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
 			<version>2.2.3</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.framework</artifactId>
+			<version>7.0.3</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -317,6 +378,7 @@
 							!gnu.trove.map.hash,
 							!gnu.trove.set.hash,
 							!org.semanticweb.owl.explanation.api,
+							org.osgi.framework;version=!,
 							*
 						</Import-Package>
 						<Export-Package>
@@ -325,7 +387,8 @@
 							de.fuberlin.csw.aspectowl.owlapi.protege,
 							de.fuberlin.csw.aspectowl.protege.editor.core.ui,
 							de.fuberlin.csw.aspectowl.parser,
-							de.fuberlin.csw.aspectowl.protege.util
+							de.fuberlin.csw.aspectowl.protege.util,
+							javax.validation.constraints
 						</Export-Package>
 						<Include-Resource>plugin.xml, {maven-resources}, {maven-dependencies}</Include-Resource>
 						<Embed-Dependency>
@@ -334,9 +397,19 @@
 							telemetry,
 							javassist,
 							owlexplanation,
-							hppcrt
+							hppcrt,
+							commons,
+							math,
+							commons-math,
+							commons-math3,
+							fol,
+							jama,
+							plugin,
+							core,
+							ojalgo
 						</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
+						<Embed-StripGroup>false</Embed-StripGroup>
 						<Embed-Transitive>true</Embed-Transitive>
 						<!-- Private-Package>skeleton</Private-Package-->
 						<Eclipse-SupplementBundle>org.protege.editor.owl</Eclipse-SupplementBundle>
