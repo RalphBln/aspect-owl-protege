@@ -15,7 +15,7 @@ public class AspectButton extends MListButton {
 
     private static final Color ROLL_OVER_COLOR = new Color(0, 0, 0);
 
-    private static final String ASPECT_STRING = "A";
+    private static final String ASPECT_STRING = "\uD802\uDD00";
 
     private OWLAxiom axiom;
     private OWLOntology ontology;
