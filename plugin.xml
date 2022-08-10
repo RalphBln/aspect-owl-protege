@@ -43,7 +43,7 @@
             id="AspectOrientedFunctionalSyntaxOWLParserInitializer"
             name="Aspect-Oriented Functional Syntax OWL Parser Initializer"
             point="org.protege.editor.core.application.EditorKitHook">
-        <class value="de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook"/>
+        <class value="xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
    <extension
@@ -54,7 +54,7 @@
             value="Ontology Aspects">
       </label>
       <class
-            value="de.fuberlin.csw.aspectowl.protege.InferredAspectViewComponent">
+            value="xyz.aspectowl.protege.InferredAspectViewComponent">
       </class>
       <category
             value="@org.protege.ontologycategory">
@@ -67,7 +67,7 @@
             value="Aspects">
       </label>
       <class
-            value="de.fuberlin.csw.aspectowl.protege.AspectWorkspaceTab">
+            value="xyz.aspectowl.protege.AspectOWLWorkspaceTab">
       </class>
       <index
             value="X">
@@ -87,7 +87,7 @@
             value="Ontology Aspect Quantification with SPARQL">
       </label>
       <class
-            value="de.fuberlin.csw.aspectowl.protege.AspectSparqlQueryViewComponent">
+            value="xyz.aspectowl.protege.AspectOWLSparqlQueryViewComponent">
       </class>
       <category
             value="@org.protege.ontologycategory">
@@ -99,7 +99,7 @@
          point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Save ontology module"/>
         <toolTip value="Save ontology module"/>
-        <class value="de.fuberlin.csw.aspectowl.protege.SaveOntologyModuleAction"/>
+        <class value="xyz.aspectowl.protege.SaveAspectOWLOntologyModuleAction"/>
         <path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
         <editorKitId value="any"/>
         <accelerator value="shift S"/>
@@ -109,7 +109,7 @@
     	name="Save aspect-oriented Ontology"
     	point="org.protege.editor.core.application.EditorKitMenuAction">
     	<name value="Save aspect-oriented Ontology"/>
-    	<class value="de.fuberlin.csw.aspectowl.protege.SaveAspectOrientedOntology"/>
+    	<class value="xyz.aspectowl.protege.SaveAspectOWLOntology"/>
     	<toolTip value="Save your aspect-oriented Ontology in its own file format"/>
     	<path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
     	<editorKitId value="OWLEditorKit"/>
@@ -120,11 +120,11 @@
     	name="Aspect-Oriented Ontology Development Preferences"
     	point="org.protege.editor.core.application.preferencespanel">
     	<label value="Aspects" />
-    	<class value="de.fuberlin.csw.aspectowl.preferences.AspectOWLPreferencesPanel"/>
+    	<class value="xyz.aspectowl.preferences.AspectOWLPreferencesPanel"/>
     </extension>
     <extension id="InconsistentAspectSeparatorOntologyExplanationGenerator"
                point="org.protege.editor.owl.inconsistentOntologyExplanation">
-        <class value="de.fuberlin.csw.aspectowl.explanation.AspectExplanationPluginImpl"/>
+        <class value="xyz.aspectowl.explanation.AspectOWLExplanationPluginImpl"/>
         <name value="Identification and deactivation of aspects that cause inconsistency"/>
     </extension>
     <!--extension id="AspectOWLEditorPluginFactory"
@@ -134,13 +134,13 @@
     </extension-->
     <extension id="AspectOrientedOntologyDevelopmentEditorKitFactory"
                point="org.protege.editor.core.editorkit.EditorKitFactory">
-        <class value="de.fuberlin.csw.aspectowl.protege.editorkit.AspectOWLEditorKitFactory" />
+        <class value="xyz.aspectowl.protege.editorkit.AspectOWLEditorKitFactory" />
         <name value="Factory for the AOOD Protégé editor kit" />
     </extension>
     <extension id="AspectOWLFunctionalSyntax"
                point="org.protege.editor.core.application.ViewComponent">
         <label value="Aspect OWL functional syntax rendering"/>
-        <class value="de.fuberlin.csw.aspectowl.protege.editor.core.ui.view.ontology.OWLAspectFunctionalSyntaxRenderingViewComponent"/>
+        <class value="xyz.aspectowl.protege.editor.core.ui.view.ontology.OWLAspectFunctionalSyntaxRenderingViewComponent"/>
         <headerColor value="@org.protege.ontologycolor"/>
         <category value="@org.protege.ontologycategory"/>
     </extension>

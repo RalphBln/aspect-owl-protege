@@ -5,6 +5,6 @@ build.properties
 META-INF/
 target/
 
-de.fuberlin.csw.aood.protege.plugin.iml
+xyz.aspectowl.protege.plugin.iml
 .idea
 catalog-v001.xml

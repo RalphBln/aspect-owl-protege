@@ -1,11 +1,10 @@
 package org.apache.felix.framework;
 
-import de.fuberlin.csw.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
-import de.fuberlin.csw.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
+import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
 import javassist.*;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.wiring.BundleWiring;
-import org.semanticweb.owlapi.model.AxiomType;
 
 /**
  * Lives in package org.apache.felix.framework because we need access to the WovenClassImpl constructor, which is
@@ -36,7 +35,7 @@ public class AspectOWLPostClassLoadingWeavingHelper {
             ctClass.detach();
             wovenClass.setBytes(bytes);
 
-            wovenClass.getDynamicImports().add("de.fuberlin.csw.aspectowl.owlapi.protege");
+            wovenClass.getDynamicImports().add("xyz.aspectowl.owlapi.protege");
 
             wovenClass.complete(wovenClass.getDefinedClass(), null, null);
 

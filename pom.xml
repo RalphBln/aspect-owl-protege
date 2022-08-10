@@ -45,8 +45,8 @@
 		<version>7</version>
 	</parent>
 
-	<groupId>de.fuberlin.csw.aood.protege</groupId>
-	<artifactId>de.fuberlin.csw.aood.protege.plugin</artifactId>
+	<groupId>xyz.aspectowl</groupId>
+	<artifactId>protege.plugin</artifactId>
 	<version>v5.6.0.2-j15</version>
 	<name>Aspect-Oriented Ontology Protégé Plug-In</name> 
 	<description>A plug-in for aspect-oriented ontology development.</description>
@@ -379,15 +379,16 @@
 							!gnu.trove.set.hash,
 							!org.semanticweb.owl.explanation.api,
 							org.osgi.framework;version=!,
+							org.apache.felix.framework;version=!,
 							*
 						</Import-Package>
 						<Export-Package>
-							de.fuberlin.csw.aspectowl.protege,
-							de.fuberlin.csw.aspectowl.owlapi.model,
-							de.fuberlin.csw.aspectowl.owlapi.protege,
-							de.fuberlin.csw.aspectowl.protege.editor.core.ui,
-							de.fuberlin.csw.aspectowl.parser,
-							de.fuberlin.csw.aspectowl.protege.util,
+							xyz.aspectowl.protege,
+							xyz.aspectowl.owlapi.model,
+							xyz.aspectowl.owlapi.protege,
+							xyz.aspectowl.protege.editor.core.ui,
+							xyz.aspectowl.parser,
+							xyz.aspectowl.protege.util,
 							javax.validation.constraints
 						</Export-Package>
 						<Include-Resource>plugin.xml, {maven-resources}, {maven-dependencies}</Include-Resource>
@@ -435,7 +436,7 @@
 								<resource>
 									<directory>${basedir}/target</directory>
 									<includes>
-										<include>de.fuberlin.csw.aood.protege.plugin-${project.version}.jar</include>
+										<include>xyz.aspectowl.protege.plugin-${project.version}.jar</include>
 									</includes>
 								</resource>
 							</resources>
@@ -446,6 +447,7 @@
 			<plugin><!--For easier debugging. TODO remove-->
 				<artifactId>exec-maven-plugin</artifactId>
 				<groupId>org.codehaus.mojo</groupId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
 						<id>Stop running Protégé instance</id>

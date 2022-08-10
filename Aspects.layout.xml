@@ -40,7 +40,7 @@
     <VSNode splits="1.0">
         <CNode>
             <Component label="Aspects">
-                <Property id="pluginId" value="de.fuberlin.csw.aspectowl.protege.InferredAspectViewComponent"/>
+                <Property id="pluginId" value="xyz.aspectowl.protege.InferredAspectViewComponent"/>
             </Component>
         </CNode>
     </VSNode>
