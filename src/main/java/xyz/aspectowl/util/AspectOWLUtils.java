@@ -45,7 +45,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
-import xyz.aspectowl.preferences.AspectOWLPreferencesPanel;
+import xyz.aspectowl.protege.preferences.AspectOWLPreferencesPanel;
 
 /**
  * 

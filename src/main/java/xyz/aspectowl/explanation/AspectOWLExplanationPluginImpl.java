@@ -1,7 +1,7 @@
 package xyz.aspectowl.explanation;
 
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.explanation.io.InconsistentOntologyPluginInstance;

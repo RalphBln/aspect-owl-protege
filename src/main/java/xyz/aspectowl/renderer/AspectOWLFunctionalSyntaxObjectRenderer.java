@@ -1,7 +1,7 @@
 package xyz.aspectowl.renderer;
 
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
-import xyz.aspectowl.owlapi.model.OWLAspectAxiomVisitor;
+import xyz.aspectowl.owlapi.model.AspectOWLAxiomVisitor;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import xyz.aspectowl.owlapi.vocab.AspectOWLVocabulary;
 import org.semanticweb.owlapi.functional.renderer.FunctionalSyntaxObjectRenderer;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 
-public class AspectOWLFunctionalSyntaxObjectRenderer extends FunctionalSyntaxObjectRenderer implements OWLAspectAxiomVisitor {
+public class AspectOWLFunctionalSyntaxObjectRenderer extends FunctionalSyntaxObjectRenderer implements AspectOWLAxiomVisitor {
 
     private OWLAspectManager am;
     private Writer writer;

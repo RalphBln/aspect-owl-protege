@@ -43,7 +43,7 @@
             id="AspectOrientedFunctionalSyntaxOWLParserInitializer"
             name="Aspect-Oriented Functional Syntax OWL Parser Initializer"
             point="org.protege.editor.core.application.EditorKitHook">
-        <class value="xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook"/>
+        <class value="xyz.aspectowl.protege.AspectOWLEditorKitHook"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
    <extension
@@ -120,7 +120,7 @@
     	name="Aspect-Oriented Ontology Development Preferences"
     	point="org.protege.editor.core.application.preferencespanel">
     	<label value="Aspects" />
-    	<class value="xyz.aspectowl.preferences.AspectOWLPreferencesPanel"/>
+    	<class value="xyz.aspectowl.protege.preferences.AspectOWLPreferencesPanel"/>
     </extension>
     <extension id="InconsistentAspectSeparatorOntologyExplanationGenerator"
                point="org.protege.editor.owl.inconsistentOntologyExplanation">

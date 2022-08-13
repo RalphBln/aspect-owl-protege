@@ -2,7 +2,7 @@ package xyz.aspectowl.owlapi.model.impl;
 
 import xyz.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
 import xyz.aspectowl.owlapi.model.visitor.MissingAspectVisitorMappingException;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +40,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
 
     @Override
     public void accept(@Nonnull OWLAxiomVisitor visitor) {
-        if (visitor instanceof OWLAspectAxiomVisitor) {
-            ((OWLAspectAxiomVisitor)visitor).visit(this);
+        if (visitor instanceof AspectOWLAxiomVisitor) {
+            ((AspectOWLAxiomVisitor)visitor).visit(this);
         } else {
             AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).ifPresentOrElse(v -> v.visit(this), () -> log.warn("No aspect visitor defined for visitor {}", visitor));
         }
@@ -50,8 +50,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
     @Nonnull
     @Override
     public <O> O accept(@Nonnull OWLAxiomVisitorEx<O> visitor) {
-        if (visitor instanceof OWLAspectAxiomVisitorEx) {
-            return ((OWLAspectAxiomVisitorEx<O>)visitor).visit(this);
+        if (visitor instanceof AspectOWLAxiomVisitorEx) {
+            return ((AspectOWLAxiomVisitorEx<O>)visitor).visit(this);
         }
         return (O) AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).map(v -> v.visit(this)).orElseThrow(() -> new MissingAspectVisitorMappingException(this, visitor));
 
@@ -89,8 +89,8 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
 
     @Override
     public void accept(@Nonnull OWLObjectVisitor visitor) {
-        if (visitor instanceof OWLAspectAxiomVisitor) {
-            ((OWLAspectAxiomVisitor) visitor).visit(this);
+        if (visitor instanceof AspectOWLAxiomVisitor) {
+            ((AspectOWLAxiomVisitor) visitor).visit(this);
         } else {
             AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).get().visit(this);
         }
@@ -99,10 +99,10 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
     @Nonnull
     @Override
     public <O> O accept(@Nonnull OWLObjectVisitorEx<O> visitor) {
-        if (visitor instanceof OWLAspectAxiomVisitorEx) {
-            return ((OWLAspectAxiomVisitorEx<O>) visitor).visit(this);
+        if (visitor instanceof AspectOWLAxiomVisitorEx) {
+            return ((AspectOWLAxiomVisitorEx<O>) visitor).visit(this);
         } else {
-            return ((OWLAspectAxiomVisitorEx<O>)AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).get()).visit(this);
+            return ((AspectOWLAxiomVisitorEx<O>)AspectOWLVisitorMap.getAspectAxiomVisitor(visitor).get()).visit(this);
         }
     }
 

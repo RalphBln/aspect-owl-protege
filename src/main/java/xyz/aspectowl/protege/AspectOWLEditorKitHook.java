@@ -1,18 +1,17 @@
 /**
  * 
  */
-package xyz.aspectowl.owlapi.protege;
+package xyz.aspectowl.protege;
 
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import xyz.aspectowl.owlapi.model.impl.AspectOWLAxiomInstance;
 import xyz.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
-import xyz.aspectowl.owlapi.protege.visitor.ProtegeAspectOWLVisitorProvider;
+import xyz.aspectowl.owlapi.visitor.ProtegeAspectOWLVisitorProvider;
 import xyz.aspectowl.owlapi.vocab.AspectOWLVocabulary;
 import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxDocumentFormat;
 import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxParserFactory;
 import xyz.aspectowl.parser.AspectOWLOntologyPreSaveChecker;
-import xyz.aspectowl.protege.AspectOWLWorkspace;
 import xyz.aspectowl.protege.editor.core.ui.AspectButton;
 import xyz.aspectowl.protege.views.AspectAssertionPanel;
 import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory;
@@ -213,7 +212,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 					ctClass.addMethod(ctMethod);
 				}
 
-				ctMethod.insertAfter("if (value instanceof org.protege.editor.owl.ui.frame.OWLFrameSectionRow) return xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.getButtonsWithAspectButton($_, (org.protege.editor.owl.ui.frame.OWLFrameSectionRow)value, editorKit);");
+				ctMethod.insertAfter("if (value instanceof org.protege.editor.owl.ui.frame.OWLFrameSectionRow) return xyz.aspectowl.protege.AspectOWLEditorKitHook.getButtonsWithAspectButton($_, (org.protege.editor.owl.ui.frame.OWLFrameSectionRow)value, editorKit);");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 
@@ -235,7 +234,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 					ctClass.addMethod(ctMethod);
 				}
 
-				ctMethod.insertAt(103, "xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(loadingManager, modelManager);");
+				ctMethod.insertAt(103, "xyz.aspectowl.protege.AspectOWLEditorKitHook.addAspectOWLParser(loadingManager, modelManager);");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 
@@ -257,7 +256,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 					ctClass.addMethod(ctMethod);
 				}
 
-				ctMethod.insertAt(99, "xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addAspectOWLParser(reloadingManager, modelManager);");
+				ctMethod.insertAt(99, "xyz.aspectowl.protege.AspectOWLEditorKitHook.addAspectOWLParser(reloadingManager, modelManager);");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 
@@ -266,10 +265,10 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtConstructor ctConstructor = ctClass.getConstructor("()V");
-				ctConstructor.insertAt(39, "xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.addOntologyFormat(formats);");
+				ctConstructor.insertAt(39, "xyz.aspectowl.protege.AspectOWLEditorKitHook.addOntologyFormat(formats);");
 
 				CtMethod ctMethod = ctClass.getMethod("isFormatOk", "(Lorg/protege/editor/owl/OWLEditorKit;Lorg/semanticweb/owlapi/model/OWLDocumentFormat;)Z"); // throws NotFoundException if method does not exist
-				ctMethod.insertBefore("if (!(xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.alternativeFormatIfAspectOriented(format, editorKit))) return false;");
+				ctMethod.insertBefore("if (!(xyz.aspectowl.protege.AspectOWLEditorKitHook.alternativeFormatIfAspectOriented(format, editorKit))) return false;");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 
@@ -348,7 +347,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				CtClass ctClass = prepareClassForWeaving(wovenClass);
 
 				CtMethod ctMethod = ctClass.getMethod("getReferencingAxioms", "(Lorg/semanticweb/owlapi/model/OWLPrimitive;Lorg/semanticweb/owlapi/model/parameters/Imports;)Ljava/util/Set;");
-				ctMethod.insertAfter("xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook.fillInAxiomsReferencedByAspect(owlEntity, includeImportsClosure, this, $_);");
+				ctMethod.insertAfter("xyz.aspectowl.protege.AspectOWLEditorKitHook.fillInAxiomsReferencedByAspect(owlEntity, includeImportsClosure, this, $_);");
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 				wovenClass.getDynamicImports().add("xyz.aspectowl.protege.util");

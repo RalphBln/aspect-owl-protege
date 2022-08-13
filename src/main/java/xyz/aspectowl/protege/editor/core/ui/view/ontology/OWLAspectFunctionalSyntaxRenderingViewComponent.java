@@ -1,6 +1,6 @@
 package xyz.aspectowl.protege.editor.core.ui.view.ontology;
 
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxRenderer;
 import org.protege.editor.owl.ui.view.ontology.AbstractOntologyRenderingViewComponent;
 import org.semanticweb.owlapi.model.OWLOntology;

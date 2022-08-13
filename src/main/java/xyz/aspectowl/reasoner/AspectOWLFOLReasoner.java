@@ -27,7 +27,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public String getReasonerName() {
-        return "AspectOWL Reasoner";
+        return "AspectOWL FOL Reasoner";
     }
 
     @Nonnull

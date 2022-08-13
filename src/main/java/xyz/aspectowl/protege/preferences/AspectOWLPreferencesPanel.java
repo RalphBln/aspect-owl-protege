@@ -1,7 +1,7 @@
 /**
  * 
  */
-package xyz.aspectowl.preferences;
+package xyz.aspectowl.protege.preferences;
 
 import java.awt.BorderLayout;
 

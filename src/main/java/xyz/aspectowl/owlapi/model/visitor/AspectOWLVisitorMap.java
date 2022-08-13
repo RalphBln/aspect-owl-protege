@@ -1,7 +1,7 @@
 package xyz.aspectowl.owlapi.model.visitor;
 
-import xyz.aspectowl.owlapi.model.OWLAspectAxiomVisitor;
-import xyz.aspectowl.owlapi.model.OWLAspectAxiomVisitorEx;
+import xyz.aspectowl.owlapi.model.AspectOWLAxiomVisitor;
+import xyz.aspectowl.owlapi.model.AspectOWLAxiomVisitorEx;
 import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLAxiomVisitorEx;
 
@@ -18,11 +18,11 @@ public class AspectOWLVisitorMap {
         AspectOWLVisitorMap.provider = provider;
     }
 
-    public static Optional<OWLAspectAxiomVisitor> getAspectAxiomVisitor(OWLAxiomVisitor orig) {
+    public static Optional<AspectOWLAxiomVisitor> getAspectAxiomVisitor(OWLAxiomVisitor orig) {
         return provider.getAspectAxiomVisitor(orig);
     }
 
-    public static Optional<OWLAspectAxiomVisitorEx> getAspectAxiomVisitor(OWLAxiomVisitorEx orig) {
+    public static Optional<AspectOWLAxiomVisitorEx> getAspectAxiomVisitor(OWLAxiomVisitorEx orig) {
         return provider.getAspectAxiomVisitor(orig);
     }
 

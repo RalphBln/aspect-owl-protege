@@ -1,7 +1,7 @@
 package xyz.aspectowl.protege.util;
 
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.OWLEntityRenamer;
 

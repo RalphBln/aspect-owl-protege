@@ -1,7 +1,7 @@
 package org.apache.felix.framework;
 
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import javassist.*;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.wiring.BundleWiring;

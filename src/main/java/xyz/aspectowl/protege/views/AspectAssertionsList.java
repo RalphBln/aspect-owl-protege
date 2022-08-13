@@ -5,7 +5,7 @@ import xyz.aspectowl.owlapi.model.OWLAspect;
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import xyz.aspectowl.owlapi.model.impl.AspectOWLAxiomInstance;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import xyz.aspectowl.protege.editor.core.ui.AspectButton;
 
 import org.protege.editor.core.ui.list.MList;

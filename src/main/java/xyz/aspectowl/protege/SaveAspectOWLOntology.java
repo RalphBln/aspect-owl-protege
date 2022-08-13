@@ -26,7 +26,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
 import xyz.aspectowl.util.AspectOWLUtils;
 
 public class SaveAspectOWLOntology extends ProtegeAction {

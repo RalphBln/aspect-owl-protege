@@ -38,7 +38,7 @@ package xyz.aspectowl.inference;
 
 import xyz.aspectowl.owlapi.model.OWLAspect;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import xyz.aspectowl.owlapi.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import xyz.aspectowl.util.AnnotatedAxiomsDuplicateFilter;
 import xyz.aspectowl.util.DefaultOWLAxiomVisitorAdapter;
 import org.protege.editor.core.util.ProtegeDirectories;

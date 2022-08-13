@@ -1,7 +1,7 @@
-package xyz.aspectowl.owlapi.protege.visitor;
+package xyz.aspectowl.owlapi.visitor;
 
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
-import xyz.aspectowl.owlapi.model.OWLAspectAxiomVisitor;
+import xyz.aspectowl.owlapi.model.AspectOWLAxiomVisitor;
 import org.semanticweb.owlapi.model.*;
 
 import javax.annotation.Nonnull;
@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 /**
  * @author ralph
  */
-public class DummyVisitor implements OWLAspectAxiomVisitor {
+public class AspectOWLAxiomVisitorAdapter implements AspectOWLAxiomVisitor {
     @Override
     public void visit(OWLAspectAssertionAxiom axiom) {
 
