@@ -93,27 +93,38 @@
             value="@org.protege.ontologycategory">
       </category>
    </extension>
-   <extension
-         id="menu.file.SaveOntologyModule"
-         name="SaveOntologyModule"
-         point="org.protege.editor.core.application.EditorKitMenuAction">
+    <extension
+            id="menu.file.SaveOntologyModule"
+            name="SaveOntologyModule"
+            point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Save ontology module"/>
         <toolTip value="Save ontology module"/>
         <class value="xyz.aspectowl.protege.SaveAspectOWLOntologyModuleAction"/>
         <path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
         <editorKitId value="any"/>
-        <accelerator value="shift S"/>
+        <accelerator value="shift M"/>
     </extension>
     <extension
     	id="SaveAspectOrientedOntology"
     	name="Save aspect-oriented Ontology"
     	point="org.protege.editor.core.application.EditorKitMenuAction">
     	<name value="Save aspect-oriented Ontology"/>
-    	<class value="xyz.aspectowl.protege.SaveAspectOWLOntology"/>
+    	<class value="xyz.aspectowl.protege.SaveAspectOWLOntologyAction"/>
     	<toolTip value="Save your aspect-oriented Ontology in its own file format"/>
     	<path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
     	<editorKitId value="OWLEditorKit"/>
     	<accelerator value="shift A"/>
+    </extension>
+    <extension
+            id="menu.edit.CopyTPTP"
+            name="CopyTPTP"
+            point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Copy ontology as TPTP"/>
+        <toolTip value="Copy aspectOWL ontology as TPTP text (for debugging)"/>
+        <class value="xyz.aspectowl.protege.CopyAspectOWLOntologyAsTPTPAction"/>
+        <path value="org.protege.editor.core.application.menu.EditMenu/SlotAB-Z"/>
+        <editorKitId value="any"/>
+        <accelerator value="shift T"/>
     </extension>
     <extension
     	id="AspectOrientedOntologyDevelopmentPreferencesPanel"

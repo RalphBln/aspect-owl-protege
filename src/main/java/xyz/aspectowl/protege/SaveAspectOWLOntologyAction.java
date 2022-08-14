@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import xyz.aspectowl.util.AspectOWLUtils;
 
-public class SaveAspectOWLOntology extends ProtegeAction {
+public class SaveAspectOWLOntologyAction extends ProtegeAction {
 
 	/**
 	 * 
