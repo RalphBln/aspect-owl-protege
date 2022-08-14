@@ -1,19 +1,32 @@
 package xyz.aspectowl.protege.editor.core.ui;
 
 import com.google.common.html.HtmlEscapers;
+import org.checkerframework.checker.units.qual.A;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import org.protege.editor.core.ui.list.MListButton;
 import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.io.IOException;
 
 public class AspectButton extends MListButton {
 
     private static final Color ROLL_OVER_COLOR = new Color(0, 0, 0);
 
     private static final String ASPECT_STRING = "⬇";
+
+    private static BufferedImage img = null;
+    static {
+        try {
+            img = ImageIO.read(AspectButton.class.getResourceAsStream("/aspectButton.png"));
+        } catch (IOException e) {
+        }
+    }
 
     private OWLAxiom axiom;
     private OWLOntology ontology;
@@ -45,7 +58,6 @@ public class AspectButton extends MListButton {
         int y = getBounds().y;
 
         Font font = g.getFont().deriveFont(Font.BOLD, OWLRendererPreferences.getInstance().getFontSize());
-//        Font font = g.getFont().deriveFont(Font.BOLD, 12);
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
         final Rectangle stringBounds = fontMetrics.getStringBounds(ASPECT_STRING, g).getBounds();
@@ -55,7 +67,9 @@ public class AspectButton extends MListButton {
         // Protege's built-in buttons do not have that, so I won't add it
 //        g.setColor(ontology == null ? Color.RED : g.getColor());
 
-        g.drawString(ASPECT_STRING, x + w / 2 - stringBounds.width / 2, y + (h - stringBounds.height) / 2 + baseline );
+//        g.drawString(ASPECT_STRING, x + w / 2 - stringBounds.width / 2, y + (h - stringBounds.height) / 2 + baseline );
+        g.drawImage(img, null, x, y);
+
     }
 
     @Override
