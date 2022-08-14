@@ -35,7 +35,7 @@ public class AspectOWLPostClassLoadingWeavingHelper {
             ctClass.detach();
             wovenClass.setBytes(bytes);
 
-            wovenClass.getDynamicImports().add("xyz.aspectowl.owlapi.protege");
+            wovenClass.getDynamicImports().add("xyz.aspectowl.protege");
 
             wovenClass.complete(wovenClass.getDefinedClass(), null, null);
 

@@ -46,7 +46,7 @@
 	</parent>
 
 	<groupId>xyz.aspectowl</groupId>
-	<artifactId>protege.plugin</artifactId>
+	<artifactId>aspectowl-protege-plugin</artifactId>
 	<version>v5.6.0.2-j15</version>
 	<name>Aspect-Oriented Ontology Protégé Plug-In</name> 
 	<description>A plug-in for aspect-oriented ontology development.</description>
@@ -54,6 +54,7 @@
 	<properties>
 		<protege.version>5.6.0-beta-1-SNAPSHOT</protege.version>
 		<owlapi.version>4.5.19</owlapi.version>
+		<bundle-version>1.0.0</bundle-version>
 		<org.osgi.framework.system.packages.extra>org.w3c.dom.:ranges</org.osgi.framework.system.packages.extra>
 		<protege.install.location>/Users/ralph/devel/Applications/protege-j15/Protege-5.6.0-beta-1-SNAPSHOT</protege.install.location>
 	</properties>
@@ -360,7 +361,8 @@
 					<instructions>
 						<_noee>true</_noee>
 						<Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
-						<Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
+						<Bundle-Version>${bundle-version}</Bundle-Version>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true</Bundle-SymbolicName>
 						<Bundle-Vendor>Corporate Semantic Web Group, Institute for Computer Science, Freie Universitaet Berlin</Bundle-Vendor>
 						<Import-Package>
 							!org.eclipse.swt.*,
@@ -374,21 +376,20 @@
 							!org.coode.xml,
 							!uk.ac.manchester.cs.bhig.util,
 							!com.sun.jdi.*,
-							!org.apache.felix.framework.*,
 							!gnu.trove.map.hash,
 							!gnu.trove.set.hash,
 							!org.semanticweb.owl.explanation.api,
+							!org.apache.felix.framework,
+							!org.apache.felix.framework.*,
 							org.osgi.framework;version=!,
-							org.apache.felix.framework;version=!,
 							*
 						</Import-Package>
 						<Export-Package>
-							xyz.aspectowl.protege,
-							xyz.aspectowl.owlapi.model,
-							xyz.aspectowl.owlapi.protege,
-							xyz.aspectowl.protege.editor.core.ui,
-							xyz.aspectowl.parser,
-							xyz.aspectowl.protege.util,
+							xyz.aspectowl.protege;version="${bundle-version}",
+							xyz.aspectowl.owlapi.model;version="${bundle-version}",
+							xyz.aspectowl.protege.editor.core.ui;version="${bundle-version}",
+							xyz.aspectowl.parser;version="${bundle-version}",
+							xyz.aspectowl.protege.util;version="${bundle-version}",
 							javax.validation.constraints
 						</Export-Package>
 						<Include-Resource>plugin.xml, {maven-resources}, {maven-dependencies}</Include-Resource>
@@ -436,7 +437,7 @@
 								<resource>
 									<directory>${basedir}/target</directory>
 									<includes>
-										<include>xyz.aspectowl.protege.plugin-${project.version}.jar</include>
+										<include>aspectowl-protege-plugin-${project.version}.jar</include>
 									</includes>
 								</resource>
 							</resources>

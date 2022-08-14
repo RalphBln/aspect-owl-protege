@@ -391,7 +391,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		byte[] bytes = ctClass.toBytecode();
 		ctClass.detach();
 		wovenClass.setBytes(bytes);
-		wovenClass.getDynamicImports().add("xyz.aspectowl.owlapi.protege");
+		wovenClass.getDynamicImports().add("xyz.aspectowl.protege");
 	}
 
 //	private static final OWLAspect testAspect = new OWLNamedAspectImpl(IRI.create("http://www.example.org/aspectowl/FunnyAspect"));
