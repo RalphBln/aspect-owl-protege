@@ -106,7 +106,7 @@ public class SpassTptpFolReasoner extends FolReasoner {
     public String queryProof(FolBeliefSet kb, FolFormula query) {
         String output = null;
         try {
-            File file = File.createTempFile("tmp", ".txt");
+            File file = File.createTempFile("tmp", ".p");
             UnsortedTPTPWriter writer = new UnsortedTPTPWriter(new PrintWriter(file));
             writer.printBase(kb);
             writer.printQuery(query);

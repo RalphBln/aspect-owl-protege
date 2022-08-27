@@ -62,6 +62,10 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     private boolean writeEntitiesAsURIs = true;
     private boolean addMissingDeclarations = true;
 
+    // Since TPTP only allows letters, numbers, and the underscore character in names we have to translate the OWL IRIs
+    // to names containing only these characters and keep the mappings for later back translation.
+    private HashMap<String, OWLEntity> nameMappings = new HashMap<>();
+
     private UnsortedTPTPWriter out;
 
     public FolParser getFolParser() {

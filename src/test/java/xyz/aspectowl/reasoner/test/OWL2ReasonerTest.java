@@ -13,6 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import xyz.aspectowl.tptp.reasoner.SpassTptpFolReasoner;
+import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
+import xyz.aspectowl.tptp.reasoner.util.UnsortedTPTPWriter;
 import xyz.aspectowl.tptp.renderer.AspectAnnotationOWL2TPTPObjectRenderer;
 import xyz.aspectowl.tptp.renderer.OWL2TPTPObjectRenderer;
 
@@ -38,8 +40,10 @@ public class OWL2ReasonerTest {
 
     @BeforeAll
     public static void setup() {
-        String spassLocation = Optional.of(System.getenv("SPASS_HOME")).orElseThrow(() -> new IllegalStateException("SPASS_HOME environment variable must point to SPASS installation directory"));
-        FolReasoner.setDefaultReasoner(new SpassTptpFolReasoner(spassLocation)); //Set default prover, options are NaiveProver, EProver, Prover9
+//        String spassLocation = Optional.of(System.getenv("SPASS_HOME")).orElseThrow(() -> new IllegalStateException("SPASS_HOME environment variable must point to SPASS installation directory"));
+//        FolReasoner.setDefaultReasoner(new SpassTptpFolReasoner(spassLocation)); //Set default prover, options are NaiveProver, EProver, Prover9
+        String vampireLocation = Optional.of(System.getenv("VAMPIRE_HOME")).orElseThrow(() -> new IllegalStateException("VAMPIRE_HOME environment variable must point to VAMPIRE installation directory"));
+        FolReasoner.setDefaultReasoner(new VampireTptpFolReasoner(vampireLocation)); //Set default prover, options are NaiveProver, EProver, Prover9
         prover = FolReasoner.getDefaultReasoner();
     }
 
@@ -49,14 +53,14 @@ public class OWL2ReasonerTest {
         System.out.printf("Processing ontology file: %s\n\n", ontologyFile.getName());
         try {
             PrintWriter out = new PrintWriter(System.out);
-            TPTPWriter w = new TPTPWriter(out);
+            UnsortedTPTPWriter w = new UnsortedTPTPWriter(out);
             w.printBase(bs);
             w.printQuery(conjecture.getConjecture());
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf(((SpassTptpFolReasoner)prover).queryProof(bs, conjecture.getConjecture()));
+        System.out.printf(((VampireTptpFolReasoner)prover).queryProof(bs, conjecture.getConjecture()));
         if (conjecture instanceof NonConjecture) {
             assertFalse(prover.query(bs, conjecture.getConjecture()));
         } else {
@@ -67,9 +71,9 @@ public class OWL2ReasonerTest {
     private static Stream<Arguments> provideOntologySourceLocations() throws URISyntaxException {
 
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-        man.getIRIMappers().add(ontologyIRI -> IRI.create(OWL2ReasonerTest.class.getResource("/ontologies/test-base.ofn")));
+        man.getIRIMappers().add(ontologyIRI -> IRI.create(OWL2ReasonerTest.class.getResource("/reasoner/ontologies/test-base.ofn")));
 
-        URL ontologiesBaseURL = OWL2ReasonerTest.class.getResource("/ontologies");
+        URL ontologiesBaseURL = OWL2ReasonerTest.class.getResource("/reasoner/ontologies");
         File ontologiesBaseDir = new File(ontologiesBaseURL.toURI());
 
         OWLAnnotationProperty conjectureAnnotationProperty = man.getOWLDataFactory().getOWLAnnotationProperty(conjectureProp);
@@ -77,7 +81,7 @@ public class OWL2ReasonerTest {
 
         return Arrays.stream(ontologiesBaseDir.listFiles(file -> !file.getName().equals("test-base.ofn") && file.getName().endsWith(".ofn"))).flatMap(file -> {
             try {
-                OWLOntology onto = man.loadOntologyFromOntologyDocument(OWL2ReasonerTest.class.getResourceAsStream("/ontologies/" + file.getName()));
+                OWLOntology onto = man.loadOntologyFromOntologyDocument(OWL2ReasonerTest.class.getResourceAsStream("/reasoner/ontologies/" + file.getName()));
                 AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
                 onto.accept(renderer);
                 return onto.getAnnotations().stream().filter(annotation -> annotation.getProperty().equals(conjectureAnnotationProperty) || annotation.getProperty().equals(nonConjectureAnnotationProperty)).map(annotation ->

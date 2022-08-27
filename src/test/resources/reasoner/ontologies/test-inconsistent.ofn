@@ -1,0 +1,37 @@
+Prefix(:=<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology>
+Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture> "exists X: (owlNothing(X))"^^xsd:string)
+
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Cat>))
+Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Dog>))
+Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#CatDog>))
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Cat> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Cat>)
+
+DisjointClasses(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Cat> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Dog>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#CatDog> (<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#CatDog>)
+
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Cat> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#CatDog>)
+ClassAssertion(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#Dog> <http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/inconsistentOntology#CatDog>)
+
+
+)

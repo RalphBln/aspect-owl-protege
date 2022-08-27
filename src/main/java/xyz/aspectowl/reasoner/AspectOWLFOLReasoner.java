@@ -4,14 +4,20 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 /**
  * @author ralph
  */
 public class AspectOWLFOLReasoner extends OWLReasonerBase {
+
+    private static final Logger log = LoggerFactory.getLogger(AspectOWLFOLReasoner.class);
 
     private static final Version VERSION = new Version(5, 6, 0, 0);
 
@@ -43,7 +49,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public void precomputeInferences(@Nonnull InferenceType... inferenceTypes) {
-
+        log.warn("Precomputing is not supported yet. Inferences are computed on demand and cached.");
     }
 
     @Override
@@ -54,7 +60,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Set<InferenceType> getPrecomputableInferenceTypes() {
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
