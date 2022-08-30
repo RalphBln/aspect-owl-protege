@@ -1,11 +1,19 @@
 package xyz.aspectowl.reasoner;
 
+import net.sf.tweety.logics.commons.syntax.Predicate;
+import net.sf.tweety.logics.commons.syntax.Variable;
+import net.sf.tweety.logics.fol.parser.FolParser;
+import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
+import net.sf.tweety.logics.fol.syntax.FolAtom;
+import net.sf.tweety.logics.fol.syntax.FolFormula;
+import net.sf.tweety.logics.fol.writer.TPTPWriter;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -17,23 +25,38 @@ import java.util.Set;
  */
 public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
+    public static final String REASONER_NAME = "AspectOWL FOL Reasoner";
+
     private static final Logger log = LoggerFactory.getLogger(AspectOWLFOLReasoner.class);
 
     private static final Version VERSION = new Version(5, 6, 0, 0);
 
-    protected AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull OWLReasonerConfiguration configuration, @Nonnull BufferingMode bufferingMode) {
+    // TODO add preference for reasoner (vampire, spass, ...)
+    private VampireTptpFolReasoner folReasoner;
+
+    private static final FolFormula EXISTS_OWL_NOTHING = new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1)), new Variable("X"));
+
+    public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull BufferingMode bufferingMode) {
+        this(rootOntology, new SimpleConfiguration(
+                new NullReasonerProgressMonitor(),
+                FreshEntityPolicy.ALLOW, // TODO Make this configurable?
+                300,
+                IndividualNodeSetPolicy.BY_SAME_AS) , bufferingMode);
+    }
+
+    public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull OWLReasonerConfiguration configuration, @Nonnull BufferingMode bufferingMode) {
         super(rootOntology, configuration, bufferingMode);
     }
 
     @Override
     protected void handleChanges(@Nonnull Set<OWLAxiom> addAxioms, @Nonnull Set<OWLAxiom> removeAxioms) {
-
+        // TODO reload ontology
     }
 
     @Nonnull
     @Override
     public String getReasonerName() {
-        return "AspectOWL FOL Reasoner";
+        return REASONER_NAME;
     }
 
     @Nonnull

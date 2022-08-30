@@ -155,5 +155,8 @@
         <headerColor value="@org.protege.ontologycolor"/>
         <category value="@org.protege.ontologycategory"/>
     </extension>
-
+    <extension id="aspectowl.reasoner.factory" point="org.protege.editor.owl.inference_reasonerfactory">
+        <name value="AspectOWL Reasoner"/>
+        <class value="xyz.aspectowl.protege.reasoner.AspectOWLFOLReasonerInfo"/>
+    </extension>
 </plugin>
