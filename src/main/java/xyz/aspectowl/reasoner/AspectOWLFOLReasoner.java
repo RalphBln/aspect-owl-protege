@@ -5,6 +5,7 @@ import net.sf.tweety.logics.commons.syntax.Variable;
 import net.sf.tweety.logics.fol.parser.FolParser;
 import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
 import net.sf.tweety.logics.fol.syntax.FolAtom;
+import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
 import net.sf.tweety.logics.fol.syntax.FolFormula;
 import net.sf.tweety.logics.fol.writer.TPTPWriter;
 import org.semanticweb.owlapi.model.*;
@@ -13,9 +14,16 @@ import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.aspectowl.protege.AspectOWLEditorKitHook;
+import xyz.aspectowl.protege.editorkit.AspectOWLEditorKit;
+import xyz.aspectowl.tptp.reasoner.InconsistentOntologyException;
 import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
+import xyz.aspectowl.tptp.renderer.AspectAnnotationOWL2TPTPObjectRenderer;
 
 import javax.annotation.Nonnull;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -31,10 +39,12 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     private static final Version VERSION = new Version(5, 6, 0, 0);
 
+    private FolBeliefSet beliefSet;
+
     // TODO add preference for reasoner (vampire, spass, ...)
     private VampireTptpFolReasoner folReasoner;
 
-    private static final FolFormula EXISTS_OWL_NOTHING = new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1)), new Variable("X"));
+    private static final FolFormula EXISTS_OWL_NOTHING = new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1), new Variable("X")), new Variable("X"));
 
     public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull BufferingMode bufferingMode) {
         this(rootOntology, new SimpleConfiguration(
@@ -46,11 +56,23 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull OWLReasonerConfiguration configuration, @Nonnull BufferingMode bufferingMode) {
         super(rootOntology, configuration, bufferingMode);
+        // TODO get binary location this from prefs
+        folReasoner = new VampireTptpFolReasoner("/Users/ralph/Diss/development/fol-theorem-provers/vampire-build/bin/vampire_rel_master_6344");
+        reloadOntology();
     }
 
     @Override
     protected void handleChanges(@Nonnull Set<OWLAxiom> addAxioms, @Nonnull Set<OWLAxiom> removeAxioms) {
-        // TODO reload ontology
+        reloadOntology();
+    }
+
+    private void reloadOntology() {
+        OWLOntology ontology = getRootOntology();
+        // TODO find a way to get the AspectOWLManager without relying on protege-related code
+        ConcreteAspectOWL2TPTPObjectRenderer renderer = new ConcreteAspectOWL2TPTPObjectRenderer(AspectOWLEditorKitHook.getAspectManager(ontology.getOWLOntologyManager()), ontology, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
+        renderer.setHumanReadableTptpNames(true);
+        ontology.accept(renderer);
+        beliefSet = renderer.getBeliefSet();
     }
 
     @Nonnull
@@ -88,7 +110,12 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isConsistent() {
-        return false;
+        try {
+            folReasoner.query(beliefSet, EXISTS_OWL_NOTHING);
+            return true;
+        } catch (InconsistentOntologyException e) {
+            return false;
+        }
     }
 
     @Override

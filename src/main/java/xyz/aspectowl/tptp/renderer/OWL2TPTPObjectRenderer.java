@@ -21,6 +21,7 @@ import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.aspectowl.owlapi.model.OWLAspect;
 import xyz.aspectowl.tptp.reasoner.util.UnsortedTPTPWriter;
 import xyz.aspectowl.tptp.util.Counter;
 
@@ -34,8 +35,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 // TODO include ontology import closure (priority HIGH)
-// TODO prevent name clashes (since we only use local names)
-// TODO handle punnings (make unique names)  (priority MEDIUM) DONE
+// DONE prevent name clashes (since we only use local names)
+// DONE handle punnings (make unique names)  (priority MEDIUM)
 // TODO prevent name clashes between existing and generated predicate names (unlikely but who knows)  (priority LOW)
 
 
@@ -298,7 +299,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     @Override
     public Stream<FolFormula> visit(OWLHasKeyAxiom axiom) {
         // TODO
-        return null;
+        return Stream.empty();
     }
 
     private String translate(OWLIndividual individual) {
@@ -327,13 +328,16 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         StringBuilder buf = new StringBuilder();
         buf.append("forall X: (%s(X) <=> ");
 
+        if (ce instanceof OWLAspect)
+            ce = ((OWLAspect) ce).asClassExpression();
+
         switch (type) {
             case OBJECT_SOME_VALUES_FROM: {
                 OWLObjectSomeValuesFrom svf = (OWLObjectSomeValuesFrom)ce;
                 String opeTrans = translate(svf.getProperty());
                 String fillerTrans = translate(svf.getFiller());
 
-                buf.append(String.format("exists Y: (%s(X,Y) && %(Y))", opeTrans, fillerTrans));
+                buf.append(String.format("exists Y: (%s(X,Y) && %s(Y))", opeTrans, fillerTrans));
                 break;
             }
             case OBJECT_ALL_VALUES_FROM: {
@@ -569,8 +573,8 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             throw new OWL2TPTPRendererError(String.format("Error configuring %s. Could not parse trivial formula. This should not have happened.", OWL2TPTPObjectRenderer.class.getSimpleName()), e);
         }
         ontology.getAxioms().stream().forEach(
-                axiom -> axiom.accept(this).forEach(
-                        folFormula -> bs.add(folFormula)
+                axiom ->  Optional.ofNullable(axiom.accept(this)).ifPresent(formulae -> formulae.forEach(
+                        folFormula -> bs.add(folFormula))
                 )
         );
 
