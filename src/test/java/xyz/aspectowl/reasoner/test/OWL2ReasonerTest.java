@@ -1,7 +1,11 @@
 package xyz.aspectowl.reasoner.test;
 
+import net.sf.tweety.logics.commons.syntax.Predicate;
+import net.sf.tweety.logics.commons.syntax.Variable;
 import net.sf.tweety.logics.fol.parser.FolParser;
 import net.sf.tweety.logics.fol.reasoner.FolReasoner;
+import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
+import net.sf.tweety.logics.fol.syntax.FolAtom;
 import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
 import net.sf.tweety.logics.fol.syntax.FolFormula;
 import net.sf.tweety.logics.fol.writer.TPTPWriter;
@@ -12,6 +16,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import xyz.aspectowl.tptp.reasoner.InconsistentOntologyException;
 import xyz.aspectowl.tptp.reasoner.SpassTptpFolReasoner;
 import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
 import xyz.aspectowl.tptp.reasoner.util.UnsortedTPTPWriter;
@@ -35,6 +40,7 @@ public class OWL2ReasonerTest {
 
     private static final IRI conjectureProp = IRI.create("http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture");
     private static final IRI nonConjectureProp = IRI.create("http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture");
+    private static final IRI inconsistentOntologyProp = IRI.create("http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#inconsistent");
 
     private static FolReasoner prover;
 
@@ -51,6 +57,7 @@ public class OWL2ReasonerTest {
     @MethodSource("provideOntologySourceLocations")
     public void reasonOnOntologies(File ontologyFile, FolBeliefSet bs, Conjecture conjecture)  {
         System.out.printf("Processing ontology file: %s\n\n", ontologyFile.getName());
+        System.out.println("TPTP problem:\n");
         try {
             PrintWriter out = new PrintWriter(System.out);
             UnsortedTPTPWriter w = new UnsortedTPTPWriter(out);
@@ -60,12 +67,19 @@ public class OWL2ReasonerTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf(((VampireTptpFolReasoner)prover).queryProof(bs, conjecture.getConjecture()));
-        if (conjecture instanceof NonConjecture) {
-            assertFalse(prover.query(bs, conjecture.getConjecture()));
-        } else {
-            assertTrue(prover.query(bs, conjecture.getConjecture()));
+
+        try {
+            if (conjecture instanceof NonConjecture) {
+                assertFalse(prover.query(bs, conjecture.getConjecture()));
+            } else {
+                assertTrue(prover.query(bs, conjecture.getConjecture()));
+            }
+        } catch (InconsistentOntologyException e) {
+            assertTrue(conjecture == inconsistentOntologyConjecture);
         }
+        System.out.println("\nProof:");
+        System.out.printf(((VampireTptpFolReasoner)prover).queryProof(bs, conjecture.getConjecture()));
+
     }
 
     private static Stream<Arguments> provideOntologySourceLocations() throws URISyntaxException {
@@ -78,14 +92,16 @@ public class OWL2ReasonerTest {
 
         OWLAnnotationProperty conjectureAnnotationProperty = man.getOWLDataFactory().getOWLAnnotationProperty(conjectureProp);
         OWLAnnotationProperty nonConjectureAnnotationProperty = man.getOWLDataFactory().getOWLAnnotationProperty(nonConjectureProp);
+        OWLAnnotationProperty inconsistentOntologyAnnotationProperty = man.getOWLDataFactory().getOWLAnnotationProperty(inconsistentOntologyProp);
 
         return Arrays.stream(ontologiesBaseDir.listFiles(file -> !file.getName().equals("test-base.ofn") && file.getName().endsWith(".ofn"))).flatMap(file -> {
             try {
                 OWLOntology onto = man.loadOntologyFromOntologyDocument(OWL2ReasonerTest.class.getResourceAsStream("/reasoner/ontologies/" + file.getName()));
                 AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
+                renderer.setHumanReadableTptpNames(true);
                 onto.accept(renderer);
-                return onto.getAnnotations().stream().filter(annotation -> annotation.getProperty().equals(conjectureAnnotationProperty) || annotation.getProperty().equals(nonConjectureAnnotationProperty)).map(annotation ->
-                      Arguments.of(file, renderer.getBeliefSet(), getConjecture(parseFormula(annotation.getValue().asLiteral().get().getLiteral(), renderer.getFolParser()).orElseThrow(RuntimeException::new), annotation.getProperty().equals(nonConjectureAnnotationProperty)))
+                return onto.getAnnotations().stream().filter(annotation -> annotation.getProperty().equals(conjectureAnnotationProperty) || annotation.getProperty().equals(nonConjectureAnnotationProperty) || annotation.getProperty().equals(inconsistentOntologyAnnotationProperty)).map(annotation ->
+                      Arguments.of(file, renderer.getBeliefSet(), annotation.getProperty().equals(inconsistentOntologyAnnotationProperty) ? inconsistentOntologyConjecture : getConjecture(parseFormula(annotation.getValue().asLiteral().get().getLiteral(), renderer.getFolParser()).orElseThrow(RuntimeException::new), annotation.getProperty().equals(nonConjectureAnnotationProperty)))
                 );
             } catch (OWLOntologyCreationException e) {
                 throw new RuntimeException(e);
@@ -118,6 +134,8 @@ public class OWL2ReasonerTest {
     private static class NonConjecture extends Conjecture {
         NonConjecture(FolFormula conjecture) {super(conjecture);}
     }
+
+    private static final Conjecture inconsistentOntologyConjecture = new Conjecture(new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1), new Variable("X")), new Variable("X")));
 
     /**
      *

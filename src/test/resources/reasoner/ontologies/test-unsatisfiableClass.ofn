@@ -8,8 +8,8 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/unsatisfiableClass>
 Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(ncTimeTraveler(niMorty))")
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "forall X: (!ncTimeTraveler(X))")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(nc_TimeTraveler(ni_Morty))")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "forall X: (!nc_TimeTraveler(X))")
 
 Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/unsatisfiableClass#TimeTraveler>))
 Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/unsatisfiableClass#Morty>))

@@ -8,7 +8,7 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/equivalentObjectProperties_1>
 Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "nohasFemaleSibling(niMorty, niSummer)")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "no_hasFemaleSibling(ni_Morty, ni_Summer)")
 
 Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/equivalentObjectProperties_1#hasFemaleSibling>))
 Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/equivalentObjectProperties_1#hasSister>))

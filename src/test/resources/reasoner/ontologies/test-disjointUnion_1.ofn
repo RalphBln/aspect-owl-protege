@@ -8,8 +8,8 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointUnion_1>
 Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncStar(X) && ncDwarfPlanet(X)))")
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (ncPlanet(X) && ncStar(X)))")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (nc_Planet(X) && nc_Star(X) && nc_DwarfPlanet(X)))")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "!(exists X: (nc_Planet(X) && nc_Star(X)))")
 
 Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointUnion_1#CelestialBody>))
 Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/disjointUnion_1#DwarfPlanet>))

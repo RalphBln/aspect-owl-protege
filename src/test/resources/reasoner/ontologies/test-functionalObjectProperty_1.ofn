@@ -8,9 +8,9 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/functionalObjectProperty_1>
 Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niBeth == niMortysMother")
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niBeth == niRicksDaughter")
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "niMortysMother == niRicksDaughter")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "ni_Beth == ni_MortysMother")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "ni_Beth == ni_RicksDaughter")
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture> "ni_MortysMother == ni_RicksDaughter")
 
 Declaration(ObjectProperty(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/functionalObjectProperty_1#hasBiologicalMother>))
 Declaration(NamedIndividual(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/functionalObjectProperty_1#Beth>))

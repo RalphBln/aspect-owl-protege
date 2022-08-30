@@ -9,8 +9,8 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_2>
 Import(<http://ontology.aspectowl.xyz>)
 Import(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture> "!(ncCronenberged(niMorty))"^^xsd:string)
-Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture> "ncCronenberged(niMorty)"^^xsd:string)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture> "!(nc_Cronenberged(ni_Morty))"^^xsd:string)
+Annotation(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#nonconjecture> "nc_Cronenberged(ni_Morty)"^^xsd:string)
 
 Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_2#Cronenberged>))
 Declaration(Class(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/aspect/disjointClasses_2#DimensionC137>))

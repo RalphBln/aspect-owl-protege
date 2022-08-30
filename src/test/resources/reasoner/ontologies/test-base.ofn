@@ -9,11 +9,16 @@ Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
 Ontology(<http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base>
 
 Declaration(AnnotationProperty(:conjecture))
+Declaration(AnnotationProperty(:inconsistent))
 Declaration(AnnotationProperty(:nonconjecture))
 Declaration(AnnotationProperty(<http://purl.org/dc/elements/1.1/creator>))
 ############################
 #   Annotation Properties
 ############################
+
+# Annotation Property: :inconsistent (:inconsistent)
+
+AnnotationAssertion(<http://purl.org/dc/elements/1.1/creator> :inconsistent <http://orcid.org/0000-0002-4349-6726>)
 
 # Annotation Property: :nonconjecture (:nonconjecture)
 

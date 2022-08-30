@@ -1,5 +1,7 @@
 package xyz.aspectowl.tptp.renderer;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import net.sf.tweety.commons.ParserException;
 import net.sf.tweety.commons.util.Pair;
 import net.sf.tweety.logics.commons.syntax.Constant;
@@ -16,6 +18,7 @@ import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLObjectVisitorExAdapter;
 import org.semanticweb.owlapi.util.ShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.aspectowl.tptp.reasoner.util.UnsortedTPTPWriter;
@@ -49,11 +52,17 @@ import java.util.stream.Stream;
  * tc: temporary (anonymous) class (such as "r some A")
  * to: temporary (anonymous) object property (such as "inverse of r")
  *
- * owl: owl built-entity names (owlThing and owlNothing)
+ * owl: owl built-in entity names (owlThing and owlNothing)
  */
 public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<FolFormula>> {
 
     private static final Logger log = LoggerFactory.getLogger(OWL2TPTPObjectRenderer.class);
+
+    // TPTP only allows for ascii characters in names, so we have to convert iris accordingly.
+    // We normally do this by creating an ascii-only UUID for each IRI.
+    // This flag makes the OWL2TPTPObjectRenderer convert iris to human-readable names.
+    // This is for debugging purposes and, in contrast to the normal behavior, does not prevent name clashes.
+    private boolean humanReadableTptpNames = false;
 
     protected final Optional<OWLOntology> onto;
     private DefaultPrefixManager defaultPrefixManager;
@@ -78,6 +87,8 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         return bs;
     }
 
+    private HashBiMap<HasIRI, String> nameMap = HashBiMap.create();
+
     // There is a DlBeliefSet and I considered using it (somehow shove the OWL2 KB into a DLBeliefSet and then maybe
     // transform the latter to a FolBeliedSet) but it turned out DLBeliefSet only implements ALC while we need full
     // SROIQ(D).
@@ -85,10 +96,13 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     private FolSignature sig;
 
     public OWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer) {
+
         super(Stream.empty());
+
         onto = Optional.ofNullable(ontology);
         out = new UnsortedTPTPWriter(writer);
         defaultPrefixManager = new DefaultPrefixManager();
+
         onto.ifPresent(o -> {
             OWLOntologyManager manager = o.getOWLOntologyManager();
             OWLDocumentFormat ontologyFormat = manager.getOntologyFormat(o);
@@ -112,15 +126,30 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     }
 
     /**
+     * Sets a flag that makes {@link OWL2TPTPObjectRenderer} create human-readable names for debugging.
+     * Defaults to false.
+     * @param humanReadableTptpNames if true, makes {@link OWL2TPTPObjectRenderer} create human-readable names for debugging.
+     */
+    public void setHumanReadableTptpNames(boolean humanReadableTptpNames) {
+        this.humanReadableTptpNames = humanReadableTptpNames;
+    }
+
+    /**
      * Translates an IRI to a FOL constant name
      * @param iri
      * @return
      */
     private String translateIRI(HasIRI iri) {
-        if (iri.getIRI().isThing())
-            return "owlThing";
+
         if (iri.getIRI().isNothing())
             return "owlNothing";
+        if (iri.getIRI().isThing())
+            return "owlThing";
+
+        String cachedName = nameMap.get(iri);
+        if (cachedName != null)
+            return cachedName;
+
         String prefix;
         if (iri instanceof OWLClass)
             prefix = "nc"; // named class
@@ -132,9 +161,14 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             prefix = "nd"; // named data property
         else
             prefix = "Error"; // should not happen
-        String localName = iri.getIRI().getShortForm().replaceFirst("^.*#(.+?)$", "$1"); // regex is a workaround for https://github.com/owlcs/owlapi/issues/699
-        return String.format("%s%s", prefix, localName);
-//        return iri.getIRI().toString();
+
+        String localName = humanReadableTptpNames ?
+            iri.getIRI().getShortForm().replaceFirst("^.*#(.+?)$", "$1")  // regex is a workaround for https://github.com/owlcs/owlapi/issues/699
+            : UUID.nameUUIDFromBytes(iri.getIRI().toString().getBytes(StandardCharsets.UTF_8)).toString().replaceAll("-", "");
+
+        String tptpName = String.format("%s_%s", prefix, localName);
+        nameMap.put(iri, tptpName);
+        return tptpName;
     }
 
     @Override
@@ -474,13 +508,13 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
                 .replaceAll("-", "");
         if(!sig.containsPredicate(tempName)) {
             if (o instanceof OWLClassExpression) {
-                tempName = String.format("tc%s", tempName);
+                tempName = String.format("tc_%s", tempName);
                 sig.add(new Predicate(tempName, 1));
             } else if (o instanceof OWLObjectPropertyExpression) {
-                tempName = String.format("to%s", tempName);
+                tempName = String.format("to_%s", tempName);
                 sig.add(new Predicate(tempName, 2));
             } else {
-                throw new IllegalArgumentException("Can only make temporary predicated out of classes or object properties.");
+                throw new IllegalArgumentException("Can only make temporary predicates out of classes or object properties.");
             }
             bs.setSignature(sig);
         }
