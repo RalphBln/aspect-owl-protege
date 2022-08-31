@@ -2,31 +2,28 @@ package xyz.aspectowl.reasoner;
 
 import net.sf.tweety.logics.commons.syntax.Predicate;
 import net.sf.tweety.logics.commons.syntax.Variable;
-import net.sf.tweety.logics.fol.parser.FolParser;
-import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
-import net.sf.tweety.logics.fol.syntax.FolAtom;
-import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
-import net.sf.tweety.logics.fol.writer.TPTPWriter;
+import net.sf.tweety.logics.fol.syntax.*;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.*;
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.aspectowl.protege.AspectOWLEditorKitHook;
-import xyz.aspectowl.protege.editorkit.AspectOWLEditorKit;
 import xyz.aspectowl.tptp.reasoner.InconsistentOntologyException;
 import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
-import xyz.aspectowl.tptp.renderer.AspectAnnotationOWL2TPTPObjectRenderer;
 
 import javax.annotation.Nonnull;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author ralph
@@ -41,10 +38,10 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     private FolBeliefSet beliefSet;
 
+    private ConcreteAspectOWL2TPTPObjectRenderer folTranslator;
+
     // TODO add preference for reasoner (vampire, spass, ...)
     private VampireTptpFolReasoner folReasoner;
-
-    private static final FolFormula EXISTS_OWL_NOTHING = new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1), new Variable("X")), new Variable("X"));
 
     public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull BufferingMode bufferingMode) {
         this(rootOntology, new SimpleConfiguration(
@@ -58,6 +55,11 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
         super(rootOntology, configuration, bufferingMode);
         // TODO get binary location this from prefs
         folReasoner = new VampireTptpFolReasoner("/Users/ralph/Diss/development/fol-theorem-provers/vampire-build/bin/vampire_rel_master_6344");
+
+        // TODO find a way to get the AspectOWLManager without relying on protege-related code
+        folTranslator = new ConcreteAspectOWL2TPTPObjectRenderer(AspectOWLEditorKitHook.getAspectManager(rootOntology.getOWLOntologyManager()), rootOntology, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())), Imports.INCLUDED);
+        folTranslator.setHumanReadableTptpNames(true);
+
         reloadOntology();
     }
 
@@ -67,12 +69,8 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     }
 
     private void reloadOntology() {
-        OWLOntology ontology = getRootOntology();
-        // TODO find a way to get the AspectOWLManager without relying on protege-related code
-        ConcreteAspectOWL2TPTPObjectRenderer renderer = new ConcreteAspectOWL2TPTPObjectRenderer(AspectOWLEditorKitHook.getAspectManager(ontology.getOWLOntologyManager()), ontology, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
-        renderer.setHumanReadableTptpNames(true);
-        ontology.accept(renderer);
-        beliefSet = renderer.getBeliefSet();
+        getRootOntology().accept(folTranslator);
+        beliefSet = folTranslator.getBeliefSet();
     }
 
     @Nonnull
@@ -108,6 +106,8 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
         return Collections.emptySet();
     }
 
+    private static final FolFormula EXISTS_OWL_NOTHING = new ExistsQuantifiedFormula(new FolAtom(new Predicate("owlNothing", 1), new Variable("X")), new Variable("X"));
+
     @Override
     public boolean isConsistent() {
         try {
@@ -120,22 +120,42 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isSatisfiable(@Nonnull OWLClassExpression classExpression) {
-        return false;
+
+        if (classExpression instanceof OWLClass) {
+            // TODO
+            return true;
+        } else {
+            // TODO this is wrong. For a class expression c we must show that "not exists X : c(X)" is unprovable
+
+            var folFormulae = folTranslator.makeFormula(folTranslator.translate(classExpression)).collect(Collectors.toList());
+            var firstUniversalQuantification = (ForallQuantifiedFormula) folFormulae.get(0);
+            firstUniversalQuantification.getPredicates();
+
+            return folReasoner.query(beliefSet, new Conjunction(folFormulae));
+        }
     }
 
     @Nonnull
     @Override
     public Node<OWLClass> getUnsatisfiableClasses() {
-        return null;
+        return new OWLClassNode(getRootOntology().getClassesInSignature(Imports.INCLUDED).stream().
+                filter(owlClass -> folReasoner.query(beliefSet,
+                        new ExistsQuantifiedFormula(
+                                new FolAtom(new Predicate(folTranslator.translate(owlClass), 1), new Variable("X")),
+                                new Variable("X"))
+                )).collect(Collectors.toSet()));
     }
 
     @Override
     public boolean isEntailed(@Nonnull OWLAxiom axiom) {
-        return false;
+        var folFormulae = axiom.accept(folTranslator);
+        return folReasoner.query(beliefSet, new Conjunction(folFormulae.collect(Collectors.toList())));
     }
 
     @Override
     public boolean isEntailed(@Nonnull Set<? extends OWLAxiom> axioms) {
+//        var folFormulae = axiom.accept(folTranslator);
+//        return folReasoner.query(beliefSet, new Conjunction(folFormulae.collect(Collectors.toList())));
         return false;
     }
 

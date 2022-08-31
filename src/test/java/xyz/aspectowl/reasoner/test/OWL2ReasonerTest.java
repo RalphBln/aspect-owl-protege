@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.tptp.reasoner.InconsistentOntologyException;
 import xyz.aspectowl.tptp.reasoner.SpassTptpFolReasoner;
 import xyz.aspectowl.tptp.reasoner.VampireTptpFolReasoner;
@@ -97,7 +98,7 @@ public class OWL2ReasonerTest {
         return Arrays.stream(ontologiesBaseDir.listFiles(file -> !file.getName().equals("test-base.ofn") && file.getName().endsWith(".ofn"))).flatMap(file -> {
             try {
                 OWLOntology onto = man.loadOntologyFromOntologyDocument(OWL2ReasonerTest.class.getResourceAsStream("/reasoner/ontologies/" + file.getName()));
-                AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
+                AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())), Imports.INCLUDED);
                 renderer.setHumanReadableTptpNames(true);
                 onto.accept(renderer);
                 return onto.getAnnotations().stream().filter(annotation -> annotation.getProperty().equals(conjectureAnnotationProperty) || annotation.getProperty().equals(nonConjectureAnnotationProperty) || annotation.getProperty().equals(inconsistentOntologyAnnotationProperty)).map(annotation ->

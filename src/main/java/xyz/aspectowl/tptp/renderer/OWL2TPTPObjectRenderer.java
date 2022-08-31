@@ -65,6 +65,8 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     // This is for debugging purposes and, in contrast to the normal behavior, does not prevent name clashes.
     private boolean humanReadableTptpNames = false;
 
+    private Imports includeImportsClosure;
+
     protected final Optional<OWLOntology> onto;
     private DefaultPrefixManager defaultPrefixManager;
     protected Optional<ShortFormProvider> labelMaker = Optional.empty();
@@ -96,9 +98,11 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     private FolBeliefSet bs;
     private FolSignature sig;
 
-    public OWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer) {
+    public OWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
 
         super(Stream.empty());
+
+        this.includeImportsClosure = includeImportsClosure;
 
         onto = Optional.ofNullable(ontology);
         out = new UnsortedTPTPWriter(writer);
@@ -302,7 +306,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         return Stream.empty();
     }
 
-    private String translate(OWLIndividual individual) {
+    public String translate(OWLIndividual individual) {
         if (individual.isAnonymous()) {
             throw new IllegalArgumentException(String.format("Cannot translate anonymous individuals to FOL: %s", individual));
         }
@@ -318,7 +322,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
      * @param ce
      * @return
      */
-    protected String translate(OWLClassExpression ce) {
+    public String translate(OWLClassExpression ce) {
         ClassExpressionType type = ce.getClassExpressionType();
         if (type == ClassExpressionType.OWL_CLASS)
             return translateIRI(ce.asOWLClass());
@@ -525,7 +529,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         return tempName;
     }
 
-    private String translate(OWLObjectPropertyExpression ope) {
+    public String translate(OWLObjectPropertyExpression ope) {
         if (ope.isNamed()) {
             return translateIRI(ope.asOWLObjectProperty());
         }
@@ -544,7 +548,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
      * @param args the arguments for the formatted string
      * @return A stream containing *exactly one* formula.
      */
-    protected Stream<FolFormula> makeFormula(String format, Object... args) {
+    public Stream<FolFormula> makeFormula(String format, Object... args) {
         try {
             return Stream.of((FolFormula)folp.parseFormula(String.format(format, args)));
         } catch (IOException e) {
@@ -572,6 +576,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         } catch (IOException e) {
             throw new OWL2TPTPRendererError(String.format("Error configuring %s. Could not parse trivial formula. This should not have happened.", OWL2TPTPObjectRenderer.class.getSimpleName()), e);
         }
+
         ontology.getAxioms().stream().forEach(
                 axiom ->  Optional.ofNullable(axiom.accept(this)).ifPresent(formulae -> formulae.forEach(
                         folFormula -> bs.add(folFormula))

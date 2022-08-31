@@ -1,5 +1,6 @@
 package xyz.aspectowl.reasoner.test;
 
+import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.protege.editorkit.AspectOWLEditorKitFactory;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.sf.tweety.logics.fol.parser.FolParser;
@@ -128,7 +129,7 @@ public class AspectOwlFolReasonerTest {
         return Arrays.stream(ontologiesBaseDir.listFiles(file -> !file.getName().equals("test-base.ofn") && file.getName().endsWith(".ofn"))).flatMap(file -> {
             try {
                 OWLOntology onto = man.loadOntologyFromOntologyDocument(AspectOwlFolReasonerTest.class.getResourceAsStream("/reasoner/ontologies/" + file.getName()));
-                AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())));
+                AspectAnnotationOWL2TPTPObjectRenderer renderer = new AspectAnnotationOWL2TPTPObjectRenderer(onto, new PrintWriter(new PrintStream(OutputStream.nullOutputStream())), Imports.INCLUDED);
                 onto.accept(renderer);
                 return onto.getAnnotations().stream().filter(annotation -> annotation.getProperty().equals(conjectureAnnotationProperty) || annotation.getProperty().equals(nonConjectureAnnotationProperty)).map(annotation ->
                         Arguments.of(file, renderer.getBeliefSet(), getConjecture(parseFormula(annotation.getValue().asLiteral().get().getLiteral(), renderer.getFolParser()).orElseThrow(RuntimeException::new), annotation.getProperty().equals(nonConjectureAnnotationProperty)))

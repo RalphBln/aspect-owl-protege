@@ -8,6 +8,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.parameters.Imports;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public class AspectAnnotationOWL2TPTPObjectRenderer extends AspectOWL2TPTPObject
 
     private final ManchesterOWLSyntaxParserImpl manchesterSyntaxParser;
 
-    public AspectAnnotationOWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer) {
-        super(ontology, writer);
+    public AspectAnnotationOWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
+        super(ontology, writer, includeImportsClosure);
         manchesterSyntaxParser = new ManchesterOWLSyntaxParserImpl(new OWLAPIConfigProvider(), ontology.getOWLOntologyManager().getOWLDataFactory());
         manchesterSyntaxParser.getPrefixManager().setDefaultPrefix("");
         manchesterSyntaxParser.getPrefixManager().setPrefix("", ontology.getOntologyID().getOntologyIRI().get().toString() + "#");

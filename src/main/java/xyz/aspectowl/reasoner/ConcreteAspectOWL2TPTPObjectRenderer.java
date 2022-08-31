@@ -1,5 +1,6 @@
 package xyz.aspectowl.reasoner;
 
+import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import net.sf.tweety.logics.fol.syntax.Equivalence;
 import net.sf.tweety.logics.fol.syntax.FolFormula;
@@ -21,8 +22,8 @@ public class ConcreteAspectOWL2TPTPObjectRenderer extends AspectOWL2TPTPObjectRe
     private OWLAspectManager am;
     private OWLOntology ontology;
 
-    public ConcreteAspectOWL2TPTPObjectRenderer(OWLAspectManager am, OWLOntology ontology, Writer writer) {
-        super(ontology, writer);
+    public ConcreteAspectOWL2TPTPObjectRenderer(OWLAspectManager am, OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
+        super(ontology, writer, includeImportsClosure);
         this.am = am;
         this.ontology = ontology;
     }
