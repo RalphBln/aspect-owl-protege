@@ -9,6 +9,7 @@ import xyz.aspectowl.tptp.renderer.AspectOWL2TPTPObjectRenderer;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,19 +35,13 @@ public class ConcreteAspectOWL2TPTPObjectRenderer extends AspectOWL2TPTPObjectRe
     @Override
     public Stream<FolFormula> handleAspects(OWLAxiom axiom, Stream<FolFormula> nonAspectFormulae) {
         if (hasAspect(axiom)) {
+            List<FolFormula> nonAspectFormulaList = nonAspectFormulae.collect(Collectors.toList()); // because we need to process the stream several times if there is more than one aspect
             var result = new ArrayList<FolFormula>();
             am.getAssertedAspects(ontology, axiom).forEach(
                     aspect -> makeFormula(String.format("forall A: (%s(A))", translate(aspect))).forEach(
-                            aspectEquivalencePart -> {
-                                try {
-                                    nonAspectFormulae.collect(Collectors.toList()).forEach(
-                                            joinpointAxiomEquivalencePart -> result.add(new Equivalence(aspectEquivalencePart, joinpointAxiomEquivalencePart))
-                                    );
-                                } catch (IllegalStateException e) {
-                                    prin
-                                    e.printStackTrace();
-                                }
-                            }
+                            aspectEquivalencePart -> nonAspectFormulaList.forEach(
+                                    joinpointAxiomEquivalencePart -> result.add(new Equivalence(aspectEquivalencePart, joinpointAxiomEquivalencePart))
+                            )
                     )
             );
             return result.stream();
