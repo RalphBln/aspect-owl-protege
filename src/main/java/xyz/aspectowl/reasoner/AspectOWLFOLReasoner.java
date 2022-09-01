@@ -241,7 +241,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
                                         new Predicate(folTranslator.translate(owlClass), 1),
                                         new Variable("X")
                                 ), new FolAtom(
-                                new Predicate("owlNothing"),
+                                new Predicate(ce instanceof OWLClass ? folTranslator.translate(ce) : folTranslator.temporaryPredicate(ce)),
                                 new Variable("X")
                         ))
                         ), new Variable("X"))
