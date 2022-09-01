@@ -1,8 +1,11 @@
 package xyz.aspectowl.reasoner;
 
+import net.sf.tweety.commons.util.Pair;
 import net.sf.tweety.logics.commons.syntax.Predicate;
 import net.sf.tweety.logics.commons.syntax.Variable;
+import net.sf.tweety.logics.fol.parser.FolParser;
 import net.sf.tweety.logics.fol.syntax.*;
+import net.sf.tweety.math.term.Term;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.*;
@@ -194,9 +197,9 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isEntailed(@Nonnull Set<? extends OWLAxiom> axioms) {
-//        var folFormulae = axiom.accept(folTranslator);
-//        return folReasoner.query(beliefSet, new Conjunction(folFormulae.collect(Collectors.toList())));
-        return false;
+        var conjunction = new Conjunction();
+        axioms.forEach(axiom -> axiom.accept(folTranslator).filter(formula -> !conjunction.contains(formula)).forEach(formula -> conjunction.add(formula)));
+        return folReasoner.query(beliefSet, conjunction);
     }
 
     @Override
@@ -207,13 +210,13 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Node<OWLClass> getTopClassNode() {
-        return null;
+        return getEquivalentClasses(getRootOntology().getOWLOntologyManager().getOWLDataFactory().getOWLThing());
     }
 
     @Nonnull
     @Override
     public Node<OWLClass> getBottomClassNode() {
-        return null;
+        return getEquivalentClasses(getRootOntology().getOWLOntologyManager().getOWLDataFactory().getOWLNothing());
     }
 
     @Nonnull
@@ -231,7 +234,19 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Node<OWLClass> getEquivalentClasses(@Nonnull OWLClassExpression ce) {
-        return null;
+        return new OWLClassNode(getRootOntology().getClassesInSignature(Imports.INCLUDED).stream().filter(
+                owlClass -> folReasoner.query(beliefSet, new ForallQuantifiedFormula(
+                        new Equivalence(new Pair<>(
+                                new FolAtom(
+                                        new Predicate(folTranslator.translate(owlClass), 1),
+                                        new Variable("X")
+                                ), new FolAtom(
+                                new Predicate("owlNothing"),
+                                new Variable("X")
+                        ))
+                        ), new Variable("X"))
+                )
+        ).collect(Collectors.toSet()));
     }
 
     @Nonnull
