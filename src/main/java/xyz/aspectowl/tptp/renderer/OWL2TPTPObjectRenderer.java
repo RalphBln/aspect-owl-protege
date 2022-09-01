@@ -511,7 +511,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         return a.compareTo(b) < 0 ? pair : new Pair<>(b, a);
     }
 
-    private String temporaryPredicate(OWLObject o) {
+    public String temporaryPredicate(OWLObject o) {
         String tempName = UUID.nameUUIDFromBytes(o.toString().getBytes(StandardCharsets.UTF_8)).toString()
                 .replaceAll("-", "");
         if(!sig.containsPredicate(tempName)) {

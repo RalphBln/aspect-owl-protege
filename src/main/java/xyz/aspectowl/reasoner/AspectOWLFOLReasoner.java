@@ -8,6 +8,7 @@ import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
+import org.semanticweb.owlapi.util.CollectionFactory;
 import org.semanticweb.owlapi.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.semanticweb.owlapi.model.AxiomType.*;
+
 /**
  * @author ralph
  */
@@ -35,6 +38,45 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     private static final Logger log = LoggerFactory.getLogger(AspectOWLFOLReasoner.class);
 
     private static final Version VERSION = new Version(5, 6, 0, 0);
+
+    // Axiom types for which this reasoner supports inference.
+    // Right now, we support all DL inferences.
+    // Datatype reasoning is not supported yet but might be added in the future (comment the types back in as soon as they are supported)
+    // SWRL is not supported by this reasoner, but we do have additional Aspect-Oriented SWRL built-ins.
+    @Nonnull private static final Set<AxiomType<?>> SupportedAxiomTypes = CollectionFactory.createSet(
+            (AxiomType<?>) SUBCLASS_OF,
+            EQUIVALENT_CLASSES,
+            DISJOINT_CLASSES,
+            OBJECT_PROPERTY_DOMAIN,
+            OBJECT_PROPERTY_RANGE,
+            FUNCTIONAL_OBJECT_PROPERTY,
+            INVERSE_FUNCTIONAL_OBJECT_PROPERTY,
+//            DATA_PROPERTY_DOMAIN,
+//            DATA_PROPERTY_RANGE,
+//            FUNCTIONAL_DATA_PROPERTY,
+//            DATATYPE_DEFINITION,
+            DISJOINT_UNION,
+            HAS_KEY,
+            CLASS_ASSERTION,
+            SAME_INDIVIDUAL,
+            DIFFERENT_INDIVIDUALS,
+            OBJECT_PROPERTY_ASSERTION,
+            NEGATIVE_OBJECT_PROPERTY_ASSERTION,
+//            DATA_PROPERTY_ASSERTION,
+//            NEGATIVE_DATA_PROPERTY_ASSERTION,
+            TRANSITIVE_OBJECT_PROPERTY,
+//            DISJOINT_DATA_PROPERTIES,
+//            SUB_DATA_PROPERTY,
+//            EQUIVALENT_DATA_PROPERTIES,
+            DISJOINT_OBJECT_PROPERTIES,
+            SUB_OBJECT_PROPERTY,
+            EQUIVALENT_OBJECT_PROPERTIES,
+            SUB_PROPERTY_CHAIN_OF,
+            INVERSE_OBJECT_PROPERTIES,
+            SYMMETRIC_OBJECT_PROPERTY,
+            ASYMMETRIC_OBJECT_PROPERTY,
+            REFLEXIVE_OBJECT_PROPERTY,
+            IRREFLEXIVE_OBJECT_PROPERTY);
 
     private FolBeliefSet beliefSet;
 
@@ -61,6 +103,14 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
         folTranslator.setHumanReadableTptpNames(true);
 
         reloadOntology();
+
+        rootOntology.getClassesInSignature().forEach(ce -> {
+            try {
+                isSatisfiable(ce);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -120,19 +170,9 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isSatisfiable(@Nonnull OWLClassExpression classExpression) {
-
-        if (classExpression instanceof OWLClass) {
-            // TODO
-            return true;
-        } else {
-            // TODO this is wrong. For a class expression c we must show that "not exists X : c(X)" is unprovable
-
-            var folFormulae = folTranslator.makeFormula(folTranslator.translate(classExpression)).collect(Collectors.toList());
-            var firstUniversalQuantification = (ForallQuantifiedFormula) folFormulae.get(0);
-            firstUniversalQuantification.getPredicates();
-
-            return folReasoner.query(beliefSet, new Conjunction(folFormulae));
-        }
+        String predicateName = classExpression instanceof OWLClass ? folTranslator.translate(classExpression) : folTranslator.temporaryPredicate(classExpression);
+        var notExists = new Negation(new ExistsQuantifiedFormula(new FolAtom(new Predicate(predicateName, 1), new Variable("X")), new Variable("X")));
+        return !folReasoner.query(beliefSet, notExists);
     }
 
     @Nonnull
@@ -161,7 +201,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isEntailmentCheckingSupported(@Nonnull AxiomType<?> axiomType) {
-        return false;
+        return SupportedAxiomTypes.contains(axiomType);
     }
 
     @Nonnull

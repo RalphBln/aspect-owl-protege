@@ -153,9 +153,9 @@ public class VampireTptpFolReasoner extends FolReasoner {
         // "SZS status Timeout for ..." in the end.
         if (Pattern.compile("% SZS status ContradictoryAxioms for").matcher(output).find())
             throw new InconsistentOntologyException();
-        if (Pattern.compile("% Termination reason: Refutation").matcher(output).find())
+        if (Pattern.compile("% Termination reason: Refutation\n").matcher(output).find())
             return true;
-        if (Pattern.compile("% Termination reason: Satisfiable").matcher(output).find())
+        if (Pattern.compile("% Termination reason: Satisfiable\n").matcher(output).find())
             return false;
         if (Pattern.compile("SZS status Timeout for").matcher(output).find())
             throw new RuntimeException("Failure: Vampire timeout.");
