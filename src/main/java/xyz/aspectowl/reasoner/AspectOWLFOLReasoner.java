@@ -88,6 +88,9 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     // TODO add preference for reasoner (vampire, spass, ...)
     private VampireTptpFolReasoner folReasoner;
 
+    private final OWLClass OWL_THING;
+    private final OWLClass OWL_NOTHING;
+
     public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull BufferingMode bufferingMode) {
         this(rootOntology, new SimpleConfiguration(
                 new NullReasonerProgressMonitor(),
@@ -98,6 +101,10 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
     public AspectOWLFOLReasoner(@Nonnull OWLOntology rootOntology, @Nonnull OWLReasonerConfiguration configuration, @Nonnull BufferingMode bufferingMode) {
         super(rootOntology, configuration, bufferingMode);
+
+        OWL_THING = getRootOntology().getOWLOntologyManager().getOWLDataFactory().getOWLThing();
+        OWL_NOTHING = rootOntology.getOWLOntologyManager().getOWLDataFactory().getOWLNothing();
+
         // TODO get binary location this from prefs
         folReasoner = new VampireTptpFolReasoner("/Users/ralph/Diss/development/fol-theorem-provers/vampire-build/bin/vampire_rel_master_6344");
 
@@ -109,11 +116,15 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
 
         rootOntology.getClassesInSignature().forEach(ce -> {
             try {
-                isSatisfiable(ce);
+                var satisfiable = isSatisfiable(ce);
+                var equivalents = getEquivalentClasses(ce);
+                var disjoints = getDisjointClasses(ce);
+                System.out.printf("Sat: %s, eq: %s, dis: %s\n", satisfiable, equivalents, disjoints);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
+        OWL_THING = null;
     }
 
     @Override
@@ -210,13 +221,13 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Node<OWLClass> getTopClassNode() {
-        return getEquivalentClasses(getRootOntology().getOWLOntologyManager().getOWLDataFactory().getOWLThing());
+        return getEquivalentClasses(OWL_THING);
     }
 
     @Nonnull
     @Override
     public Node<OWLClass> getBottomClassNode() {
-        return getEquivalentClasses(getRootOntology().getOWLOntologyManager().getOWLDataFactory().getOWLNothing());
+        return getEquivalentClasses(OWL_NOTHING);
     }
 
     @Nonnull
@@ -241,7 +252,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
                                         new Predicate(folTranslator.translate(owlClass), 1),
                                         new Variable("X")
                                 ), new FolAtom(
-                                new Predicate(ce instanceof OWLClass ? folTranslator.translate(ce) : folTranslator.temporaryPredicate(ce)),
+                                new Predicate(ce instanceof OWLClass ? folTranslator.translate(ce) : folTranslator.temporaryPredicate(ce), 1),
                                 new Variable("X")
                         ))
                         ), new Variable("X"))
@@ -258,7 +269,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Node<OWLObjectPropertyExpression> getTopObjectPropertyNode() {
-        return null;
+        return new OWLClassNode(getEquivalentClasses())
     }
 
     @Nonnull
@@ -386,4 +397,6 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     public NodeSet<OWLNamedIndividual> getDifferentIndividuals(@Nonnull OWLNamedIndividual ind) {
         return null;
     }
+
+
 }
