@@ -124,7 +124,6 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
                 throw new RuntimeException(e);
             }
         });
-        OWL_THING = null;
     }
 
     @Override
@@ -246,7 +245,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Override
     public Node<OWLClass> getEquivalentClasses(@Nonnull OWLClassExpression ce) {
         return new OWLClassNode(getRootOntology().getClassesInSignature(Imports.INCLUDED).stream().filter(
-                owlClass -> folReasoner.query(beliefSet, new ForallQuantifiedFormula(
+                owlClass -> folReasoner.query(beliefSet, new ForallQuantifiedFormula( // forall X: CLASS = X
                         new Equivalence(new Pair<>(
                                 new FolAtom(
                                         new Predicate(folTranslator.translate(owlClass), 1),
@@ -269,7 +268,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     @Nonnull
     @Override
     public Node<OWLObjectPropertyExpression> getTopObjectPropertyNode() {
-        return new OWLClassNode(getEquivalentClasses())
+        return null;
     }
 
     @Nonnull
@@ -397,6 +396,7 @@ public class AspectOWLFOLReasoner extends OWLReasonerBase {
     public NodeSet<OWLNamedIndividual> getDifferentIndividuals(@Nonnull OWLNamedIndividual ind) {
         return null;
     }
+
 
 
 }
