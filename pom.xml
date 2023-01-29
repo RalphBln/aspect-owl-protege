@@ -289,6 +289,12 @@
 			<artifactId>core</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.dpaukov</groupId>
+			<artifactId>combinatoricslib3</artifactId>
+			<version>3.3.3</version>
+		</dependency>
+
 
 <!-- for debugging. TODO remove -->
 		<dependency>
@@ -387,6 +393,7 @@
 						<Export-Package>
 							xyz.aspectowl.protege;version="${bundle-version}",
 							xyz.aspectowl.owlapi.model;version="${bundle-version}",
+							xyz.aspectowl.owlapi.protege;version="${bundle-version}",
 							xyz.aspectowl.protege.editor.core.ui;version="${bundle-version}",
 							xyz.aspectowl.parser;version="${bundle-version}",
 							xyz.aspectowl.protege.util;version="${bundle-version}",

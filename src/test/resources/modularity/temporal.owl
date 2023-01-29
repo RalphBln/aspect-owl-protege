@@ -1,0 +1,56 @@
+Prefix(:=<http://aspectowl.xyz/test/modularity/temporal/>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://aspectowl.xyz/test/modularity/temporal>
+
+Declaration(Class(<http://aspectowl.xyz/test/modularity/temporal#Interval1>))
+Declaration(Class(<http://aspectowl.xyz/test/modularity/temporal#TemporalContext>))
+Declaration(Class(<http://aspectowl.xyz/test/modularity/temporal#TimeInstance>))
+Declaration(ObjectProperty(<http://aspectowl.xyz/test/modularity/temporal#after>))
+Declaration(ObjectProperty(<http://aspectowl.xyz/test/modularity/temporal#before>))
+Declaration(NamedIndividual(<http://aspectowl.xyz/test/modularity/temporal#T1>))
+Declaration(NamedIndividual(<http://aspectowl.xyz/test/modularity/temporal#T2>))
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://aspectowl.xyz/test/modularity/temporal#after> (<http://aspectowl.xyz/test/modularity/temporal#after>)
+
+InverseObjectProperties(<http://aspectowl.xyz/test/modularity/temporal#after> <http://aspectowl.xyz/test/modularity/temporal#before>)
+TransitiveObjectProperty(<http://aspectowl.xyz/test/modularity/temporal#after>)
+
+# Object Property: <http://aspectowl.xyz/test/modularity/temporal#before> (<http://aspectowl.xyz/test/modularity/temporal#before>)
+
+AsymmetricObjectProperty(<http://aspectowl.xyz/test/modularity/temporal#before>)
+TransitiveObjectProperty(<http://aspectowl.xyz/test/modularity/temporal#before>)
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://aspectowl.xyz/test/modularity/temporal#Interval1> (<http://aspectowl.xyz/test/modularity/temporal#Interval1>)
+
+EquivalentClasses(<http://aspectowl.xyz/test/modularity/temporal#Interval1> ObjectIntersectionOf(ObjectHasValue(<http://aspectowl.xyz/test/modularity/temporal#after> <http://aspectowl.xyz/test/modularity/temporal#T1>) ObjectHasValue(<http://aspectowl.xyz/test/modularity/temporal#before> <http://aspectowl.xyz/test/modularity/temporal#T2>)))
+SubClassOf(<http://aspectowl.xyz/test/modularity/temporal#Interval1> <http://aspectowl.xyz/test/modularity/temporal#TemporalContext>)
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://aspectowl.xyz/test/modularity/temporal#T1> (<http://aspectowl.xyz/test/modularity/temporal#T1>)
+
+ClassAssertion(<http://aspectowl.xyz/test/modularity/temporal#TimeInstance> <http://aspectowl.xyz/test/modularity/temporal#T1>)
+
+# Individual: <http://aspectowl.xyz/test/modularity/temporal#T2> (<http://aspectowl.xyz/test/modularity/temporal#T2>)
+
+ClassAssertion(<http://aspectowl.xyz/test/modularity/temporal#TimeInstance> <http://aspectowl.xyz/test/modularity/temporal#T2>)
+
+
+)

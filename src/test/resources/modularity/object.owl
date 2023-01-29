@@ -1,0 +1,47 @@
+Prefix(:=<http://aspectowl.xyz/example/untitled-ontology-1000/>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://aspectowl.xyz/test/modularity/object>
+
+Declaration(Class(<http://aspectowl.xyz/test/modularity/object#Chancellor>))
+Declaration(Class(<http://aspectowl.xyz/test/modularity/object#Country>))
+Declaration(Class(<http://aspectowl.xyz/test/modularity/object#Person>))
+Declaration(ObjectProperty(<http://aspectowl.xyz/test/modularity/object#chancellorOf>))
+Declaration(NamedIndividual(<http://aspectowl.xyz/test/modularity/object#AngelaMerkel>))
+Declaration(NamedIndividual(<http://aspectowl.xyz/test/modularity/object#Germany>))
+Declaration(NamedIndividual(<http://aspectowl.xyz/test/modularity/object#OlafScholz>))
+
+############################
+#   Classes
+############################
+
+# Class: <http://aspectowl.xyz/test/modularity/object#Chancellor> (<http://aspectowl.xyz/test/modularity/object#Chancellor>)
+
+EquivalentClasses(<http://aspectowl.xyz/test/modularity/object#Chancellor> ObjectSomeValuesFrom(<http://aspectowl.xyz/test/modularity/object#chancellorOf> <http://aspectowl.xyz/test/modularity/object#Country>))
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://aspectowl.xyz/test/modularity/object#AngelaMerkel> (<http://aspectowl.xyz/test/modularity/object#AngelaMerkel>)
+
+ClassAssertion(<http://aspectowl.xyz/test/modularity/object#Person> <http://aspectowl.xyz/test/modularity/object#AngelaMerkel>)
+ObjectPropertyAssertion(<http://aspectowl.xyz/test/modularity/object#chancellorOf> <http://aspectowl.xyz/test/modularity/object#AngelaMerkel> <http://aspectowl.xyz/test/modularity/object#Germany>)
+
+# Individual: <http://aspectowl.xyz/test/modularity/object#Germany> (<http://aspectowl.xyz/test/modularity/object#Germany>)
+
+ClassAssertion(<http://aspectowl.xyz/test/modularity/object#Country> <http://aspectowl.xyz/test/modularity/object#Germany>)
+
+# Individual: <http://aspectowl.xyz/test/modularity/object#OlafScholz> (<http://aspectowl.xyz/test/modularity/object#OlafScholz>)
+
+ClassAssertion(<http://aspectowl.xyz/test/modularity/object#Person> <http://aspectowl.xyz/test/modularity/object#OlafScholz>)
+ObjectPropertyAssertion(<http://aspectowl.xyz/test/modularity/object#chancellorOf> <http://aspectowl.xyz/test/modularity/object#OlafScholz> <http://aspectowl.xyz/test/modularity/object#Germany>)
+
+
+)
