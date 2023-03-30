@@ -215,6 +215,10 @@
 					<artifactId>owlapi-distribution</artifactId>
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.jgrapht</groupId>
+					<artifactId>jgrapht-jdk1.5</artifactId>
+				</exclusion>
 			</exclusions>
         </dependency>
 		<!--<dependency>-->
@@ -294,7 +298,11 @@
 			<artifactId>combinatoricslib3</artifactId>
 			<version>3.3.3</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>1.5.1</version>
+		</dependency>
 
 <!-- for debugging. TODO remove -->
 		<dependency>
@@ -352,7 +360,7 @@
             <plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>5.1.8</version>
 				<extensions>true</extensions>
 				<executions>
 					<execution>
@@ -388,6 +396,9 @@
 							!org.apache.felix.framework,
 							!org.apache.felix.framework.*,
 							org.osgi.framework;version=!,
+							!android.dalvik,
+							!dalvik.system,
+							!org.paukov.combinatorics3,
 							*
 						</Import-Package>
 						<Export-Package>
@@ -415,7 +426,9 @@
 							jama,
 							plugin,
 							core,
-							ojalgo
+							ojalgo,
+							jgrapht-core,
+							jheaps
 						</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>

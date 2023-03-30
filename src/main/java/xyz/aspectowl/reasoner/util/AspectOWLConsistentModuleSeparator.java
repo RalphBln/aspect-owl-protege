@@ -1,6 +1,6 @@
 package xyz.aspectowl.reasoner.util;
 
-import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.paukov.combinatorics3.Generator;
