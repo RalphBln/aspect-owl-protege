@@ -7,20 +7,17 @@ import org.semanticweb.owlapi.util.OWLStorerFactoryImpl;
 
 import javax.annotation.Nonnull;
 
-public class AspectOWLFunctionalSyntaxStorerFactory extends OWLStorerFactoryImpl {
+public class AspectOWLFunctionalSyntaxStorerFactory extends AspectOWLStorerFactoryImpl {
 
     private static final long serialVersionUID = 4225557529363900763L;
 
-    private OWLAspectManager am;
-
     public AspectOWLFunctionalSyntaxStorerFactory(OWLAspectManager am) {
-        super(new AspectOWLFunctionalSyntaxDocumentFormatFactory());
-        this.am = am;
+        super(new AspectOWLFunctionalSyntaxDocumentFormatFactory(), am);
     }
 
     @Nonnull
     @Override
     public OWLStorer createStorer() {
-        return new AspectOWLFunctionalSyntaxStorer(am);
+        return new AspectOWLFunctionalSyntaxStorer(getAspectManager());
     }
 }

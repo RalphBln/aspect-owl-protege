@@ -11,20 +11,18 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
 
-public class AspectOWLFunctionalSyntaxStorer extends AbstractOWLStorer {
+public class AspectOWLFunctionalSyntaxStorer extends AbstractAspectOWLStorer {
 
     private static final long serialVersionUID = -865604218123629582L;
 
-    private OWLAspectManager am;
-
     public AspectOWLFunctionalSyntaxStorer(OWLAspectManager am) {
-        this.am = am;
+        super(am);
     }
 
     @Override
     protected void storeOntology(@Nonnull OWLOntology ontology, @Nonnull Writer writer, @Nonnull OWLDocumentFormat format) throws OWLOntologyStorageException {
         try {
-            ontology.accept(new AspectOWLFunctionalSyntaxObjectRenderer(ontology, writer, am));
+            ontology.accept(new AspectOWLFunctionalSyntaxObjectRenderer(ontology, writer, getAspectManager()));
             writer.flush();
         } catch (IOException e) {
             throw new OWLOntologyStorageException(e);

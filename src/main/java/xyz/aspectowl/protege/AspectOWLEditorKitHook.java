@@ -138,7 +138,8 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 		OWLOntologyManager om = mm.getOWLOntologyManager();
 
-		om.getOntologyStorers().add(new AspectOWLFunctionalSyntaxStorerFactory(am));
+		var registeredOntologyStorers = om.getOntologyStorers();
+		registeredOntologyStorers.add(new AspectOWLFunctionalSyntaxStorerFactory(am));
 
 		mm.addIOListener(new AspectOWLOntologyPreSaveChecker(om));
 
