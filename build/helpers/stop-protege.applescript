@@ -1,6 +1,6 @@
 tell application "iTerm"
 	activate
-	set theWindows to the windows whose name is "java"
+	set theWindows to the windows whose name is "protege-test-run"
 end tell
 
 if theWindows is not {} then
@@ -10,8 +10,8 @@ if theWindows is not {} then
 --	repeat while the name of theWindow contains "/run.command"
 --		delay 1
 --	end repeat
---	focus(theWindow) -- just in case
---	tell application "System Events" to keystroke "w" using command down
+	focus(theWindow) -- just in case
+	tell application "System Events" to keystroke "w" using command down
 end if
 
 on focus(theWindow)

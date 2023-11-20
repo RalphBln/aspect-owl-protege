@@ -1,0 +1,4 @@
+# Rename this file from dev.properties.example to dev.properties and fill in the path to your local Protégé installation
+# directory below.
+
+protege.install.location=/path/to/your/local/protege/installation

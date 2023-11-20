@@ -10,3 +10,4 @@ xyz.aspectowl.protege.plugin.iml
 catalog-v001.xml
 src/main/java/xyz/aspectowl/Test.java
 src/main/java/xyz/aspectowl/TestTarget.java
+/build/helpers/dev.properties

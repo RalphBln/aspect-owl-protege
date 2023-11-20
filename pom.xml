@@ -56,7 +56,6 @@
 		<owlapi.version>4.5.26</owlapi.version>
 		<bundle-version>1.0.0</bundle-version>
 		<org.osgi.framework.system.packages.extra>org.w3c.dom.:ranges</org.osgi.framework.system.packages.extra>
-		<protege.install.location>/Users/ralph/devel/Applications/protege-j15/Protege-5.6.0-beta-1-SNAPSHOT</protege.install.location>
 	</properties>
 
 	<packaging>bundle</packaging>
@@ -510,10 +509,27 @@
 						</goals>
 						<configuration>
 							<executable>osascript</executable>
-							<!--commandlineArgs>-e 'tell application "Terminal" to do script "/Applications/Protégé-5.2.app/Contents/MacOS/JavaAppLauncher ${project.basedir}/src/main/resources/test.owl"'</commandlineArgs-->
-							<commandlineArgs>-e 'tell application "iTerm" to create window with default profile command "${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"'</commandlineArgs>
+							<commandlineArgs>-e 'tell application "iTerm"' -e 'set newWindow to (create window with profile "protege-test-run")' -e 'tell current session of newWindow' -e 'write text "j15;${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"' -e 'end tell' -e 'end tell'</commandlineArgs>
 							<async>true</async>
 							<asyncDestroyOnShutdown>false</asyncDestroyOnShutdown>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.1.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>build/helpers/dev.properties</file>
+							</files>
 						</configuration>
 					</execution>
 				</executions>
