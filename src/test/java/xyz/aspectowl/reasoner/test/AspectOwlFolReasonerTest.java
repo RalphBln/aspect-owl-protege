@@ -55,7 +55,7 @@ public class AspectOwlFolReasonerTest {
 
         ServiceLoader<FrameworkFactory> ffs = ServiceLoader.load(FrameworkFactory.class);
         FrameworkFactory ff = ffs.findFirst().get();
-        HashMap<String, Object> config = new HashMap<>();
+        HashMap<String, String> config = new HashMap<>();
         Framework fwk = ff.newFramework(config);
         try {
             fwk.start();

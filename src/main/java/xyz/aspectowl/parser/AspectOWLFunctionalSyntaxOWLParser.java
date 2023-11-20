@@ -69,6 +69,8 @@ public class AspectOWLFunctionalSyntaxOWLParser extends AbstractOWLParser {
 			throw new OWLParserException(e.getMessage(), e, 0, 0);
 		} catch (TokenMgrError e) {
 			throw new OWLParserException(e);
+		} catch (Throwable t) {
+			throw new OWLParserException(new RuntimeException(t));
 		} finally {
 			if (is != null) {
 				is.close();

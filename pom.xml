@@ -47,13 +47,13 @@
 
 	<groupId>xyz.aspectowl</groupId>
 	<artifactId>aspectowl-protege-plugin</artifactId>
-	<version>v5.6.0.2-j15</version>
+	<version>5.6.3-j15</version>
 	<name>Aspect-Oriented Ontology Protégé Plug-In</name> 
 	<description>A plug-in for aspect-oriented ontology development.</description>
 
 	<properties>
-		<protege.version>5.6.0-beta-1-SNAPSHOT</protege.version>
-		<owlapi.version>4.5.19</owlapi.version>
+		<protege.version>5.6.3</protege.version>
+		<owlapi.version>4.5.26</owlapi.version>
 		<bundle-version>1.0.0</bundle-version>
 		<org.osgi.framework.system.packages.extra>org.w3c.dom.:ranges</org.osgi.framework.system.packages.extra>
 		<protege.install.location>/Users/ralph/devel/Applications/protege-j15/Protege-5.6.0-beta-1-SNAPSHOT</protege.install.location>
@@ -121,6 +121,10 @@
 					<artifactId>owlapi-osgidistribution</artifactId>
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>owlexplanation</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -128,7 +132,7 @@
         	<groupId>net.sourceforge.owlapi</groupId>
         	<artifactId>owlexplanation</artifactId>
         	<version>5.0.0</version>
-        	<scope>compile</scope>
+        	<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>owlapi-osgidistribution</artifactId>
@@ -193,7 +197,7 @@
         <dependency>
         	<groupId>edu.stanford.protege</groupId>
         	<artifactId>sparql-query-plugin</artifactId>
-        	<version>3.0.0</version>
+        	<version>2.0.2</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>owlapi-distribution</artifactId>
@@ -204,6 +208,7 @@
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
         <dependency>
@@ -237,9 +242,9 @@
 			<version>1.8.10</version>
 		</dependency-->
 		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>4.3.1</version>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.framework</artifactId>
+			<version>7.0.5</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -304,26 +309,32 @@
 			<version>1.5.1</version>
 		</dependency>
 
-<!-- for debugging. TODO remove -->
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.main</artifactId>
-			<version>4.4.1</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
 			<version>2.2.3</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.framework</artifactId>
-			<version>7.0.3</version>
-			<scope>provided</scope>
-		</dependency>
+<!-- for debugging. TODO remove -->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.felix</groupId>-->
+<!--			<artifactId>org.apache.felix.main</artifactId>-->
+<!--			<version>4.4.1</version>-->
+<!--			<scope>provided</scope>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>io.github.cdimascio</groupId>-->
+<!--			<artifactId>dotenv-java</artifactId>-->
+<!--			<version>2.2.3</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.felix</groupId>-->
+<!--			<artifactId>org.apache.felix.framework</artifactId>-->
+<!--			<version>7.0.3</version>-->
+<!--			<scope>provided</scope>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
@@ -395,10 +406,14 @@
 							!org.semanticweb.owl.explanation.api,
 							!org.apache.felix.framework,
 							!org.apache.felix.framework.*,
-							org.osgi.framework;version=!,
 							!android.dalvik,
 							!dalvik.system,
 							!org.paukov.combinatorics3,
+							org.openrdf.query,
+							com.google.common.*;version=!,
+							!org.apache.felix.resolver,
+							org.protege.editor.owl.rdf;version=!,
+							!uk.ac.manchester.cs.owl.explanation;version=3.0.0,
 							*
 						</Import-Package>
 						<Export-Package>

@@ -37,7 +37,7 @@ public class AspectOWLPostClassLoadingWeavingHelper {
 
             wovenClass.getDynamicImports().add("xyz.aspectowl.protege");
 
-            wovenClass.complete(wovenClass.getDefinedClass(), null, null);
+            wovenClass.complete();
 
         } catch (Throwable t) {
 //				System.out.format("Weaving failed for class %s: %s.\n", className, t.getMessage());
