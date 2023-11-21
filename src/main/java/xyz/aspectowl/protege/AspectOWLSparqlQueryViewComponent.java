@@ -237,7 +237,7 @@ public class AspectOWLSparqlQueryViewComponent extends AbstractActiveOntologyVie
 		fillBufferWithPrefixes(buf, namespace2PrefixMap);
 		
 		
-		buf.append("PREFIX aspect: <http://www.corporate-semantic-web.de/ontologies/aspect_owl#>\n");
+		buf.append("PREFIX aspect: <https://ontology.aspectowl.xyz/aspect_owl#>\n");
 		buf.append("PREFIX ex: <http://csw.inf.fu-berlin.de/aood/example#>\n");
 				
 		buf.append("CONSTRUCT {?s ?p ?o}\n");

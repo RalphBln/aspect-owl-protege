@@ -160,7 +160,7 @@ public class AspectOWLSparqlQueryExecutor {
 //				"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + 
 //				"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" + 
 //				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + 
-//				"PREFIX aspect: <http://www.corporate-semantic-web.de/ontologies/aspect_owl#>\n" + 
+//				"PREFIX aspect: <https://ontology.aspectowl.xyz/aspect_owl#>\n" + 
 //				"\n" + 
 //				"CONSTRUCT {?s ?p ?o}\n" + 
 //				"WHERE {\n" + 
@@ -172,7 +172,7 @@ public class AspectOWLSparqlQueryExecutor {
 //		
 //		IRI exampleOntoIRI = IRI.create("http://csw.inf.fu-berlin.de/aood/example");
 //		
-//		IRI aspectOntoIRI = IRI.create("http://www.corporate-semantic-web.de/ontologies/aspect_owl");
+//		IRI aspectOntoIRI = IRI.create("https://ontology.aspectowl.xyz/aspect_owl");
 //
 //		OWLOntologyManager om = OWLManager.createOWLOntologyManager();
 //

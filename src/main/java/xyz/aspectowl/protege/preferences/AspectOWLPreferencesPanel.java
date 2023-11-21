@@ -26,7 +26,7 @@ public class AspectOWLPreferencesPanel extends OWLPreferencesPanel {
 	public static final String PREFERENCES_ID_DEFAULT = "default";
 	
 	public static final String PREFERENCES_ID_ASPECT_PROPERTY_IRI = "aspect ns";
-	public static final String PREFERENCES_ID_ASPECT_PROPERTY_IRI_DEFAULT_VALUE = "http://www.corporate-semantic-web.de/ontologies/aspect/owl";
+	public static final String PREFERENCES_ID_ASPECT_PROPERTY_IRI_DEFAULT_VALUE = "https://ontology.aspectowl.xyz/aspect/owl";
 	
 	
 	

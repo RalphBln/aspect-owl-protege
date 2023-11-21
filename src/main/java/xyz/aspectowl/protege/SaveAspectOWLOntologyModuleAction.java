@@ -154,7 +154,7 @@ public class SaveAspectOWLOntologyModuleAction extends ProtegeAction {
 							System.out.println(importIRI.getIRI());
 						}*/
 						
-						OWLImportsDeclaration aspectOWLOnt = new OWLImportsDeclarationImpl(IRI.create("http://www.corporate-semantic-web.de/ontologies/aspect_owl"));
+						OWLImportsDeclaration aspectOWLOnt = new OWLImportsDeclarationImpl(IRI.create("https://ontology.aspectowl.xyz/aspect_owl"));
 						changes.add(new AddImport(aspectOntology, aspectOWLOnt));
 
 						

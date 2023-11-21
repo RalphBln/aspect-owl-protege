@@ -55,8 +55,8 @@ public class AspectOWLUtils {
 	
 //	private static final Logger log = Logger.getLogger(AspectOWLUtils.class);
 	
-//	public final IRI hasAspectPropertyIRI = IRI.create("http://www.corporate-semantic-web.de/ontologies/aspect_owl#hasAspect");
-//	public static final IRI ASPECT_BASE_CLASS_IRI = IRI.create("http://www.corporate-semantic-web.de/ontologies/aspect_owl#Aspect");
+//	public final IRI hasAspectPropertyIRI = IRI.create("https://ontology.aspectowl.xyz/aspect_owl#hasAspect");
+//	public static final IRI ASPECT_BASE_CLASS_IRI = IRI.create("https://ontology.aspectowl.xyz/aspect_owl#Aspect");
 	
 	
 	/**

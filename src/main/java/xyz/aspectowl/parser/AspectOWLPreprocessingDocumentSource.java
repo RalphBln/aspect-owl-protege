@@ -69,7 +69,7 @@ public class AspectOWLPreprocessingDocumentSource implements OWLOntologyDocument
 		
 		ArrayList<OWLAnnotationProperty> ontologyProperties = new ArrayList<OWLAnnotationProperty>(activeOntologyProperties);
 		
-		String aspectIRI = "http://www.corporate-semantic-web.de/ontologies/aspect_owl";
+		String aspectIRI = "https://ontology.aspectowl.xyz/aspect_owl";
 		
 		if (ontologyProperties.size() > 0)
 		{

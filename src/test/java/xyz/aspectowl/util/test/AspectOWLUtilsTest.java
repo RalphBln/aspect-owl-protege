@@ -25,7 +25,7 @@ public class AspectOWLUtilsTest {
 //		// should be of the form: NAME, IRI, FILE_RESOURCE
 //		String[][] setupContent = {
 //				{"example", "http://csw.inf.fu-berlin.de/aood/example", "/AspectsExample.owl"},
-//				{"aspect",  "http://www.corporate-semantic-web.de/ontologies/aspect_owl", "/aspectOWL.owl"},
+//				{"aspect",  "https://ontology.aspectowl.xyz/aspect_owl", "/aspectOWL.owl"},
 //				{"time",    "http://www.w3.org/2006/time", "/time.owl"},
 //				{"siblings","http://www.semanticweb.org/test-ontology", "/sibs-full.owl"}
 //		};
@@ -60,7 +60,7 @@ public class AspectOWLUtilsTest {
 //				"PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" + 
 //				"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" + 
 //				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + 
-//				"PREFIX aspect: <http://www.corporate-semantic-web.de/ontologies/aspect_owl#>\n" + 
+//				"PREFIX aspect: <https://ontology.aspectowl.xyz/aspect_owl#>\n" + 
 //				"\n" + 
 //				"CONSTRUCT {?s ?p ?o}\n" + 
 //				"WHERE {\n" + 
@@ -173,7 +173,7 @@ public class AspectOWLUtilsTest {
 //						+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>"
 //						+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 //						+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
-//						+ "PREFIX asp: <http://www.corporate-semantic-web.de/ontologies/aspect_owl#>";
+//						+ "PREFIX asp: <https://ontology.aspectowl.xyz/aspect_owl#>";
 //		
 //		// every line represents a query of the form: QUERY_STRING, EVALUATION_MODE, EXPECTATION
 //		Object[][] queries = {

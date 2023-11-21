@@ -179,7 +179,7 @@ public class SaveAspectOWLOntologyAction extends ProtegeAction {
 	private String changeToAspectOrientedFunctionalSyntax(String buf, List<OWLAnnotationProperty> properties)
 	{
 		String aspectIRI = properties.size() == 0
-							? "http://www.corporate-semantic-web.de/ontologies/aspect_owl"
+							? "https://ontology.aspectowl.xyz/aspect_owl"
 							: properties.get(0).toStringID();
 		
 		String aspectIriAsRegex = escapeSpecialRegexChars(aspectIRI);

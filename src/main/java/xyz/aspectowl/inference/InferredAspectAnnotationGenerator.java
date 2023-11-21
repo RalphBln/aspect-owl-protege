@@ -129,7 +129,7 @@ public class InferredAspectAnnotationGenerator extends DefaultOWLAxiomVisitorAda
 
         tempOM = OWLManager.createOWLOntologyManager();
         
-        inferredAspectsOnto = tempOM.createOntology(IRI.create("http://www.corporate-semantic-web.de/ontologies/aspects" + System.currentTimeMillis()));
+        inferredAspectsOnto = tempOM.createOntology(IRI.create("https://ontology.aspectowl.xyz/aspects" + System.currentTimeMillis()));
 				
 		OWLReasonerManager reasonerManager = modelManager.getOWLReasonerManager();
 		OWLReasoner reasoner = reasonerManager.getCurrentReasoner();
