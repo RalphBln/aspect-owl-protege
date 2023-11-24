@@ -3,6 +3,7 @@
  */
 package xyz.aspectowl.protege;
 
+import com.google.common.collect.Sets;
 import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import xyz.aspectowl.owlapi.model.impl.AspectOWLAxiomInstance;
@@ -14,6 +15,8 @@ import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxParserFactory;
 import xyz.aspectowl.parser.AspectOWLOntologyPreSaveChecker;
 import xyz.aspectowl.protege.editor.core.ui.AspectButton;
 import xyz.aspectowl.protege.views.AspectAssertionPanel;
+import xyz.aspectowl.rdf.AspectOWLRDFDocumentFormat;
+import xyz.aspectowl.rdf.renderer.AspectOWLRDFStorerFactory;
 import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory;
 import javassist.*;
 import org.osgi.framework.hooks.weaving.WeavingHook;
@@ -40,6 +43,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author ralph
@@ -47,6 +53,11 @@ import java.util.*;
 public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook {
 
 	private static final Logger log = LoggerFactory.getLogger(AspectOWLEditorKitHook.class);
+
+	private static final Set<OWLDocumentFormat> SUPPORTED_FORMATS = Stream.of(
+			new AspectOWLFunctionalSyntaxDocumentFormat(),
+			new AspectOWLRDFDocumentFormat()
+	).collect(Collectors.toSet());
 
 	private final HashSet<String> frameSectionRowClassesForAspectButtons = new HashSet<>();
 	private final HashSet<String> propertyCharacteristicsViewComponentClassesForAspectButtons = new HashSet<>();
@@ -140,6 +151,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 		var registeredOntologyStorers = om.getOntologyStorers();
 		registeredOntologyStorers.add(new AspectOWLFunctionalSyntaxStorerFactory(am));
+		registeredOntologyStorers.add(new AspectOWLRDFStorerFactory(am));
 
 		mm.addIOListener(new AspectOWLOntologyPreSaveChecker(om));
 
@@ -447,26 +459,22 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 	}
 
 	@SuppressWarnings("unused")
-	public static void addOntologyFormat(List<OWLDocumentFormat> formats) {
-		for (OWLDocumentFormat format : formats) {
-			if (format instanceof AspectOWLFunctionalSyntaxDocumentFormat) {
-				return;
-			}
-		}
-		formats.add(new AspectOWLFunctionalSyntaxDocumentFormat());
+	public static void addOntologyFormat(List<OWLDocumentFormat> formatList) {
+		var formats = Sets.newHashSet(formatList); // a little bit more efficient
+		SUPPORTED_FORMATS.stream().filter(Predicate.not(formats::contains)).forEach(formatList::add);
 	}
 
 	@SuppressWarnings("unused")
 	public static boolean alternativeFormatIfAspectOriented(OWLDocumentFormat format, OWLEditorKit editorKit) {
-		if (format instanceof AspectOWLFunctionalSyntaxDocumentFormat
-				|| !(getAspectManager(editorKit).hasAspects(editorKit.getModelManager().getActiveOntology()))) {
+		if (!(getAspectManager(editorKit).hasAspects(editorKit.getModelManager().getActiveOntology()))
+			|| SUPPORTED_FORMATS.contains(format))
 			return true;
-		}
 
 		int userSaysOk = JOptionPane.showConfirmDialog(editorKit.getOWLWorkspace(),
-				String.format("The ontology contains aspects. The '%s' format loses all information about aspects.  We highly recommend to use the 'OWL Functional Syntax with Aspect-Oriented Extensions' format.  Continue anyway (you will lose information)?", format),
+				String.format("The ontology contains aspects. The '%s' format loses all information about aspects. We highly recommend that you use one of the formats that have 'with Aspect-Oriented Extensions' in their names. Continue anyway (you will lose information)?", format),
 				"Warning",
 				JOptionPane.YES_NO_OPTION);
+
 		return userSaysOk == JOptionPane.YES_OPTION;
 	}
 
