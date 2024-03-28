@@ -5,7 +5,7 @@ import org.semanticweb.owlapi.formats.PrefixDocumentFormatImpl;
 /**
  * @author ralph
  */
-public class AspectOWLRDFDocumentFormat extends PrefixDocumentFormatImpl {
+public class AspectOWLTrigDocumentFormat extends PrefixDocumentFormatImpl {
 
     /**
      * @see org.semanticweb.owlapi.formats.PrefixDocumentFormatImpl#getKey()

@@ -1,14 +1,12 @@
 package xyz.aspectowl.rdf;
 
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
-import org.semanticweb.owlapi.model.OWLDocumentFormatFactory;
 import org.semanticweb.owlapi.util.OWLDocumentFormatFactoryImpl;
-import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxDocumentFormat;
 
 /**
  * @author Ralph Schäfermeier
  */
-public class AspectOWLRDFDocumentFormatFactory extends OWLDocumentFormatFactoryImpl {
+public class AspectOWLTrigDocumentFormatFactory extends OWLDocumentFormatFactoryImpl {
 
     /**
      *
@@ -18,7 +16,7 @@ public class AspectOWLRDFDocumentFormatFactory extends OWLDocumentFormatFactoryI
     /**
      *
      */
-    public AspectOWLRDFDocumentFormatFactory() {
+    public AspectOWLTrigDocumentFormatFactory() {
         // TODO Auto-generated constructor stub
     }
 
@@ -27,7 +25,7 @@ public class AspectOWLRDFDocumentFormatFactory extends OWLDocumentFormatFactoryI
      */
     @Override
     public OWLDocumentFormat createFormat() {
-        return new AspectOWLRDFDocumentFormat();
+        return new AspectOWLTrigDocumentFormat();
     }
 
     /* (non-Javadoc)

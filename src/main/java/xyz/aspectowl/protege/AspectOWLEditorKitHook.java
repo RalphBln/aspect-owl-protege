@@ -4,21 +4,8 @@
 package xyz.aspectowl.protege;
 
 import com.google.common.collect.Sets;
-import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
-import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import xyz.aspectowl.owlapi.model.impl.AspectOWLAxiomInstance;
-import xyz.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
-import xyz.aspectowl.owlapi.visitor.ProtegeAspectOWLVisitorProvider;
-import xyz.aspectowl.owlapi.vocab.AspectOWLVocabulary;
-import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxDocumentFormat;
-import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxParserFactory;
-import xyz.aspectowl.parser.AspectOWLOntologyPreSaveChecker;
-import xyz.aspectowl.protege.editor.core.ui.AspectButton;
-import xyz.aspectowl.protege.views.AspectAssertionPanel;
-import xyz.aspectowl.rdf.AspectOWLRDFDocumentFormat;
-import xyz.aspectowl.rdf.renderer.AspectOWLRDFStorerFactory;
-import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory;
 import javassist.*;
+import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.protege.editor.core.editorkit.EditorKit;
@@ -36,6 +23,21 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
+import xyz.aspectowl.owlapi.model.OWLAspectManager;
+import xyz.aspectowl.owlapi.model.impl.AspectOWLAxiomInstance;
+import xyz.aspectowl.owlapi.model.visitor.AspectOWLVisitorMap;
+import xyz.aspectowl.owlapi.visitor.ProtegeAspectOWLVisitorProvider;
+import xyz.aspectowl.owlapi.vocab.AspectOWLVocabulary;
+import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxDocumentFormat;
+import xyz.aspectowl.parser.AspectOWLFunctionalSyntaxParserFactory;
+import xyz.aspectowl.parser.AspectOWLOntologyPreSaveChecker;
+import xyz.aspectowl.protege.editor.core.ui.AspectButton;
+import xyz.aspectowl.protege.views.AspectAssertionPanel;
+import xyz.aspectowl.rdf.AspectOWLTrigDocumentFormat;
+import xyz.aspectowl.rdf.renderer.AspectOWLRDFStorerFactory;
+import xyz.aspectowl.rdf.renderer.AspectOWLTriGWriterFactory;
+import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 	private static final Set<OWLDocumentFormat> SUPPORTED_FORMATS = Stream.of(
 			new AspectOWLFunctionalSyntaxDocumentFormat(),
-			new AspectOWLRDFDocumentFormat()
+			new AspectOWLTrigDocumentFormat()
 	).collect(Collectors.toSet());
 
 	private final HashSet<String> frameSectionRowClassesForAspectButtons = new HashSet<>();
@@ -154,6 +156,8 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		registeredOntologyStorers.add(new AspectOWLRDFStorerFactory(am));
 
 		mm.addIOListener(new AspectOWLOntologyPreSaveChecker(om));
+
+		RDFWriterRegistry.getInstance().add(new AspectOWLTriGWriterFactory());
 
 		// The following commented-in code does not work in Java 9 and upwards due to tighter security measurements
 		// in the reflection API introduced with that version.
@@ -256,7 +260,8 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 				// Each time an ontology is loaded, Protege creates a new OWLOntologyManager. This ontology manager is used
 				// for the loading process. After the ontology (and potential imports) are loaded, the ontologies are copied
 				// to the main ontology manager (the one stored in the single OWLModelManager instance). Then, the loading
-				// OWLOntologyManger is discarded. Anyway, we need to add our ParserFactory to each loading ontology manager.
+				// OWLOntologyManger is discarded.
+				// Bottom line: We need to add our ParserFactory to each loading ontology manager.
 
 				CtClass ctClass = prepareClassForWeaving(wovenClass);
 

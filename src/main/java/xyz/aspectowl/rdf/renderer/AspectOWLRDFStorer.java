@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import xyz.aspectowl.rdf.AspectOWLRDFDocumentFormat;
+import xyz.aspectowl.rdf.AspectOWLTrigDocumentFormat;
 import xyz.aspectowl.renderer.AbstractAspectOWLStorer;
 
 import javax.annotation.Nonnull;
@@ -25,6 +25,6 @@ public class AspectOWLRDFStorer extends AbstractAspectOWLStorer {
 
     @Override
     public boolean canStoreOntology(@Nonnull OWLDocumentFormat ontologyFormat) {
-        return ontologyFormat instanceof AspectOWLRDFDocumentFormat;
+        return ontologyFormat instanceof AspectOWLTrigDocumentFormat;
     }
 }
