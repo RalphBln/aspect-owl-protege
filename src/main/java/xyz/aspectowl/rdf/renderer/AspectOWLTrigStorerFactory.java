@@ -10,15 +10,15 @@ import javax.annotation.Nonnull;
 /**
  * @author ralph
  */
-public class AspectOWLRDFStorerFactory extends AspectOWLStorerFactoryImpl {
+public class AspectOWLTrigStorerFactory extends AspectOWLStorerFactoryImpl {
 
 
-    public AspectOWLRDFStorerFactory(OWLAspectManager am) {
+    public AspectOWLTrigStorerFactory(OWLAspectManager am) {
         super(new AspectOWLTrigDocumentFormatFactory(), am);
     }
 
     @Nonnull
     @Override
     public OWLStorer createStorer() {
-        return new AspectOWLRDFStorer(getAspectManager());
+        return new AspectOWLTrigStorer(getAspectManager());
     }}

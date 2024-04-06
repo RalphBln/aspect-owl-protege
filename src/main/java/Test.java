@@ -16,7 +16,7 @@ public class Test {
         try {
             var onto = man.loadOntologyFromOntologyDocument(new File("/tmp/test.owl"));
             man.saveOntology(onto, new TrigDocumentFormat(), new FileDocumentTarget(new File("/tmp/test.trig")));
-        } catch (OWLOntologyCreationException | OWLOntologyStorageException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

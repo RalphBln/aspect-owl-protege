@@ -33,7 +33,7 @@ public class AspectOWLTrigDocumentFormatFactory extends OWLDocumentFormatFactory
      */
     @Override
     public String getKey() {
-        return "RDF format with Aspect-Oriented Extensions";
+        return "Trig format with Aspect-Oriented Extensions";
     }
 
 }
