@@ -35,8 +35,8 @@ import xyz.aspectowl.parser.AspectOWLOntologyPreSaveChecker;
 import xyz.aspectowl.protege.editor.core.ui.AspectButton;
 import xyz.aspectowl.protege.views.AspectAssertionPanel;
 import xyz.aspectowl.rdf.AspectOWLTrigDocumentFormat;
-import xyz.aspectowl.rdf.renderer.AspectOWLTrigStorerFactory;
 import xyz.aspectowl.rdf.renderer.AspectOWLTriGWriterFactory;
+import xyz.aspectowl.rdf.renderer.AspectOWLTrigStorerFactory;
 import xyz.aspectowl.renderer.AspectOWLFunctionalSyntaxStorerFactory;
 
 import javax.swing.*;

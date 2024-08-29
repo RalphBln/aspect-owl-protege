@@ -56,6 +56,7 @@
 		<owlapi.version>4.5.26</owlapi.version>
 		<bundle-version>1.0.0</bundle-version>
 		<org.osgi.framework.system.packages.extra>org.w3c.dom.:ranges</org.osgi.framework.system.packages.extra>
+		<rdf4j.version>3.7.7</rdf4j.version>
 	</properties>
 
 	<packaging>bundle</packaging>
@@ -198,17 +199,17 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-        	<groupId>net.sourceforge.owlapi</groupId>
-        	<artifactId>owlapi-rio</artifactId>
-        	<version>${owlapi.version}</version>
-        	<exclusions>
-        		<exclusion>
-        			<artifactId>owlapi-api</artifactId>
-        			<groupId>net.sourceforge.owlapi</groupId>
-        		</exclusion>
-        	</exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--        	<groupId>net.sourceforge.owlapi</groupId>-->
+<!--        	<artifactId>owlapi-rio</artifactId>-->
+<!--        	<version>${owlapi.version}</version>-->
+<!--        	<exclusions>-->
+<!--        		<exclusion>-->
+<!--        			<artifactId>owlapi-api</artifactId>-->
+<!--        			<groupId>net.sourceforge.owlapi</groupId>-->
+<!--        		</exclusion>-->
+<!--        	</exclusions>-->
+<!--        </dependency>-->
 
         <dependency>
         	<groupId>edu.stanford.protege</groupId>
@@ -326,11 +327,11 @@
 			<version>1.5.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.eclipse.rdf4j</groupId>
-			<artifactId>rdf4j-runtime-osgi</artifactId>
-			<version>3.7.7</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.eclipse.rdf4j</groupId>-->
+<!--			<artifactId>rdf4j-runtime-osgi</artifactId>-->
+<!--			<version>${rdf4j.version}</version>-->
+<!--		</dependency>-->
 
 <!--		<dependency>-->
 <!--			<groupId>org.eclipse.rdf4j</groupId>-->
@@ -339,6 +340,7 @@
 <!--			<scope>provided</scope>-->
 <!--		</dependency>-->
 
+
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
@@ -346,12 +348,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.github.jsonld-java</groupId>
-			<artifactId>jsonld-java</artifactId>
-			<version>0.13.3</version>
-		</dependency>
-<!-- for debugging. TODO remove -->
+
+		<!-- for debugging. TODO remove -->
 <!--		<dependency>-->
 <!--			<groupId>org.apache.felix</groupId>-->
 <!--			<artifactId>org.apache.felix.main</artifactId>-->
@@ -371,6 +369,22 @@
 <!--			<version>7.0.3</version>-->
 <!--			<scope>provided</scope>-->
 <!--		</dependency>-->
+
+		<dependency>
+			<groupId>com.github.jsonld-java</groupId>
+			<artifactId>jsonld-java</artifactId>
+			<version>0.13.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.17.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -450,13 +464,13 @@
 							!org.apache.felix.resolver,
 							org.protege.editor.owl.rdf;version=!,
 							!uk.ac.manchester.cs.owl.explanation;version=3.0.0,
-							!com.fasterxml.jackson.*,
 							!com.github.jsonldjava.*,
 							!com.opencsv.*,
 							!org.elasticsearch.*,
 							!org.locationtech.*,
 							!org.mapdb,
 							org.semanticweb.owlapi.formats,
+							org.eclipse.rdf4j.common.net;version="3.7.7",
 							*
 						</Import-Package>
 						<Export-Package>
@@ -486,9 +500,16 @@
 							core,
 							ojalgo,
 							jgrapht-core,
-							jheaps,
-							owlapi-rio,
-							rdf4j-runtime-osgi
+							jheaps
+<!--							rdf4j-rio-api,-->
+<!--							rdf4j-util,-->
+<!--							rdf4j-model,-->
+<!--							rdf4j-model-api,-->
+<!--							rdf4j-common-annotation,-->
+<!--							rdf4j-common-exception,-->
+<!--							rdf4j-model-vocabulary,-->
+<!--							rdf4j-rio-trig,-->
+<!--							rdf4j-rio-turtle-->
 						</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 						<Embed-StripGroup>false</Embed-StripGroup>

@@ -20,7 +20,7 @@ public class AspectOWLFunctionalSyntaxDocumentFormat extends PrefixDocumentForma
 	 */
 	@Override
 	public String getKey() {
-		return "OWL Functional Syntax with Aspect-Oriented Extensions";
+		return "AspectOWL Functional Syntax";
 	}
 	
 }

@@ -20,5 +20,5 @@ public class AspectOWLTrigStorerFactory extends AspectOWLStorerFactoryImpl {
     @Nonnull
     @Override
     public OWLStorer createStorer() {
-        return new AspectOWLTrigStorer(getAspectManager());
+        return new AspectOWLTrigStorer(getFormatFactory(), getAspectManager());
     }}
