@@ -139,6 +139,18 @@
 					<artifactId>owlapi-osgidistribution</artifactId>
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-api</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-tools</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-osgidistribution</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
 			</exclusions>
         </dependency>
 
@@ -171,11 +183,13 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.8.2</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
 			<version>5.8.2</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
