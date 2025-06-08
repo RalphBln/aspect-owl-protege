@@ -555,7 +555,7 @@
 						</goals>
 						<configuration>
 							<executable>osascript</executable>
-							<commandlineArgs>-e 'tell application "iTerm"' -e 'set newWindow to (create window with profile "protege-test-run")' -e 'tell current session of newWindow' -e 'write text "j15;${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"' -e 'end tell' -e 'end tell'</commandlineArgs>
+							<commandlineArgs>-e 'tell application "iTerm"' -e 'set newWindow to (create window with profile "protege-test-run")' -e 'tell current session of newWindow' -e 'write text "j21;${protege.install.location}/run.command ${project.basedir}/src/main/resources/test.owl"' -e 'end tell' -e 'end tell'</commandlineArgs>
 							<async>true</async>
 							<asyncDestroyOnShutdown>false</asyncDestroyOnShutdown>
 						</configuration>
