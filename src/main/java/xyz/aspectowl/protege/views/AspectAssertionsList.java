@@ -191,6 +191,8 @@ public class AspectAssertionsList extends MList {
     	
 		AspectButton button = new AspectButton(axiom, ontology, aspectManager);
 		button.setActionListener(e -> {
+        // TODO squash duplicated code (AspectOWLEditorKitHook)
+        // TODO (duplicate) show our nicer flashy new aspect editor here
 			AspectAssertionPanel aspectAssertionPanel = new AspectAssertionPanel(editorKit);
 			aspectAssertionPanel.setAxiom(new AspectOWLAxiomInstance(axiom, ontology, aspectManager));
 			new UIHelper(editorKit).showDialog("Aspects for " + axiom.getAxiomType().toString() + " axiom", aspectAssertionPanel, JOptionPane.CLOSED_OPTION);
