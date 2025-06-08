@@ -412,8 +412,6 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 		wovenClass.getDynamicImports().add("xyz.aspectowl.protege");
 	}
 
-//	private static final OWLAspect testAspect = new OWLNamedAspectImpl(IRI.create("http://www.example.org/aspectowl/FunnyAspect"));
-
 	/**
 	 * @param original
 	 * @return
@@ -437,19 +435,11 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 		AspectButton button = new AspectButton(axiom, ontology, aspectManager);
 		button.setActionListener(e -> {
-
-			//			if (!am.hasAssertedAspects(axiom)) {
-//                am.addAspect(testAspect, axiom); // for testing
-//            } else {
-//            	am.removeAssertedAspect(axiom, testAspect);
-//			}
-
+			// TODO Replace this with a nicer aspect editor
 			AspectAssertionPanel aspectAssertionPanel = new AspectAssertionPanel(editorKit);
 			aspectAssertionPanel.setAxiom(new AspectOWLAxiomInstance(axiom, ontology, aspectManager));
 			new UIHelper(editorKit).showDialog("Aspects for " + axiom.getAxiomType().toString() + " axiom", aspectAssertionPanel, JOptionPane.CLOSED_OPTION);
 			aspectAssertionPanel.dispose();
-
-
 //			editorKit.getModelManager().fireEvent(EventType.ACTIVE_ONTOLOGY_CHANGED);
 		});
 		additionalButtons.add(button);
