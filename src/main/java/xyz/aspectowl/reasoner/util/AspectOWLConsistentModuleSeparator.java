@@ -1,8 +1,8 @@
 package xyz.aspectowl.reasoner.util;
 
-import org.jgrapht.alg.connectivity.ConnectivityInspector;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
+//import org.jgrapht.alg.connectivity.ConnectivityInspector;
+//import org.jgrapht.graph.DefaultEdge;
+//import org.jgrapht.graph.SimpleGraph;
 import org.paukov.combinatorics3.Generator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -41,25 +41,25 @@ public class AspectOWLConsistentModuleSeparator {
         HashMap<OWLEntity, OWLAxiom> axiomsByEntity = new HashMap<>();
 
         // Transform ontology to undirected graph
-        SimpleGraph<OWLEntity, DefaultEdge> ontologyGraph = new SimpleGraph<>(DefaultEdge.class);
-        axioms.forEach(axiom -> {
-            axiomsByEntity.put(axiom.getSignature().stream().findAny().get(), axiom); // map one arbitrary entity to this axiom so that we can find the axioms for a module later
-            Generator.combination(axiom.getSignature()).simple(2).forEach(owlEntityPair -> {
-                OWLEntity entity1 = owlEntityPair.get(0);
-                OWLEntity entity2 = owlEntityPair.get(1);
-                ontologyGraph.addVertex(entity1);
-                ontologyGraph.addVertex(entity2);
-                ontologyGraph.addEdge(entity1, entity2);
-            });
-        });
+//        SimpleGraph<OWLEntity, DefaultEdge> ontologyGraph = new SimpleGraph<>(DefaultEdge.class);
+//        axioms.forEach(axiom -> {
+//            axiomsByEntity.put(axiom.getSignature().stream().findAny().get(), axiom); // map one arbitrary entity to this axiom so that we can find the axioms for a module later
+//            Generator.combination(axiom.getSignature()).simple(2).forEach(owlEntityPair -> {
+//                OWLEntity entity1 = owlEntityPair.get(0);
+//                OWLEntity entity2 = owlEntityPair.get(1);
+//                ontologyGraph.addVertex(entity1);
+//                ontologyGraph.addVertex(entity2);
+//                ontologyGraph.addEdge(entity1, entity2);
+//            });
+//        });
 
         // If graph is disconnected, get all maximally connected components
-        ConnectivityInspector<OWLEntity, DefaultEdge> ci = new ConnectivityInspector(ontologyGraph);
-        int count = 1;
-        for(Set<OWLEntity> owlEntities : ci.connectedSets()) {
-            OWLOntology module = man.createOntology(IRI.create(ontoIRI + "/" + count++));
-            owlEntities.forEach(owlEntity -> System.out.printf("%s ", owlEntity.getIRI().getShortForm()));
-        }
+//        ConnectivityInspector<OWLEntity, DefaultEdge> ci = new ConnectivityInspector(ontologyGraph);
+//        int count = 1;
+//        for(Set<OWLEntity> owlEntities : ci.connectedSets()) {
+//            OWLOntology module = man.createOntology(IRI.create(ontoIRI + "/" + count++));
+//            owlEntities.forEach(owlEntity -> System.out.printf("%s ", owlEntity.getIRI().getShortForm()));
+//        }
 
         return null;
     }

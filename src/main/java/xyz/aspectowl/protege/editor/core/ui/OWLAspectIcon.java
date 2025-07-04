@@ -19,7 +19,7 @@ public class OWLAspectIcon extends OWLClassIcon {
     public OWLAspectIcon(Type type) {
         this(type, FillType.FILLED);
     }
-
+ 
     public OWLAspectIcon(Type type, FillType fillType) {
         super(type, fillType);
         this.type = type;

@@ -46,53 +46,53 @@
         <class value="xyz.aspectowl.protege.AspectOWLEditorKitHook"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
-   <extension
-         id="AspectInferenceViewComponent"
-         name="Inferred Aspects"
-         point="org.protege.editor.core.application.ViewComponent">
-      <label
-            value="Ontology Aspects">
-      </label>
-      <class
-            value="xyz.aspectowl.protege.InferredAspectViewComponent">
-      </class>
-      <category
-            value="@org.protege.ontologycategory">
-      </category>
-   </extension>
-   <extension
-         id="AspectWorkspaceTab"
-         point="org.protege.editor.core.application.WorkspaceTab">
-      <label
-            value="Aspects">
-      </label>
-      <class
-            value="xyz.aspectowl.protege.AspectOWLWorkspaceTab">
-      </class>
-      <index
-            value="X">
-      </index>
-      <editorKitId
-            value="OWLEditorKit">
-      </editorKitId>
-      <defaultViewConfigFileName
-            value="Aspects.layout.xml">
-      </defaultViewConfigFileName>
-   </extension>
-   <extension
-         id="AspectSparqlQueryView"
-         name="Aspect SPARQL Query"
-         point="org.protege.editor.core.application.ViewComponent">
-      <label
-            value="Ontology Aspect Quantification with SPARQL">
-      </label>
-      <class
-            value="xyz.aspectowl.protege.AspectOWLSparqlQueryViewComponent">
-      </class>
-      <category
-            value="@org.protege.ontologycategory">
-      </category>
-   </extension>
+    <extension
+            id="AspectInferenceViewComponent"
+            name="Inferred Aspects"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label
+                value="Ontology Aspects">
+        </label>
+        <class
+                value="xyz.aspectowl.protege.InferredAspectViewComponent">
+        </class>
+        <category
+                value="@org.protege.ontologycategory">
+        </category>
+    </extension>
+    <extension
+            id="AspectWorkspaceTab"
+            point="org.protege.editor.core.application.WorkspaceTab">
+        <label
+                value="Aspects">
+        </label>
+        <class
+                value="xyz.aspectowl.protege.AspectOWLWorkspaceTab">
+        </class>
+        <index
+                value="X">
+        </index>
+        <editorKitId
+                value="OWLEditorKit">
+        </editorKitId>
+        <defaultViewConfigFileName
+                value="Aspects.layout.xml">
+        </defaultViewConfigFileName>
+    </extension>
+    <extension
+            id="AspectSparqlQueryView"
+            name="Aspect SPARQL Query"
+            point="org.protege.editor.core.application.ViewComponent">
+        <label
+                value="Ontology Aspect Quantification with SPARQL">
+        </label>
+        <class
+                value="xyz.aspectowl.protege.AspectOWLSparqlQueryViewComponent">
+        </class>
+        <category
+                value="@org.protege.ontologycategory">
+        </category>
+    </extension>
     <extension
             id="menu.file.SaveOntologyModule"
             name="SaveOntologyModule"
@@ -105,15 +105,15 @@
         <accelerator value="shift M"/>
     </extension>
     <extension
-    	id="SaveAspectOrientedOntology"
-    	name="Save aspect-oriented Ontology"
-    	point="org.protege.editor.core.application.EditorKitMenuAction">
-    	<name value="Save aspect-oriented Ontology"/>
-    	<class value="xyz.aspectowl.protege.SaveAspectOWLOntologyAction"/>
-    	<toolTip value="Save your aspect-oriented Ontology in its own file format"/>
-    	<path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
-    	<editorKitId value="OWLEditorKit"/>
-    	<accelerator value="shift A"/>
+            id="SaveAspectOrientedOntology"
+            name="Save aspect-oriented Ontology"
+            point="org.protege.editor.core.application.EditorKitMenuAction">
+        <name value="Save aspect-oriented Ontology"/>
+        <class value="xyz.aspectowl.protege.SaveAspectOWLOntologyAction"/>
+        <toolTip value="Save your aspect-oriented Ontology in its own file format"/>
+        <path value="org.protege.editor.core.application.menu.FileMenu/SlotAB-Z"/>
+        <editorKitId value="OWLEditorKit"/>
+        <accelerator value="shift A"/>
     </extension>
     <extension
             id="menu.edit.CopyTPTP"
@@ -127,11 +127,11 @@
         <accelerator value="shift T"/>
     </extension>
     <extension
-    	id="AspectOrientedOntologyDevelopmentPreferencesPanel"
-    	name="Aspect-Oriented Ontology Development Preferences"
-    	point="org.protege.editor.core.application.preferencespanel">
-    	<label value="Aspects" />
-    	<class value="xyz.aspectowl.protege.preferences.AspectOWLPreferencesPanel"/>
+            id="AspectOrientedOntologyDevelopmentPreferencesPanel"
+            name="Aspect-Oriented Ontology Development Preferences"
+            point="org.protege.editor.core.application.preferencespanel">
+        <label value="Aspects"/>
+        <class value="xyz.aspectowl.protege.preferences.AspectOWLPreferencesPanel"/>
     </extension>
     <extension id="InconsistentAspectSeparatorOntologyExplanationGenerator"
                point="org.protege.editor.owl.inconsistentOntologyExplanation">
@@ -145,8 +145,8 @@
     </extension-->
     <extension id="AspectOrientedOntologyDevelopmentEditorKitFactory"
                point="org.protege.editor.core.editorkit.EditorKitFactory">
-        <class value="xyz.aspectowl.protege.editorkit.AspectOWLEditorKitFactory" />
-        <name value="Factory for the AOOD Protégé editor kit" />
+        <class value="xyz.aspectowl.protege.editorkit.AspectOWLEditorKitFactory"/>
+        <name value="Factory for the AOOD Protégé editor kit"/>
     </extension>
     <extension id="AspectOWLFunctionalSyntax"
                point="org.protege.editor.core.application.ViewComponent">
@@ -158,5 +158,12 @@
     <extension id="aspectowl.reasoner.factory" point="org.protege.editor.owl.inference_reasonerfactory">
         <name value="AspectOWL Reasoner"/>
         <class value="xyz.aspectowl.protege.reasoner.AspectOWLFOLReasonerInfo"/>
+    </extension>
+    <extension id="AspectLevelModuleView"
+               point="org.protege.editor.core.application.ViewComponent">
+        <label value="AspectOWL level modules and cycles"/>
+        <class value="xyz.aspectowl.protege.editor.debug.ui.view.ontology.OWLAspectLevelModuleViewComponent"/>
+        <headerColor value="@org.protege.ontologycolor"/>
+        <category value="@org.protege.ontologycategory"/>
     </extension>
 </plugin>
