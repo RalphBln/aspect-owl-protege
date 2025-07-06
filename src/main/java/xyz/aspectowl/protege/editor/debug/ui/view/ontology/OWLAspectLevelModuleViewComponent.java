@@ -368,14 +368,36 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
     return entity.toString();
   }
 
+  private void recolorEdges() {
+    Graph graph = graphs.get(getOWLModelManager().getActiveOntology());
+    ConnectedComponents modules = modulesByOntology.get(getOWLModelManager().getActiveOntology());
+    graph
+        .edges()
+        .filter(edge -> edge.getAttribute("axiom.type", AxiomType.class) == AxiomType.ASPECT)
+        .forEach(
+            edge -> {
+              if (modules.getConnectedComponentOf(edge.getSourceNode())
+                  == modules.getConnectedComponentOf(edge.getTargetNode())) {
+                edge.setAttribute("ui.style", "fill-color: red;");
+              } else {
+                edge.setAttribute("ui.style", "fill-color: #FFD31C;");
+              }
+            });
+  }
+
   @Override
   public void visit(@Nonnull AddAxiom addAxiom) {
     OWLAxiom axiom = addAxiom.getAxiom();
     if (axiom instanceof OWLAspectAssertionAxiom) {
       addAspect(
           getGraph(getOWLModelManager().getActiveOntology()), (OWLAspectAssertionAxiom) axiom);
-    } else {
+    } else if (axiom instanceof OWLDeclarationAxiom) {
+      addNode(
+          getGraph(getOWLModelManager().getActiveOntology()),
+          ((OWLDeclarationAxiom) axiom).getEntity());
+    } else if (axiom.isLogicalAxiom()) {
       addClique(getGraph(getOWLModelManager().getActiveOntology()), axiom);
+      recolorEdges();
     }
   }
 
@@ -466,16 +488,17 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
           .simple(2)
           .forEach(
               owlEntityPair -> {
-                Edge edge =
-                    graph
-                        .getNode(getNodeId(owlEntityPair.get(0)))
-                        .getEdgeBetween(getNodeId(owlEntityPair.get(1)));
-                HashSet<OWLAxiom> axioms = edge.getAttribute("axioms", HashSet.class);
-                axioms.remove(removeAxiom.getAxiom());
-                if (axioms.isEmpty()) {
-                  graph.removeEdge(edge);
-                }
+                findEdge(graph, AxiomType.ONTOLOGY, owlEntityPair.get(0), owlEntityPair.get(1))
+                    .ifPresent(
+                        edge -> {
+                          HashSet<OWLAxiom> axioms = edge.getAttribute("axioms", HashSet.class);
+                          axioms.remove(removeAxiom.getAxiom());
+                          if (axioms.isEmpty()) {
+                            graph.removeEdge(edge);
+                          }
+                        });
               });
+      recolorEdges();
     }
   }
 
