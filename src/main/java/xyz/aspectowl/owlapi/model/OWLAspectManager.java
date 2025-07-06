@@ -24,10 +24,12 @@ import java.util.stream.Stream;
  * The central facility for managing all aspect-related issues.
  * At runtime there exists exactly one instance of this class per Protege workspace instance.
  */
-public class OWLAspectManager extends OWLOntologyChangeVisitorAdapter implements OWLOntologyChangeListener {
+public class OWLAspectManager extends OWLOntologyChangeVisitorAdapter implements OWLOntologyChangeListener, HasOntologyChangeListeners {
 
     private ConcurrentHashMap<OntologyObjectTuple<AspectOWLPointcut>, Set<OWLAspectAssertionAxiom>> aspectsForPointcut = CollectionFactory.createSyncMap();
     private ConcurrentHashMap<OWLObject, Set<OWLAspectAssertionAxiom>> axiomsBySignature = CollectionFactory.createSyncMap();
+    
+    private DefaultChangeBroadcastStrategy changeBroadcastStrategy = new DefaultChangeBroadcastStrategy();
 
     /**
      * Creates and returns a new OWLAspect constructed from the given ontology, join point and advice class expression.
@@ -244,7 +246,17 @@ public class OWLAspectManager extends OWLOntologyChangeVisitorAdapter implements
             lastRemovedAspects = aspectsForPointcut.remove(new OntologyObjectTuple<>(change.getOntology(), new AspectOWLJoinPointAxiomPointcut(axiom.getAxiomWithoutAnnotations())));
         }
     }
-
+    
+    @Override
+    public void removeOntologyChangeListener(@Nonnull OWLOntologyChangeListener owlOntologyChangeListener) {
+    
+    }
+    
+    @Override
+    public void addOntologyChangeListener(@Nonnull OWLOntologyChangeListener owlOntologyChangeListener) {
+    
+    }
+    
     private class OntologyObjectTuple<O> {
 
         private OWLOntology ontology;
