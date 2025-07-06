@@ -116,6 +116,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
   @Override
   protected void disposeOntologyView() {
     getOWLModelManager().removeOntologyChangeListener(ontologyChangeListener);
+    getOWLModelManager().removeListener(modelManagerListener);
     getOWLWorkspace().getOWLSelectionModel().removeListener(selectionModelListener);
   }
 
