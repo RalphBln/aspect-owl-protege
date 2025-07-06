@@ -67,7 +67,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
   private static final String ASPECT_EDGE_STYLES =
       "shape: freeplane; "
           + "size: 3px; "
-          + "fill-color: darkorange; "
+          + "fill-color: #FFD31C; "
           + "arrow-shape: arrow; "
           + "arrow-size: 8px, 8px;";
 
