@@ -94,11 +94,13 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
     if (selectedEntity != null) {
       Graph graph = graphs.get(getOWLModelManager().getActiveOntology());
       Node selectedNode = graph.getNode(getNodeId(selectedEntity));
-      selectedNode.setAttribute("ui.selected");
-      graph
-          .nodes()
-          .filter(node -> node != selectedNode)
-          .forEach(node -> node.removeAttribute("ui.selected"));
+      if (selectedNode != null) {
+        selectedNode.setAttribute("ui.selected");
+        graph
+            .nodes()
+            .filter(node -> node != selectedNode)
+            .forEach(node -> node.removeAttribute("ui.selected"));
+      }
     }
   }
 
