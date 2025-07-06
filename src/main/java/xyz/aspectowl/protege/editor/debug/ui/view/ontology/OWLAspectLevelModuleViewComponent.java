@@ -71,7 +71,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
           + "arrow-shape: arrow; "
           + "arrow-size: 8px, 8px;";
 
-  private enum AxiomType {
+  public enum AxiomType {
     ONTOLOGY,
     ASPECT
   }
@@ -314,18 +314,23 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
     // edge), so we need to
     // find the correct one (if it is present)
     Edge edge =
-        graph
-            .getNode(getNodeId(entity1))
-            .leavingEdges()
-            .filter(
-                potentialEdge ->
-                    potentialEdge.getOpposite(graph.getNode(getNodeId(entity1)))
-                            == graph.getNode(getNodeId(entity2))
-                        && potentialEdge.getAttribute("axiom.type", AxiomType.class) == axiomType)
-            .findAny()
+        findEdge(graph, axiomType, entity1, entity2)
             .orElse(createEdge(graph, axiom, axiomType, entity1, entity2));
     edge.getAttribute("axioms", HashSet.class).add(axiom);
     return edge;
+  }
+
+  private Optional<Edge> findEdge(
+      Graph graph, AxiomType axiomType, OWLEntity entity1, OWLEntity entity2) {
+    return graph
+        .getNode(getNodeId(entity1))
+        .leavingEdges()
+        .filter(
+            potentialEdge ->
+                potentialEdge.getOpposite(graph.getNode(getNodeId(entity1)))
+                        == graph.getNode(getNodeId(entity2))
+                    && potentialEdge.getAttribute("axiom.type", AxiomType.class) == axiomType)
+        .findFirst();
   }
 
   private Edge createEdge(
@@ -339,6 +344,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
             axiomType == AxiomType.ASPECT);
     edge.setAttribute("axioms", new HashSet<>());
     edge.setAttribute("layout.weight", axiomType == AxiomType.ASPECT ? 3 : 2);
+    edge.setAttribute("axiom.type", axiomType);
     if (axiomType == AxiomType.ASPECT) {
       edge.setAttribute("ui.style", ASPECT_EDGE_STYLES);
     }
@@ -411,13 +417,47 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
   @Override
   public void visit(@Nonnull RemoveAxiom removeAxiom) {
     Graph graph = getGraph(getOWLModelManager().getActiveOntology());
-    if (removeAxiom.getAxiom() instanceof OWLDeclarationAxiom) {
+    OWLAxiom axiom = removeAxiom.getAxiom();
+    if (axiom instanceof OWLAspectAssertionAxiom) {
+      AspectOWLPointcut pointcut = ((OWLAspectAssertionAxiom) axiom).getPointcut();
+      if (pointcut instanceof AspectOWLAxiomPointcut) {
+        ((AspectOWLAxiomPointcut) pointcut)
+            .getAssertedAxiomsInPointcut()
+            .forEach(
+                owlAxiom -> {
+                  owlAxiom
+                      .getSignature()
+                      .forEach(
+                          ontologyEntity ->
+                              ((OWLAspectAssertionAxiom) axiom)
+                                  .getAspect()
+                                  .getSignature()
+                                  .forEach(
+                                      aspectEntity -> {
+                                        findEdge(
+                                                graph,
+                                                AxiomType.ASPECT,
+                                                ontologyEntity,
+                                                aspectEntity)
+                                            .ifPresent(
+                                                edge -> {
+                                                  HashSet<OWLAxiom> axioms =
+                                                      edge.getAttribute("axioms", HashSet.class);
+                                                  axioms.remove(owlAxiom);
+                                                  if (axioms.isEmpty()) {
+                                                    graph.removeEdge(edge);
+                                                  }
+                                                });
+                                      }));
+                });
+      }
+    } else if (axiom instanceof OWLDeclarationAxiom) {
       // An entity has been removed from the ontology.
       // This also removes all axioms the entity is part of.
       // We can just delete the node for the entity.
       // All edges will be removed automatically.
       graph.removeNode(getNodeId(((OWLDeclarationAxiom) removeAxiom.getAxiom()).getEntity()));
-    } else {
+    } else if (axiom.isLogicalAxiom()) {
       // An axiom has been removed.
       // The entities in the removed axiom's signature remain in the ontology.
       // We need to check if the corresponding edges in the graph represent other axioms.
