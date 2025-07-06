@@ -221,6 +221,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
                     addAspect(graph, aspectAssertionAxiom);
                   });
         });
+    recolorEdges();
     return view;
   }
 
