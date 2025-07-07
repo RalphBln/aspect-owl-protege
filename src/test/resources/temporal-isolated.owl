@@ -1,0 +1,113 @@
+Prefix(:=<http://aspectowl.xyz/test/temporal/isolated/>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://aspectowl.xyz/test/temporal/isolated>
+
+Declaration(Class(:Company))
+Declaration(Class(:Person))
+Declaration(Class(:TimePoint))
+Declaration(ObjectProperty(:after))
+Declaration(ObjectProperty(:before))
+Declaration(ObjectProperty(:worksFor))
+Declaration(NamedIndividual(:Aldi))
+Declaration(NamedIndividual(:Alice))
+Declaration(NamedIndividual(:Barnes_and_Noble))
+Declaration(NamedIndividual(:Bob))
+Declaration(NamedIndividual(:Cesar))
+Declaration(NamedIndividual(:Costco))
+Declaration(NamedIndividual(:t1))
+Declaration(NamedIndividual(:t2))
+Declaration(NamedIndividual(:t3))
+Declaration(NamedIndividual(:t4))
+Declaration(NamedIndividual(:t5))
+############################
+#   Object Properties
+############################
+
+# Object Property: :after (:after)
+
+InverseObjectProperties(:after :before)
+
+# Object Property: :before (:before)
+
+ObjectPropertyDomain(:before :TimePoint)
+ObjectPropertyRange(:before :TimePoint)
+
+# Object Property: :worksFor (:worksFor)
+
+ObjectPropertyDomain(:worksFor :Person)
+ObjectPropertyRange(:worksFor :Company)
+
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: :Aldi (:Aldi)
+
+ClassAssertion(:Company :Aldi)
+
+# Individual: :Alice (:Alice)
+
+ClassAssertion(:Person :Alice)
+ObjectPropertyAssertion(:worksFor :Alice :Aldi)
+ObjectPropertyAssertion(:worksFor :Alice :Barnes_and_Noble)
+
+# Individual: :Barnes_and_Noble (:Barnes_and_Noble)
+
+ClassAssertion(:Company :Barnes_and_Noble)
+
+# Individual: :Bob (:Bob)
+
+ClassAssertion(:Person :Bob)
+ObjectPropertyAssertion(:worksFor :Bob :Barnes_and_Noble)
+ObjectPropertyAssertion(:worksFor :Bob :Costco)
+
+# Individual: :Cesar (:Cesar)
+
+ClassAssertion(:Person :Cesar)
+ObjectPropertyAssertion(:worksFor :Cesar :Aldi)
+ObjectPropertyAssertion(:worksFor :Cesar :Costco)
+
+# Individual: :Costco (:Costco)
+
+ClassAssertion(:Company :Costco)
+
+# Individual: :t1 (:t1)
+
+ClassAssertion(:TimePoint :t1)
+ObjectPropertyAssertion(:before :t1 :t2)
+
+# Individual: :t2 (:t2)
+
+ClassAssertion(:TimePoint :t2)
+ObjectPropertyAssertion(:before :t2 :t3)
+
+# Individual: :t3 (:t3)
+
+ClassAssertion(:TimePoint :t3)
+ObjectPropertyAssertion(:before :t3 :t4)
+
+# Individual: :t4 (:t4)
+
+ClassAssertion(:TimePoint :t4)
+ObjectPropertyAssertion(:before :t4 :t5)
+
+# Individual: :t5 (:t5)
+
+ClassAssertion(:TimePoint :t5)
+
+
+
+
+
+
+
+
+)
