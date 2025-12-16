@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import org.graphstream.algorithm.ConnectedComponents;
@@ -88,7 +91,17 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
   private OWLOntologyChangeListener ontologyChangeListener = this::onOntologyChanged;
   private OWLModelManagerListener modelManagerListener = this::onModelManagerChange;
   private OWLSelectionModelListener selectionModelListener = this::onSelectionChanged;
-
+  
+  private final Predicate<OWLEntity> exlusionsFilter = entity -> !Stream.of(
+          getOWLDataFactory().getOWLThing(),
+          getOWLDataFactory().getOWLNothing(),
+          getOWLDataFactory().getOWLTopObjectProperty(),
+          getOWLDataFactory().getOWLBottomObjectProperty(),
+          getOWLDataFactory().getOWLTopDataProperty(),
+          getOWLDataFactory().getOWLBottomDataProperty(),
+          getOWLDataFactory().getTopDatatype()
+  ).collect(Collectors.toSet()).contains(entity);
+  
   private void onSelectionChanged() {
     OWLEntity selectedEntity = getOWLWorkspace().getOWLSelectionModel().getSelectedEntity();
     if (selectedEntity != null) {
@@ -204,7 +217,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
         });
 
     // Construct ontology graph
-    ontology.getSignature(Imports.INCLUDED).forEach(entity -> addNode(graph, entity));
+    ontology.getSignature(Imports.INCLUDED).stream().filter(exlusionsFilter).forEach(entity -> addNode(graph, entity));
     var axioms = ontology.getLogicalAxioms(Imports.INCLUDED);
     axioms.forEach(
         axiom -> {
@@ -302,8 +315,8 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
   }
 
   private void addClique(Graph graph, OWLAxiom axiom) {
-    axiom.getSignature().forEach(entity -> addNode(graph, entity));
-    Generator.combination(axiom.getSignature())
+    axiom.getSignature().stream().filter(exlusionsFilter).forEach(entity -> addNode(graph, entity));
+    Generator.combination(axiom.getSignature().stream().filter(exlusionsFilter).collect(Collectors.toList()))
         .simple(2)
         .forEach(
             owlEntityPair -> {
@@ -352,15 +365,15 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
     if (axiomType == AxiomType.ASPECT) {
       edge.setAttribute("ui.style", ASPECT_EDGE_STYLES);
     }
-    logger.info(axiomType + " Axiom added: " + axiom);
-    logger.info("Modules:");
-    modulesByOntology
-        .get(getOWLModelManager().getActiveOntology())
-        .forEach(
-            component -> {
-              logger.info("  " + component.toString());
-              component.nodes().forEach(node -> logger.info("    " + node.toString()));
-            });
+    //    logger.info(axiomType + " Axiom added: " + axiom);
+    //    logger.info("Modules:");
+    //    modulesByOntology
+    //        .get(getOWLModelManager().getActiveOntology())
+    //        .forEach(
+    //            component -> {
+    //              logger.info("  " + component.toString());
+    //              component.nodes().forEach(node -> logger.info("    " + node.toString()));
+    //            });
     return edge;
   }
 
@@ -414,12 +427,12 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
           .forEach(
               axiom ->
                   axiom
-                      .getSignature()
+                      .getSignature().stream().filter(exlusionsFilter)
                       .forEach(
                           ontologyEntity -> {
                             aspectAssertionAxiom
                                 .getAspect()
-                                .getSignature()
+                                .getSignature().stream().filter(exlusionsFilter)
                                 .forEach(
                                     aspectEntity -> {
                                       Edge aspectEdge =
@@ -452,12 +465,12 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
             .forEach(
                 owlAxiom -> {
                   owlAxiom
-                      .getSignature()
+                      .getSignature().stream().filter(exlusionsFilter)
                       .forEach(
                           ontologyEntity ->
                               ((OWLAspectAssertionAxiom) axiom)
                                   .getAspect()
-                                  .getSignature()
+                                  .getSignature().stream().filter(exlusionsFilter)
                                   .forEach(
                                       aspectEntity -> {
                                         findEdge(
@@ -488,7 +501,7 @@ public class OWLAspectLevelModuleViewComponent extends AbstractActiveOntologyVie
       // The entities in the removed axiom's signature remain in the ontology.
       // We need to check if the corresponding edges in the graph represent other axioms.
       // Only if no other axiom in the ontology is responsible for an edge, we can remove the edge.
-      Generator.combination(removeAxiom.getSignature())
+      Generator.combination(removeAxiom.getSignature().stream().filter(exlusionsFilter).collect(Collectors.toList()))
           .simple(2)
           .forEach(
               owlEntityPair -> {
