@@ -1,0 +1,10 @@
+% This file contains FOL formulas that are in the tri-guarded fragment.
+
+% Existential quantification over atom
+fof(existential_atom,axiom,( ?[X,Y,Z,V,W]: (w(X,Y,Z,a,b,c,V,W)) )).
+
+% Guarded, three variables
+fof(guarded1,axiom,( ![X,Y,Z]: (a(X,Y,Z) => (r(X,Y) & s(Y,Z) & t(X,Z))) )).
+
+% from Rudolph S, Simkus M. The Triguarded Fragment of First-Order Logic. In: EPiC Series in Computing [Internet]. EasyChair; 2018. p. 604–19. Available from: https://easychair.org/publications/paper/wlJ3
+fof(rudolph1,axiom,( ![X,Y] : ((r1(X,a) & r2(Y,b)) => ?[Z] : (r3(X,Y,Z,c))) )).
