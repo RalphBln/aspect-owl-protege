@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * @author Ralph Schäfermeier
  */
-public class TriguardedFragmentTest {
+public class TriguardedFragmentCheckerTest {
   
   private final TriguardedFragmentChecker tgfChecker = new TriguardedFragmentChecker();
 
@@ -45,6 +45,6 @@ public class TriguardedFragmentTest {
     return new TPTPParser().parseBeliefBase(
             new BufferedReader(
                 new InputStreamReader(
-                    TriguardedFragmentTest.class.getResourceAsStream(beliefSetFilePath)))).stream().map(Arguments::of);
+                    TriguardedFragmentCheckerTest.class.getResourceAsStream(beliefSetFilePath)))).stream().map(Arguments::of);
   }
 }
