@@ -79,25 +79,45 @@ public class TriguardedFragmentChecker implements FolFragmentChecker {
           // Special case where the atom can guard itself (i.e., the atom can be used as a guard for
           // ⏉, which only
           // works for existential quantification, as A ∧ ⏉ ≡	A, whereas A → ⏉ ≢ A).
-          return cache(formula, true);
+          // We need to check if innerFormula is in TGF because the atom could be an equality.
+          return cache(formula, isInFragmentInternal((FolAtom) innerFormula));
         }
 
         if (innerFormula instanceof Conjunction) {
           // try to find a guard
           Conjunction conjunction = (Conjunction) innerFormula;
-          for (var potentialGuard : conjunction.getFormulas()) {
-            if (potentialGuard instanceof Atom
-                && isInFragmentInternal((FolFormula) potentialGuard)) {
-              Conjunction allButPotentialGuard =
-                  new Conjunction(
-                      conjunction.getFormulas().stream()
-                          .filter(conjunct -> !(conjunct.equals(potentialGuard)))
-                          .collect(Collectors.toList()));
-              if (isInFragmentInternal(allButPotentialGuard)
-                  && containsFreeVariables((FolFormula) potentialGuard, allButPotentialGuard)) {
-                return cache(formula, true);
+          // conjunctions can have size 0 and 1, we must treat these special cases
+          switch (conjunction.size()) {
+            case 0:
+              return cache(formula, true);
+            case 1:
+              return cache(
+                  formula,
+                  isInFragmentInternal((FolFormula) conjunction.getFormulas().get(0).getFormula()));
+            default:
+              for (var potentialGuard : conjunction.getFormulas()) {
+                if (potentialGuard instanceof Atom
+                    && isInFragmentInternal((FolFormula) potentialGuard)) {
+                  FolFormula allButPotentialGuard;
+                  // If the conjunction has only size 2, we can directly check the other formula.
+                  // If size > 2, we need to construct a new conjunction of the rest.
+                  if (conjunction.size() == 2) {
+                    allButPotentialGuard = (FolFormula) conjunction.getFormulas().stream()
+                            .filter(conjunct -> !(conjunct.equals(potentialGuard))).findFirst().get();
+                  } else {
+                    allButPotentialGuard =
+                        new Conjunction(
+                            conjunction.getFormulas().stream()
+                                .filter(conjunct -> !(conjunct.equals(potentialGuard)))
+                                .collect(Collectors.toList()));
+                  }
+                  if (isInFragmentInternal(allButPotentialGuard)
+                          && containsFreeVariables(
+                          (FolFormula) potentialGuard, allButPotentialGuard)) {
+                    return cache(formula, true);
+                  }
+                }
               }
-            }
           }
         }
       }
