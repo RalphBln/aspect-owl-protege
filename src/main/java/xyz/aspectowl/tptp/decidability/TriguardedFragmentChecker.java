@@ -6,8 +6,8 @@ import com.google.common.cache.LoadingCache;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import net.sf.tweety.logics.commons.syntax.interfaces.Atom;
-import net.sf.tweety.logics.fol.syntax.*;
+import org.tweetyproject.logics.commons.syntax.interfaces.Atom;
+import org.tweetyproject.logics.fol.syntax.*;
 
 /**
  * @author Ralph Schäfermeier

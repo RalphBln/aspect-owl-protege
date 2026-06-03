@@ -1,6 +1,6 @@
 package xyz.aspectowl.tptp.renderer;
 
-import net.sf.tweety.logics.fol.syntax.FolFormula;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 

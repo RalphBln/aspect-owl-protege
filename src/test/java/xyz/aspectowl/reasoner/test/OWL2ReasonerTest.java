@@ -1,14 +1,14 @@
 package xyz.aspectowl.reasoner.test;
 
-import net.sf.tweety.logics.commons.syntax.Predicate;
-import net.sf.tweety.logics.commons.syntax.Variable;
-import net.sf.tweety.logics.fol.parser.FolParser;
-import net.sf.tweety.logics.fol.reasoner.FolReasoner;
-import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
-import net.sf.tweety.logics.fol.syntax.FolAtom;
-import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
-import net.sf.tweety.logics.fol.writer.TPTPWriter;
+import org.tweetyproject.logics.commons.syntax.Predicate;
+import org.tweetyproject.logics.commons.syntax.Variable;
+import org.tweetyproject.logics.fol.parser.FolParser;
+import org.tweetyproject.logics.fol.reasoner.FolReasoner;
+import org.tweetyproject.logics.fol.syntax.ExistsQuantifiedFormula;
+import org.tweetyproject.logics.fol.syntax.FolAtom;
+import org.tweetyproject.logics.fol.syntax.FolBeliefSet;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
+import org.tweetyproject.logics.fol.writer.TPTPWriter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

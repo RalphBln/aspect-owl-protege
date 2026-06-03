@@ -1,7 +1,7 @@
 package xyz.aspectowl.tptp.renderer;
 
-import net.sf.tweety.logics.fol.syntax.Equivalence;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
+import org.tweetyproject.logics.fol.syntax.Equivalence;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.semanticweb.owlapi.OWLAPIConfigProvider;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
 import org.semanticweb.owlapi.model.IRI;

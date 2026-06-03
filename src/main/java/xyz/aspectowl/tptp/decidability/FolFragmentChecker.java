@@ -1,6 +1,6 @@
 package xyz.aspectowl.tptp.decidability;
 
-import net.sf.tweety.logics.fol.syntax.*;
+import org.tweetyproject.logics.fol.syntax.*;
 
 /**
  * @author Ralph Schäfermeier

@@ -1,9 +1,9 @@
 package xyz.aspectowl.tptp.reasoner;
 
-import net.sf.tweety.commons.util.Shell;
-import net.sf.tweety.logics.fol.reasoner.FolReasoner;
-import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
+import org.tweetyproject.commons.util.Shell;
+import org.tweetyproject.logics.fol.reasoner.FolReasoner;
+import org.tweetyproject.logics.fol.syntax.FolBeliefSet;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
 import xyz.aspectowl.tptp.reasoner.util.UnsortedTPTPWriter;
 
 import java.io.File;
@@ -71,7 +71,7 @@ public class VampireTptpFolReasoner extends FolReasoner {
     }
 
     /* (non-Javadoc)
-     * @see net.sf.tweety.logics.fol.reasoner.FolReasoner#query(net.sf.tweety.logics.fol.syntax.FolBeliefSet, net.sf.tweety.logics.fol.syntax.FolFormula)
+     * @see org.tweetyproject.logics.fol.reasoner.FolReasoner#query(org.tweetyproject.logics.fol.syntax.FolBeliefSet, org.tweetyproject.logics.fol.syntax.FolFormula)
      */
     @Override
     public Boolean query(FolBeliefSet kb, FolFormula query) {
@@ -95,7 +95,12 @@ public class VampireTptpFolReasoner extends FolReasoner {
             throw new RuntimeException(e);
         }
     }
-
+    
+    @Override
+    public boolean isInstalled() {
+        return new File(binaryLocation).exists();
+    }
+    
     /**
      * Determines the answer wrt. to the given query and returns the proof (if applicable).
      * May decrease VAMPIRE's performance, use {@link VampireTptpFolReasoner#query(FolBeliefSet,FolFormula)}

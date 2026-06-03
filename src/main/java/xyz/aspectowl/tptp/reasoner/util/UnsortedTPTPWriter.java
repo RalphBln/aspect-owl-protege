@@ -24,33 +24,33 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.sf.tweety.logics.commons.syntax.Constant;
-import net.sf.tweety.logics.commons.syntax.Functor;
-import net.sf.tweety.logics.commons.syntax.Predicate;
-import net.sf.tweety.logics.commons.syntax.Variable;
-import net.sf.tweety.logics.commons.syntax.interfaces.Term;
-import net.sf.tweety.logics.fol.syntax.AssociativeFolFormula;
-import net.sf.tweety.logics.fol.syntax.Conjunction;
-import net.sf.tweety.logics.fol.syntax.Contradiction;
-import net.sf.tweety.logics.fol.syntax.EqualityPredicate;
-import net.sf.tweety.logics.fol.syntax.Equivalence;
-import net.sf.tweety.logics.fol.syntax.ExistsQuantifiedFormula;
-import net.sf.tweety.logics.fol.syntax.FolAtom;
-import net.sf.tweety.logics.fol.syntax.FolBeliefSet;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
-import net.sf.tweety.logics.fol.syntax.FolSignature;
-import net.sf.tweety.logics.fol.syntax.ForallQuantifiedFormula;
-import net.sf.tweety.logics.fol.syntax.Implication;
-import net.sf.tweety.logics.fol.syntax.InequalityPredicate;
-import net.sf.tweety.logics.fol.syntax.Negation;
-import net.sf.tweety.logics.commons.syntax.RelationalFormula;
-import net.sf.tweety.logics.fol.syntax.Tautology;
-import net.sf.tweety.logics.fol.writer.FolWriter;
+import org.tweetyproject.logics.commons.syntax.Constant;
+import org.tweetyproject.logics.commons.syntax.Functor;
+import org.tweetyproject.logics.commons.syntax.Predicate;
+import org.tweetyproject.logics.commons.syntax.Variable;
+import org.tweetyproject.logics.commons.syntax.interfaces.Term;
+import org.tweetyproject.logics.fol.syntax.AssociativeFolFormula;
+import org.tweetyproject.logics.fol.syntax.Conjunction;
+import org.tweetyproject.logics.fol.syntax.Contradiction;
+import org.tweetyproject.logics.fol.syntax.EqualityPredicate;
+import org.tweetyproject.logics.fol.syntax.Equivalence;
+import org.tweetyproject.logics.fol.syntax.ExistsQuantifiedFormula;
+import org.tweetyproject.logics.fol.syntax.FolAtom;
+import org.tweetyproject.logics.fol.syntax.FolBeliefSet;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
+import org.tweetyproject.logics.fol.syntax.FolSignature;
+import org.tweetyproject.logics.fol.syntax.ForallQuantifiedFormula;
+import org.tweetyproject.logics.fol.syntax.Implication;
+import org.tweetyproject.logics.fol.syntax.InequalityPredicate;
+import org.tweetyproject.logics.fol.syntax.Negation;
+import org.tweetyproject.logics.commons.syntax.RelationalFormula;
+import org.tweetyproject.logics.fol.syntax.Tautology;
+import org.tweetyproject.logics.fol.writer.FolWriter;
 
 /**
  * Prints single first-order logic formulas and full knowledge bases to TPTP format.
  *
- * @see net.sf.tweety.logics.fol.reasoner.EFOLReasoner
+ * @see org.tweetyproject.logics.fol.reasoner.EFOLReasoner
  * @author Nils Geilen
  * @author Anna Gessler
  * @author Ralph Schäfermeier
@@ -83,7 +83,7 @@ public class UnsortedTPTPWriter implements FolWriter {
 
     /*
      * (non-Javadoc)
-     * @see net.sf.tweety.logics.fol.writer.FolWriter#printQuery(net.sf.tweety.logics.fol.syntax.FolFormula)
+     * @see org.tweetyproject.logics.fol.writer.FolWriter#printQuery(org.tweetyproject.logics.fol.syntax.FolFormula)
      */
     public void printQuery( FolFormula query) throws IOException {
         writer.write( "fof(" + "query" + ", conjecture, " + printFormula(query) + ").\n");
@@ -91,7 +91,7 @@ public class UnsortedTPTPWriter implements FolWriter {
 
     /*
      * (non-Javadoc)
-     * @see net.sf.tweety.logics.fol.writer.FolWriter#printEquivalence(net.sf.tweety.logics.fol.syntax.FolFormula, net.sf.tweety.logics.fol.syntax.FolFormula)
+     * @see org.tweetyproject.logics.fol.writer.FolWriter#printEquivalence(org.tweetyproject.logics.fol.syntax.FolFormula, org.tweetyproject.logics.fol.syntax.FolFormula)
      */
     public void printEquivalence( FolFormula a, FolFormula b) throws IOException {
         writer.write( "fof(" + "equation" + ", conjecture, " + printFormula(a) + " <=> "+ printFormula(b) + ").\n");
@@ -99,7 +99,7 @@ public class UnsortedTPTPWriter implements FolWriter {
 
     /*
      * (non-Javadoc)
-     * @see net.sf.tweety.logics.fol.writer.FolWriter#printBase(net.sf.tweety.logics.fol.FolBeliefSet)
+     * @see org.tweetyproject.logics.fol.writer.FolWriter#printBase(org.tweetyproject.logics.fol.FolBeliefSet)
      */
     public void printBase(FolBeliefSet b) throws IOException {
 //        // print types
@@ -268,7 +268,7 @@ public class UnsortedTPTPWriter implements FolWriter {
 
     /*
      * (non-Javadoc)
-     * @see net.sf.tweety.logics.fol.writer.FolWriter#close()
+     * @see org.tweetyproject.logics.fol.writer.FolWriter#close()
      */
     public void close() throws IOException {
         writer.close();

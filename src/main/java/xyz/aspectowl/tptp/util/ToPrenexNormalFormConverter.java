@@ -1,10 +1,10 @@
 package xyz.aspectowl.tptp.util;
 
 import java.io.IOException;
-import net.sf.tweety.logics.commons.syntax.Variable;
-import net.sf.tweety.logics.commons.syntax.interfaces.Atom;
-import net.sf.tweety.logics.fol.parser.TPTPParser;
-import net.sf.tweety.logics.fol.syntax.*;
+import org.tweetyproject.logics.commons.syntax.Variable;
+import org.tweetyproject.logics.commons.syntax.interfaces.Atom;
+import org.tweetyproject.logics.fol.parser.TPTPParser;
+import org.tweetyproject.logics.fol.syntax.*;
 
 // Thought I might need it (for a potential Gödel class membership checker) but probably don't.
 // Keeping it around just in case.

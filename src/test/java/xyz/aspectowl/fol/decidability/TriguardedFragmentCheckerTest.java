@@ -4,8 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Stream;
-import net.sf.tweety.logics.fol.parser.TPTPParser;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
+
+import org.tweetyproject.logics.fol.parser.FolParser;
+import org.tweetyproject.logics.fol.parser.TPTPParser;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

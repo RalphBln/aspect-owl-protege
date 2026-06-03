@@ -2,8 +2,8 @@ package xyz.aspectowl.reasoner;
 
 import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import net.sf.tweety.logics.fol.syntax.Equivalence;
-import net.sf.tweety.logics.fol.syntax.FolFormula;
+import org.tweetyproject.logics.fol.syntax.Equivalence;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import xyz.aspectowl.tptp.renderer.AspectOWL2TPTPObjectRenderer;

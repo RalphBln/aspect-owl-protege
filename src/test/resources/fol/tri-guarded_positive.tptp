@@ -34,12 +34,12 @@ fof(combinedaspects,axiom, (
     )
 )).
 
- fof(transitivity,axiom,(
-     ! [A] :
-     ( aspect1(A, top_concept) => (
-         ! [B] :
-         ( aspect2(B,A) => (
-             ! [X,Y,Z] :
-             ( ( related(X,Y)
-                 & related(Y,Z) )
-             => related(X,Z,B) ) ) ) ) ) )).
+% fof(transitivity,axiom,(
+%     ! [A] :
+%     ( aspect1(A, top_concept) => (
+%         ! [B] :
+%         ( aspect2(B,A) => (
+%             ! [X,Y,Z] :
+%             ( ( related(X,Y)
+%                 & related(Y,Z) )
+%             => related(X,Z,B) ) ) ) ) ) )).

@@ -266,16 +266,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.tweety</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.17</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.tweety</groupId>
-			<artifactId>math</artifactId>
-			<version>1.17</version>
-		</dependency>
-		<dependency>
 			<groupId>gov.nist.math</groupId>
 			<artifactId>jama</artifactId>
 			<version>1.0.3</version>
@@ -296,19 +286,19 @@
 			<version>35.0</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.tweety.logics</groupId>
+			<groupId>org.tweetyproject.logics</groupId>
 			<artifactId>commons</artifactId>
-			<version>1.17</version>
+			<version>1.30</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.tweety.logics</groupId>
+			<groupId>org.tweetyproject.logics</groupId>
 			<artifactId>fol</artifactId>
-			<version>1.17</version>
+			<version>1.30</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.tweety</groupId>
+			<groupId>org.tweetyproject</groupId>
 			<artifactId>plugin</artifactId>
-			<version>1.17</version>
+			<version>1.30</version>
 		</dependency>
 		<dependency>
 			<groupId>jspf</groupId>
