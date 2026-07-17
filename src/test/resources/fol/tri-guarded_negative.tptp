@@ -1,7 +1,0 @@
-% This file contains FOL formulas that are NOT in the tri-guarded fragment.
-
-% Universal quantification over atom
-fof(universal_atom,axiom,( ![X,Y,Z,V,W]: (v(X,Y,Z,a,b,c,V,W)) )).
-
-% Unguarded
-fof(unguarded,axiom,( ![X,Y,Z,U,V,W]: (a(X,Y,Z) => (r(X,Y) & s(Z,U) & t(V,W))) )).

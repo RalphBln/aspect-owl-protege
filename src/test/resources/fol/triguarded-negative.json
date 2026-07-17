@@ -1,0 +1,14 @@
+{
+  "comment": "This file contains FOL formulas that are NOT in the tri-guarded fragment.",
+  "inFragment": false,
+  "data": [
+    {
+      "label": "Universal quantification over atom",
+      "formula": "![X,Y,Z,V,W]: (v(X,Y,Z,a,b,c,V,W))"
+    },
+    {
+      "label": "Unguarded",
+      "formula": "![X,Y,Z,U,V,W]: (a(X,Y,Z) => (r(X,Y) & s(Z,U) & t(V,W)))"
+    }
+  ]
+}

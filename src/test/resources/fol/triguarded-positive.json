@@ -1,0 +1,38 @@
+{
+    "comment": "This file contains FOL formulas that are in the tri-guarded fragment.",
+    "inFragment": true,
+    "data": [
+        {
+            "label": "Existential quantification over atom",
+            "formula": "?[X,Y,Z,V,W]: (w(X,Y,Z,a,b,c,V,W))"
+        },
+        {
+            "label": "Guarded, three variables",
+            "formula": "![X,Y,Z]: (a(X,Y,Z) => (r(X,Y) & s(Y,Z) & t(X,Z)))"
+        },
+        {
+            "label": "from Rudolph S, Simkus M. The Triguarded Fragment of First-Order Logic. In: EPiC Series in Computing [Internet]. EasyChair; 2018. p. 604–19. Available from: https://easychair.org/publications/paper/wlJ3",
+            "formula": "![X,Y] : ((r1(X,a) & r2(Y,b)) => ?[Z] : (r3(X,Y,Z,c)))"
+        },
+        {
+            "label": "from Pratt-Hartmann 2023: Fragments of First-Order Logic (Book): p. 104 Some artists admire only beekeepers",
+            "formula": "?[X]: (artst(X) & (![Y]: (adm(X,Y) => bkpr(Y))))"
+        },
+        {
+            "label": "from Pratt-Hartmann 2023: Fragments of First-Order Logic (Book): p. 104 Every artist envies every beekeeper they admire",
+            "formula": "![X]: (artst(X) => ![Y]: (adm(X,Y) => (bkpr(Y) => env(X,Y))))"
+        },
+        {
+            "label": "from Pratt-Hartmann 2023: Fragments of First-Order Logic (Book): p. 105 Every artist admires every beekeeper (not in GF but in FO2 and therefore in TGF)",
+            "formula": "! [X] : ( artst(X) => ! [Y] : ( bkpr(Y) => adm(X, Y) ) )"
+        },
+        {
+            "label": "from Pratt-Hartmann 2023: Fragments of First-Order Logic (Book): p. 105 Some artist envies every bekeeper he does not admire (not in GF but in FO2 and therefore in TGF)",
+            "formula": "? [X] : ( artst(X) & ! [Y] : ( (bkpr(Y) & ~adm(X, Y)) => env(X, Y) ) )"
+        },
+        {
+            "label": "combined aspects",
+            "formula": "! [Aspect, Aspect1, Aspect2] : (\n        ctxBind(Aspect, Aspect1, Aspect2) => (\n            (hasAspectPart(Aspect, Aspect1) & hasAspectPart(Aspect, Aspect2)) =>\n            ! [X, Y] : (r4(X, Y, Aspect) => r4(Y, X, Aspect))\n        )\n    )"
+        }
+    ]
+}

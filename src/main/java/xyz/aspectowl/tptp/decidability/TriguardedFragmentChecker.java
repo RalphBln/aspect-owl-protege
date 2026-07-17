@@ -6,6 +6,9 @@ import com.google.common.cache.LoadingCache;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tweetyproject.logics.commons.syntax.interfaces.Atom;
 import org.tweetyproject.logics.fol.syntax.*;
 
@@ -13,6 +16,8 @@ import org.tweetyproject.logics.fol.syntax.*;
  * @author Ralph Schäfermeier
  */
 public class TriguardedFragmentChecker implements FolFragmentChecker {
+  
+  private static final Logger log = LoggerFactory.getLogger(TriguardedFragmentChecker.class);
 
   private final LoadingCache<FolFormula, Boolean> cache =
       CacheBuilder.newBuilder()
@@ -21,7 +26,9 @@ public class TriguardedFragmentChecker implements FolFragmentChecker {
                 @Nonnull
                 @Override
                 public Boolean load(@Nonnull FolFormula key) throws Exception {
-                  return isInFragment(key);
+                  boolean inTGF = isInFragment(key);
+                  log.info("{}: {}", inTGF, key);
+                  return inTGF;
                 }
               });
 
@@ -42,6 +49,10 @@ public class TriguardedFragmentChecker implements FolFragmentChecker {
       if (formula instanceof Implication) {
         return cache.get((FolFormula) ((Implication) formula).getFormulas().getFirst())
             && cache.get((FolFormula) ((Implication) formula).getFormulas().getSecond());
+      }
+      if (formula instanceof Equivalence) {
+        return cache.get((FolFormula) ((Equivalence) formula).getFormulas().getFirst())
+                && cache.get((FolFormula) ((Equivalence) formula).getFormulas().getSecond());
       }
       if (formula instanceof Conjunction || formula instanceof Disjunction) {
         AssociativeFolFormula associativeFormula = (AssociativeFolFormula) formula;
@@ -122,6 +133,7 @@ public class TriguardedFragmentChecker implements FolFragmentChecker {
           }
         }
       }
+      log.info("false: {}", formula);
       return false;
     } catch (ExecutionException e) {
       throw new RuntimeException(e);
@@ -131,4 +143,6 @@ public class TriguardedFragmentChecker implements FolFragmentChecker {
   private boolean containsFreeVariables(FolFormula potentialGuard, FolFormula formula) {
     return potentialGuard.getUnboundVariables().containsAll(formula.getUnboundVariables());
   }
+  
+  
 }
