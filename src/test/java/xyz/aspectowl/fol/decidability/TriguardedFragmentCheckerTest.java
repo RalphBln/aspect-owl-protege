@@ -1,12 +1,13 @@
 package xyz.aspectowl.fol.decidability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
@@ -17,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openrdf.query.algebra.Str;
 import org.tweetyproject.logics.fol.parser.TPTPParser;
 import org.tweetyproject.logics.fol.syntax.FolFormula;
 import xyz.aspectowl.tptp.decidability.TriguardedFragmentChecker;
@@ -28,13 +28,14 @@ import xyz.aspectowl.tptp.decidability.TriguardedFragmentChecker;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 @ParameterizedClass
-@ValueSource(strings = {"triguarded-positive.json", "triguarded-negative.json"})
+@ValueSource(strings = {"triguarded-positive.yaml", "triguarded-negative.yaml"})
 public class TriguardedFragmentCheckerTest {
 
   private final TriguardedFragmentChecker tgfChecker = new TriguardedFragmentChecker();
-
   private final TPTPParser tptpParser = new TPTPParser();
-
+  private final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+  
+  
   @Parameter String filename;
   
   private static class TestData {
@@ -76,7 +77,6 @@ public class TriguardedFragmentCheckerTest {
 
   private Stream<Arguments> formulasAndLabels() throws IOException {
     String filePath = "/fol/" + filename;
-    ObjectMapper objectMapper = new ObjectMapper();
     TestData t =
         objectMapper.readValue(
             TriguardedFragmentCheckerTest.class.getResourceAsStream(filePath), TestData.class);
