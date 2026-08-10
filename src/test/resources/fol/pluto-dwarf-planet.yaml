@@ -1,0 +1,43 @@
+---
+title: "Pluto"
+comment: "This file contains the Pluto as planet/dwarf planet examples. All FOL formulas are in the tri-guarded fragment."
+inFragment: true
+data:
+  - label: "context binding"
+    formula: >-
+      ![CT, C1, C2, C3, C23]: (
+        (ctxBnd(CT, C1, C2, C3, C23) => (
+          ctxT(CT) & ctx1(C1, CT) & ctx2(C2, CT) & ctx3(C3, CT) & ctx23(C23, CT)
+        )
+      ))
+  - label: "Pluto is a planet in Ctx1"
+    formula: >-
+      ![CT, C1, C2, C3, C23]: (
+        (ctxBnd(CT, C1, C2, C3, C23) => (
+          ctx1(C1, CT) => planet(pluto, C1)
+        )
+      ))
+  - label: "Ctx23 is a nesting of Ctx2 and Ctx3"
+    formula: >-
+      ![CT, C1, C2, C3, C23]: (
+        (ctxBnd(CT, C1, C2, C3, C23) => (
+          (ctx3(C3, CT) & ctx2(C2, C3)) => ctx23(C2, CT)
+        )
+      ))
+  - label: "Pluto is a dwarf planet in the nested Ctx23"
+    formula: >-
+      ![CT, C1, C2, C3, C23]: (
+        (ctxBnd(CT, C1, C2, C3, C23) => (
+          ctx23(C23, CT) => dwarfplanet(pluto, C1)
+        )
+      ))
+  - label: "Planet and dwarf planet are disjoint"
+    formula: >-
+      ![CT, C1, C2, C3, C23]: (
+        (ctxBnd(CT, C1, C2, C3, C23) => (
+          ![X]: (
+            (planet(X) => ~dwarfplanet(X)) &
+            (dwarfplanet(X) => ~planet(X))
+          )
+        )
+      ))
