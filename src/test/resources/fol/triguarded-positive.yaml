@@ -1,4 +1,5 @@
 ---
+title: "Positive"
 comment: "This file contains FOL formulas that are in the tri-guarded fragment."
 inFragment: true
 data:
@@ -29,10 +30,18 @@ data:
       Some artist envies every bekeeper he does not admire (not in GF but in FO2 and
       therefore in TGF)
     formula: "? [X] : ( artst(X) & ! [Y] : ( (bkpr(Y) & ~adm(X, Y)) => env(X, Y) ) )"
-  - label: "combined aspects"
+  - label: "combined aspects with context binding"
     formula: >-
       ! [Aspect, Aspect1, Aspect2] : ( ctxBind(Aspect, Aspect1, Aspect2)
       => ( (hasAspectPart(Aspect, Aspect1) & hasAspectPart(Aspect, Aspect2) )
-      => ! [X, Y] : (r4(X, Y, Aspect) => r4(Y, X, Aspect)) ))
+      => ! [X, Y] : (r(X, Y, Aspect) => r(Y, X, Aspect)) ))
+  - label: "context binding"
+    formula: >-
+      ! [Aspect, Aspect1, Aspect2, Aspect3] : ( ctxBind(Aspect, Aspect1, Aspect2, Aspect3)
+      => ( aspect(Aspect) & aspect1(Aspect1) & aspect2(Aspect2) & aspect3(Aspect3) ))
   - label: "Universal aspect"
     formula: "! [X] : (u(X))"
+  - label: "context binding concrete"
+    formula: "! [T, L, X] : ((time(T) & location(L) & a(X,T,L)) => activeCtx(T,L,X))"
+  - label: ""
+    formula: >-

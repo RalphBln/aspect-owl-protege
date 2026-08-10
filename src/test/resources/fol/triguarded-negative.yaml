@@ -1,4 +1,5 @@
 ---
+title: "Negative"
 comment: "This file contains FOL formulas that are NOT in the tri-guarded fragment."
 inFragment: false
 data:
@@ -6,3 +7,5 @@ data:
   formula: "![X,Y,Z,V,W]: (v(X,Y,Z,a,b,c,V,W))"
 - label: "Unguarded"
   formula: "![X,Y,Z,U,V,W]: (a(X,Y,Z) => (r(X,Y) & s(Z,U) & t(V,W)))"
+- label: "wrong context binding axiom"
+  formula: "! [Aspect, Aspect1, Aspect2] : ( ctxBind(Aspect, Aspect1, Aspect2) )"
