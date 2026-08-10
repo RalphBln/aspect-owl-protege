@@ -1,13 +1,11 @@
 package xyz.aspectowl.fol.decidability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
@@ -17,7 +15,8 @@ import org.junit.jupiter.params.ParameterizedClass;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.tweetyproject.logics.fol.parser.TPTPParser;
 import org.tweetyproject.logics.fol.syntax.FolFormula;
 import xyz.aspectowl.tptp.decidability.TriguardedFragmentChecker;
@@ -28,20 +27,29 @@ import xyz.aspectowl.tptp.decidability.TriguardedFragmentChecker;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Execution(ExecutionMode.SAME_THREAD)
 @ParameterizedClass
-@ValueSource(strings = {"triguarded-positive.yaml", "triguarded-negative.yaml"})
+@MethodSource("fileNames")
 public class TriguardedFragmentCheckerTest {
 
   private final TriguardedFragmentChecker tgfChecker = new TriguardedFragmentChecker();
-  private final TPTPParser tptpParser = new TPTPParser();
   private final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-  
   
   @Parameter String filename;
   
+  private static Stream<Arguments> fileNames() throws IOException {
+    PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    Resource[] resources = resolver.getResources("classpath*:/fol/*.yaml");
+    return Arrays.stream(resources).map(Resource::getFilename).map(Arguments::of);
+  }
+  
   private static class TestData {
+    String title;
     String comment;
     boolean inFragment;
     List<TestDataItem> data;
+    
+    public void setTitle(String title) {
+      this.title = title;
+    }
     
     public void setComment(String comment) {
       this.comment = comment;
@@ -53,6 +61,11 @@ public class TriguardedFragmentCheckerTest {
     
     public void setData(List<TestDataItem> data) {
       this.data = data;
+    }
+    
+    @Override
+    public String toString() {
+      return title;
     }
   }
 
@@ -66,6 +79,11 @@ public class TriguardedFragmentCheckerTest {
     
     public void setFormula(String formula) {
       this.formula = formula;
+    }
+    
+    @Override
+    public String toString() {
+      return label + ": " + formula;
     }
   }
 
@@ -85,7 +103,7 @@ public class TriguardedFragmentCheckerTest {
 
   private FolFormula parseFormula(String formula) {
     try {
-      return tptpParser.parseBeliefBase("fof(dummyname,axiom,( " + formula + " )).").stream()
+      return new TPTPParser().parseBeliefBase("fof(dummyname,axiom,( " + formula + " )).").stream()
           .findAny()
           .get();
     } catch (IOException e) {
