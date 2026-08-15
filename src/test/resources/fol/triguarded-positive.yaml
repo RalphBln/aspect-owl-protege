@@ -41,7 +41,3 @@ data:
       => ( aspect(Aspect) & aspect1(Aspect1) & aspect2(Aspect2) & aspect3(Aspect3) ))
   - label: "Universal aspect"
     formula: "! [X] : (u(X))"
-  - label: "context binding concrete"
-    formula: "! [T, L, X] : ((time(T) & location(L) & a(X,T,L)) => activeCtx(T,L,X))"
-  - label: ""
-    formula: >-

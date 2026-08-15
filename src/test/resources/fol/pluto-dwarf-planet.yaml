@@ -36,8 +36,8 @@ data:
       ![CT, C1, C2, C3, C23]: (
         (ctxBnd(CT, C1, C2, C3, C23) => (
           ![X]: (
-            (planet(X) => ~dwarfplanet(X)) &
-            (dwarfplanet(X) => ~planet(X))
+            (planet(X, CT) => ~dwarfplanet(X, CT)) &
+            (dwarfplanet(X, CT) => ~planet(X, CT))
           )
         )
       ))
