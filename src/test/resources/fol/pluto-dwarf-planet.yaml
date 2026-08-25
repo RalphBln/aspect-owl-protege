@@ -3,41 +3,46 @@ title: "Pluto"
 comment: "This file contains the Pluto as planet/dwarf planet examples. All FOL formulas are in the tri-guarded fragment."
 inFragment: true
 data:
+  - label: "universal context"
+    formula: >-
+      ![CT]: (
+          ctxT(CT)
+      )
   - label: "context binding"
     formula: >-
-      ![CT, C1, C2, C3, C23]: (
-        (ctxBnd(CT, C1, C2, C3, C23) => (
-          ctxT(CT) & ctx1(C1, CT) & ctx2(C2, CT) & ctx3(C3, CT) & ctx23(C23, CT)
+      ![X, Y, CT, C1, C2, C3, C4]: (
+        (ctxBnd(X, Y, CT, C1, C2, C3, C4) => (
+          ctxT(CT) & ctx1(C1, CT) & ctx2(C2, CT) & ctx3(C3, CT) & ctx4(C4, CT)
         )
       ))
+  - label: "Planet and dwarf planet are disjoint in every context"
+    formula: >-
+      ![X, C]: (
+          ~(planet(X, C) & dwarfplanet(X, C))
+      )
   - label: "Pluto is a planet in Ctx1"
     formula: >-
-      ![CT, C1, C2, C3, C23]: (
-        (ctxBnd(CT, C1, C2, C3, C23) => (
-          ctx1(C1, CT) => planet(pluto, C1)
+      ![X, Y, CT, C1, C2, C3, C4]: (
+        (ctxBnd(X, Y, CT, C1, C2, C3, C4) => (
+          planet(pluto, C1)
         )
       ))
-  - label: "Ctx23 is a nesting of Ctx2 and Ctx3"
+  - label: "Ctx4 is a nesting of Ctx2 and Ctx3"
     formula: >-
-      ![CT, C1, C2, C3, C23]: (
-        (ctxBnd(CT, C1, C2, C3, C23) => (
-          (ctx3(C3, CT) & ctx2(C2, C3)) => ctx23(C2, CT)
+      ![X, Y, CT, C1, C2, C3, C4]: (
+        (ctxBnd(X, Y, CT, C1, C2, C3, C4) => (
+            ctx4(X, C4) => ((ctx2(X, C2)) & (ctx3(C2, C3)))
         )
       ))
-  - label: "Pluto is a dwarf planet in the nested Ctx23"
+  - label: "Ctx1 and Ctx2 are disjoint"
     formula: >-
-      ![CT, C1, C2, C3, C23]: (
-        (ctxBnd(CT, C1, C2, C3, C23) => (
-          ctx23(C23, CT) => dwarfplanet(pluto, C1)
-        )
-      ))
-  - label: "Planet and dwarf planet are disjoint"
+      ![X, C]: (
+          ~(ctx1(X, C) & ctx2(X, C))
+      )
+  - label: "Pluto is a dwarf planet in the nested Ctx4"
     formula: >-
-      ![CT, C1, C2, C3, C23]: (
-        (ctxBnd(CT, C1, C2, C3, C23) => (
-          ![X]: (
-            (planet(X, CT) => ~dwarfplanet(X, CT)) &
-            (dwarfplanet(X, CT) => ~planet(X, CT))
-          )
+      ![X, Y, CT, C1, C2, C3, C4]: (
+        (ctxBnd(X, Y, CT, C1, C2, C3, C4) => (
+          dwarfplanet(pluto, C4)
         )
       ))
