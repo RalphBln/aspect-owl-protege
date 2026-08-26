@@ -15,6 +15,11 @@ data:
           ctxT(CT) & ctx1(C1, CT) & ctx2(C2, CT) & ctx3(C3, CT) & ctx4(C4, CT)
         )
       ))
+  - label: "Context binding instantiation"
+    formula: >-
+      ?[X, Y, CT, C1, C2, C3, C4]: (
+        ctxBnd(X, Y, CT, C1, C2, C3, C4)
+      )
   - label: "Planet and dwarf planet are disjoint in every context"
     formula: >-
       ![X, C]: (
