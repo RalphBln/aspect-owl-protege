@@ -90,7 +90,7 @@ public class TriguardedFragmentCheckerTest {
   @ParameterizedTest
   @MethodSource("formulasAndLabels")
   void formula(FolFormula formula, String label, boolean inFragment) throws IOException {
-    Assertions.assertTrue(inFragment ? tgfChecker.isInFragment(formula) : !tgfChecker.isInFragment(formula), label);
+    Assertions.assertTrue(inFragment == tgfChecker.isInFragment(formula), label);
   }
 
   private Stream<Arguments> formulasAndLabels() throws IOException {
