@@ -119,7 +119,8 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
     @Override
     protected int compareObjectOfSameType(@Nonnull OWLObject object) {
         try {
-            return (Integer)compareObjectOfSameTypeMethod.invoke(ceDelegate, object);
+            OWLAnonymousAspectImpl other = (OWLAnonymousAspectImpl) object;
+            return (Integer)compareObjectOfSameTypeMethod.invoke(ceDelegate, other.ceDelegate);
         } catch (IllegalAccessException | InvocationTargetException e)  {
             e.printStackTrace();
             return 0;
