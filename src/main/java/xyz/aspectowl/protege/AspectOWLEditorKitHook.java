@@ -369,6 +369,14 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 
 				finalizeClassForWeaving(wovenClass, ctClass);
 				wovenClass.getDynamicImports().add("xyz.aspectowl.protege.util");
+			} else if (className.equals("org.protege.editor.owl.ui.Extensions")) {
+				CtClass ctClass = prepareClassForWeaving(wovenClass);
+				
+				CtConstructor staticInitializer = ctClass.getClassInitializer();
+				staticInitializer.insertAfter(
+            "format_extensions.put(new xyz.aspectowl.parser.AspectOWLFunctionalSyntaxDocumentFormat(), java.util.Arrays.asList(new String[] {\".aofn\"}));");
+				finalizeClassForWeaving(wovenClass, ctClass);
+				wovenClass.getDynamicImports().add("xyz.aspectowl.parser");
 			}
 
 //		} else if (className.equals("org.semanticweb.owlapi.model.AxiomType$1")) {
