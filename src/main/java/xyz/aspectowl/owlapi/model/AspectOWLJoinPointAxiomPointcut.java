@@ -35,7 +35,7 @@ public class AspectOWLJoinPointAxiomPointcut extends AspectOWLAxiomPointcut {
 
     @Override
     public int hashCode() {
-        return Objects.hash(joinPointAxiom);
+        return joinPointAxiom.hashCode() * 13 + 1;
     }
 
     @Override

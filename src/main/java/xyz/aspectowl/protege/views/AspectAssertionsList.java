@@ -156,7 +156,7 @@ public class AspectAssertionsList extends MList {
                 OWLOntology ontology = getRoot().getOntology();
 //                ontology.getOWLOntologyManager()
                 Set <OWLAnnotation> annotations = Collections.EMPTY_SET; // TODO add annotation editor to UI, github issue #8
-                OWLAspect aspect = aspectManager.getAspect(expression, annotations, Collections.EMPTY_SET);
+                OWLAspect aspect = aspectManager.getAspect(expression, annotations);
                 OWLAspectAssertionAxiom aspectAssertionAxiom = aspectManager.getAspectAssertionAxiom(ontology, new AspectOWLJoinPointAxiomPointcut(getRoot().getAxiom()), aspect);
                 editorKit.getModelManager().applyChange(new AddAxiom(ontology, aspectAssertionAxiom));
             }
@@ -239,7 +239,7 @@ public class AspectAssertionsList extends MList {
                     ArrayList<OWLOntologyChange> changes = new ArrayList<>(2);
                     changes.add(new RemoveAxiom(ontology, aspectAssertionAxiom));
                     Set <OWLAnnotation> annotations = Collections.EMPTY_SET; // TODO add annotation editor to UI, github issue #8
-                    changes.add(new AddAxiom(ontology, aspectManager.getAspectAssertionAxiom(ontology, new AspectOWLJoinPointAxiomPointcut(getRoot().getAxiom()), aspectManager.getAspect(newAspect, annotations, originalAspect.getAspects()))));
+                    changes.add(new AddAxiom(ontology, aspectManager.getAspectAssertionAxiom(ontology, new AspectOWLJoinPointAxiomPointcut(getRoot().getAxiom()), aspectManager.getAspect(newAspect, annotations))));
 
 //                    List<OWLOntologyChange> changes = getReplaceChanges(aspectAssertionAxiom.getAspect(), newAspect);
                     editorKit.getModelManager().applyChanges(changes);

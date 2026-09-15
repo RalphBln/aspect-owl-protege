@@ -11,7 +11,7 @@ public class AspectOWLPointcutComparator implements Comparator<AspectOWLAxiomPoi
 
     private List<Class> pointcutTypes = Stream.of(
             AspectOWLModulePointcut.class,
-            DLQueryPointcutAspect.class,
+            DLQueryPointcut.class,
             AspectOWLSPARQLPointcut.class,
             AspectOWLJoinPointAxiomPointcut.class).collect(Collectors.toList());
 

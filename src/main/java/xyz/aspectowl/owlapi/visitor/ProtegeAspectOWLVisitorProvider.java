@@ -16,7 +16,14 @@ public class ProtegeAspectOWLVisitorProvider implements AspectOWLVisitorProvider
 
     @Override
     public Optional<AspectOWLAxiomVisitor> getAspectAxiomVisitor(OWLAxiomVisitor orig) {
-        return Optional.of(new AspectOWLAxiomVisitorAdapter());
+        switch (orig.getClass().getName()) {
+            case "uk.ac.manchester.cs.owl.owlapi.Internals$AddAxiomVisitor":
+                return Optional.of(new ProtegeAddAspectAssertionAxiomVisitor());
+            case "uk.ac.manchester.cs.owl.owlapi.Internals$RemoveAxiomVisitor":
+                return Optional.of(new ProtegeRemoveAspectAssertionAxiomVisitor());
+          default:
+            return Optional.of(new AspectOWLAxiomVisitorAdapter());
+        }
     }
 
     @Override

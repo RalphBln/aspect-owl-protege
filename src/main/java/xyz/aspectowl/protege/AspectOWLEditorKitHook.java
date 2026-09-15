@@ -486,7 +486,7 @@ public class AspectOWLEditorKitHook extends EditorKitHook implements WeavingHook
 			return;
 
 		OWLAspectManager am = getAspectManager(ontology.getOWLOntologyManager());
-		axioms.addAll(am.getAspectAssertionAxioms(ontology, am.getAspect((OWLClass)owlEntity, Collections.EMPTY_SET, Collections.EMPTY_SET), includeImportsClosure));
+		axioms.addAll(am.getAspectAssertionAxioms(ontology, am.getAspect((OWLClass)owlEntity, Collections.EMPTY_SET), includeImportsClosure));
 	}
 
 }

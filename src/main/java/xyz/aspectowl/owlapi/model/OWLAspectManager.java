@@ -35,14 +35,13 @@ public class OWLAspectManager extends OWLOntologyChangeVisitorAdapter implements
      * Creates and returns a new OWLAspect constructed from the given ontology, join point and advice class expression.
      * @param expr
      * @param annotations
-     * @param aspects nested aspects
      * @return
      */
-    public OWLAspect getAspect(OWLClassExpression expr, Set<OWLAnnotation> annotations, Set<OWLAspect> aspects) {
+    public OWLAspect getAspect(OWLClassExpression expr, Set<OWLAnnotation> annotations) {
         if (expr.isAnonymous()) {
-            return new OWLAnonymousAspectImpl((OWLAnonymousClassExpression)expr, annotations, aspects);
+            return new OWLAnonymousAspectImpl((OWLAnonymousClassExpression)expr, annotations);
         }
-        return new OWLNamedAspectImpl(((OWLClass) expr).getIRI(), annotations, aspects);
+        return new OWLNamedAspectImpl(((OWLClass) expr).getIRI(), annotations);
     }
 
     /**
@@ -265,6 +264,10 @@ public class OWLAspectManager extends OWLOntologyChangeVisitorAdapter implements
         public OntologyObjectTuple(@Nonnull OWLOntology ontology, @Nonnull O object) {
             this.ontology = ontology;
             this.object = object;
+        }
+        
+        public AspectOWLJoinPointAxiomPointcut getPointcut() {
+            return (AspectOWLJoinPointAxiomPointcut) object;
         }
 
         @Override
