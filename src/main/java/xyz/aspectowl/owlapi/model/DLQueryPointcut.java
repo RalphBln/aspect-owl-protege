@@ -6,11 +6,11 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import java.util.Objects;
 import java.util.Set;
 
-public class DLQueryPointcutAspect extends AspectOWLAxiomPointcut {
+public class DLQueryPointcut extends AspectOWLAxiomPointcut {
 
     private OWLClassExpression dlQuery;
 
-    public DLQueryPointcutAspect(OWLClassExpression dlQuery) {
+    public DLQueryPointcut(OWLClassExpression dlQuery) {
         this.dlQuery = dlQuery;
     }
 
@@ -33,8 +33,8 @@ public class DLQueryPointcutAspect extends AspectOWLAxiomPointcut {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DLQueryPointcutAspect)) return false;
-        DLQueryPointcutAspect that = (DLQueryPointcutAspect) o;
+        if (!(o instanceof DLQueryPointcut)) return false;
+        DLQueryPointcut that = (DLQueryPointcut) o;
         return Objects.equals(dlQuery, that.dlQuery);
     }
 

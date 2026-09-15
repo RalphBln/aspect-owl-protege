@@ -30,9 +30,9 @@ public class AspectOWLFunctionalSyntaxParser {
     private boolean ignoreAnnotationsAndDeclarations = false;
     private Set<OWLAnnotation> currentAnnotations;
     protected RemappingIndividualProvider anonProvider;
-    private OWLOntologyAspectManager am;
+    private OWLAspectManager am;
 
-    public void setUp(OWLOntology ontology, OWLOntologyLoaderConfiguration configuration, OWLOntologyAspectManager am) {
+    public void setUp(OWLOntology ontology, OWLOntologyLoaderConfiguration configuration, OWLAspectManager am) {
         this.man = ontology.getOWLOntologyManager();
         this.ontology = ontology;
         this.configuration = configuration;
@@ -94,12 +94,15 @@ public class AspectOWLFunctionalSyntaxParser {
         prefixMap.putAll(nsm.getPrefixName2PrefixMap());
     }
 
-    private void addAspects(OWLAxiom joinPointAxiom, Set<OWLAspect> aspects) {
-        for (OWLAspect aspect : aspects) {
-            OWLAspectAssertionAxiom aspectAssertionAxiom = am.getAspectAssertionAxiom(ontology, new OWLJoinPointAxiomPointcut(joinPointAxiom), aspect);
+    private void addAspects(OWLAxiom joinPointAxiom, Set<OWLAspectNestingContainer> aspectNestings) {
+        for (OWLAspectNestingContainer aspectNesting : aspectNestings) {
+            OWLAspectAssertionAxiom aspectAssertionAxiom = am.getAspectAssertionAxiom(ontology, new AspectOWLJoinPointAxiomPointcut(joinPointAxiom), aspectNesting.getAspect());
             AddAxiom addAxiom = new AddAxiom(ontology, aspectAssertionAxiom);
             applyChange(addAxiom);
             am.addAspect(ontology, aspectAssertionAxiom); // we need to do this manually here because ontology change listeners are deactivated during loading
+
+            // reursively add aspect assertion axioms for the nested aspects
+            addAspects(aspectAssertionAxiom, aspectNesting.getNestedAspects());
         }
     }
 }
@@ -256,11 +259,11 @@ TOKEN: { <PN_CHARS_U: <PN_CHARS_BASE> | "_"> }
 TOKEN: { <NODEID: "_:"<PN_LOCAL>> }
 TOKEN: { <ERROR: ~[]> }
 
-public AspectOrientedFunctionalSyntaxDocumentFormat parse() throws OWLParserException, UnloadableImportException :
+public AspectOWLFunctionalSyntaxDocumentFormat parse() throws OWLParserException, UnloadableImportException :
 { }
 {
     (Prefix())*Ontology()<EOF> {
-        AspectOrientedFunctionalSyntaxDocumentFormat format = new AspectOrientedFunctionalSyntaxDocumentFormat();
+        AspectOWLFunctionalSyntaxDocumentFormat format = new AspectOWLFunctionalSyntaxDocumentFormat();
         for(String pn : prefixMap.keySet()) {
             format.setPrefix(pn, prefixMap.get(pn));
         }
@@ -275,7 +278,7 @@ void Ontology() throws OWLParserException, UnloadableImportException :
     OWLImportsDeclaration decl;
     int count = 0;
     IRI versionIRI = null;
-    OWLPointcut pointcut;
+    AspectOWLPointcut pointcut;
 }
 {
     <ONTOLOGY><OPENPAR>(ontologyIRI=IRI()(versionIRI=IRI())?)?
@@ -598,7 +601,7 @@ OWLDatatypeDefinitionAxiom DatatypeDefinitionAxiom() :
     OWLDatatype datatype;
     OWLDataRange dr;
     Set<OWLAnnotation> axAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DATATYPEDEFINITION><OPENPAR>(axAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() datatype=DatatypeIRI() dr=DataRange()<CLOSEPAR>) {
     OWLDatatypeDefinitionAxiom ax = df.getOWLDatatypeDefinitionAxiom(datatype, dr, axAnnos);
@@ -682,7 +685,7 @@ OWLClassAxiom SubClassOf() :
     OWLClassExpression subClass;
     OWLClassExpression superClass;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <SUBCLASSOF><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() subClass=ClassExpression() superClass=ClassExpression()<CLOSEPAR>{
     OWLClassAxiom ax = df.getOWLSubClassOfAxiom(subClass, superClass, axiomAnnos);
@@ -694,7 +697,7 @@ OWLClassAxiom EquivalentClasses() :
 {
     Set<OWLClassExpression> classExpressions;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <EQUIVALENTCLASSES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() classExpressions=ClassExpressionSet()<CLOSEPAR> {
     OWLClassAxiom ax = df.getOWLEquivalentClassesAxiom(classExpressions, axiomAnnos);
@@ -706,7 +709,7 @@ OWLClassAxiom DisjointClasses() :
 {
     Set<OWLClassExpression> classExpressions;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DISJOINTCLASSES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() classExpressions=ClassExpressionSet()<CLOSEPAR> {
     OWLClassAxiom ax = df.getOWLDisjointClassesAxiom(classExpressions, axiomAnnos);
@@ -719,7 +722,7 @@ OWLClassAxiom DisjointUnion() :
     OWLClass cls;
     Set<OWLClassExpression> classExpressions;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DISJOINTUNION><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() cls=ClassIRI() classExpressions=ClassExpressionSet()<CLOSEPAR> {
     OWLClassAxiom ax = df.getOWLDisjointUnionAxiom(cls, classExpressions, axiomAnnos);
@@ -757,7 +760,7 @@ OWLPropertyAxiom SubObjectPropertyOf() :
     List<OWLObjectPropertyExpression> chain = null;
     OWLObjectPropertyExpression superProperty = null;
     Set<OWLAnnotation> axiomAnnos;
-	Set<OWLAspect> aspects;
+	Set<OWLAspectNestingContainer> aspects;
 }
 {
     <SUBOBJECTPROPERTYOF><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() (subProperty=ObjectPropertyExpression() | chain=SubObjectPropertyChain()) superProperty=ObjectPropertyExpression() <CLOSEPAR>
@@ -780,7 +783,7 @@ OWLPropertyAxiom EquivalentObjectProperties() :
 {
     Set<OWLObjectPropertyExpression> props;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <EQUIVALENTOBJECTPROPERTIES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() props=ObjectPropertySet()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLEquivalentObjectPropertiesAxiom(props, axiomAnnos);
@@ -792,7 +795,7 @@ OWLPropertyAxiom DisjointObjectProperties() :
 {
     Set<OWLObjectPropertyExpression> props;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DISJOINTOBJECTPROPERTIES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() props=ObjectPropertySet()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLDisjointObjectPropertiesAxiom(props, axiomAnnos);
@@ -812,7 +815,7 @@ OWLPropertyAxiom ObjectPropertyRange() :
     OWLObjectPropertyExpression prop;
     OWLClassExpression range;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <OBJECTPROPERTYRANGE><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression() range=ClassExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLObjectPropertyRangeAxiom(prop, range, axiomAnnos);
@@ -825,7 +828,7 @@ OWLPropertyAxiom ObjectPropertyDomain() :
     OWLObjectPropertyExpression prop;
     OWLClassExpression desc;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <OBJECTPROPERTYDOMAIN><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression() desc=ClassExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLObjectPropertyDomainAxiom(prop, desc, axiomAnnos);
@@ -837,7 +840,7 @@ OWLPropertyAxiom FunctionalObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos = Collections.emptySet();
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <FUNCTIONALOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax =  df.getOWLFunctionalObjectPropertyAxiom(prop, axiomAnnos);
@@ -850,7 +853,7 @@ OWLPropertyAxiom InverseObjectProperties() :
     OWLObjectPropertyExpression propA;
     OWLObjectPropertyExpression propB;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <INVERSEOBJECTPROPERTIES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() propA=ObjectPropertyExpression() propB=ObjectPropertyExpression()<CLOSEPAR>{
     OWLPropertyAxiom ax =  df.getOWLInverseObjectPropertiesAxiom(propA, propB, axiomAnnos);
@@ -862,7 +865,7 @@ OWLPropertyAxiom InverseFunctionalObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <INVERSEFUNCTIONALOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax =  df.getOWLInverseFunctionalObjectPropertyAxiom(prop, axiomAnnos);
@@ -874,7 +877,7 @@ OWLPropertyAxiom SymmetricObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <SYMMETRICOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLSymmetricObjectPropertyAxiom(prop, axiomAnnos);
@@ -886,7 +889,7 @@ OWLPropertyAxiom AsymmetricObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <ASYMMETRICOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLAsymmetricObjectPropertyAxiom(prop, axiomAnnos);
@@ -898,7 +901,7 @@ OWLPropertyAxiom ReflexiveObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <REFLEXIVEOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLReflexiveObjectPropertyAxiom(prop, axiomAnnos);
@@ -910,7 +913,7 @@ OWLPropertyAxiom IrreflexiveObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <IRREFLEXIVEOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLIrreflexiveObjectPropertyAxiom(prop, axiomAnnos);
@@ -922,7 +925,7 @@ OWLPropertyAxiom TransitiveObjectProperty() :
 {
     OWLObjectPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <TRANSITIVEOBJECTPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLTransitiveObjectPropertyAxiom(prop, axiomAnnos);
@@ -949,7 +952,7 @@ OWLPropertyAxiom SubDataPropertyOf() :
     OWLDataPropertyExpression subProperty;
     OWLDataPropertyExpression superProperty;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <SUBDATAPROPERTYOF><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() subProperty=DataPropertyExpression() superProperty=DataPropertyExpression() <CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLSubDataPropertyOfAxiom(subProperty, superProperty, axiomAnnos);
@@ -961,7 +964,7 @@ OWLPropertyAxiom EquivalentDataProperties() :
 {
     Set<OWLDataPropertyExpression> props;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <EQUIVALENTDATAPROPERTIES><OPENPAR>axiomAnnos=AxiomAnnotationSet() aspects=AxiomAspectSet() props=DataPropertySet()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLEquivalentDataPropertiesAxiom(props, axiomAnnos);
@@ -973,7 +976,7 @@ OWLPropertyAxiom DisjointDataProperties() :
 {
     Set<OWLDataPropertyExpression> props;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DISJOINTDATAPROPERTIES><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() props=DataPropertySet()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLDisjointDataPropertiesAxiom(props, axiomAnnos);
@@ -994,7 +997,7 @@ OWLPropertyAxiom DataPropertyDomain() :
     OWLDataPropertyExpression prop;
     OWLClassExpression domain;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DATAPROPERTYDOMAIN><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=DataPropertyExpression() domain=ClassExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLDataPropertyDomainAxiom(prop, domain, axiomAnnos);
@@ -1007,7 +1010,7 @@ OWLPropertyAxiom DataPropertyRange() :
     OWLDataPropertyExpression prop;
     OWLDataRange rng;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DATAPROPERTYRANGE><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=DataPropertyExpression() rng=DataRange()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLDataPropertyRangeAxiom(prop, rng, axiomAnnos);
@@ -1019,7 +1022,7 @@ OWLPropertyAxiom FunctionalDataProperty() :
 {
     OWLDataPropertyExpression prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <FUNCTIONALDATAPROPERTY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=DataPropertyExpression()<CLOSEPAR> {
     OWLPropertyAxiom ax = df.getOWLFunctionalDataPropertyAxiom(prop, axiomAnnos);
@@ -1054,7 +1057,7 @@ OWLIndividualAxiom SameIndividuals() :
 {
     Set<OWLIndividual> individuals;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <SAMEINDIVIDUAL><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() individuals=IndividualSet()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLSameIndividualAxiom(individuals, axiomAnnos);
@@ -1066,7 +1069,7 @@ OWLIndividualAxiom DifferentIndividuals() :
 {
     Set<OWLIndividual> individuals;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DIFFERENTINDIVIDUALS><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() individuals=IndividualSet()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLDifferentIndividualsAxiom(individuals, axiomAnnos);
@@ -1079,7 +1082,7 @@ OWLIndividualAxiom ClassAssertion() :
     OWLIndividual ind;
     OWLClassExpression desc;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <CLASSASSERTION><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() desc=ClassExpression() ind=Individual()  <CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLClassAssertionAxiom(desc, ind, axiomAnnos);
@@ -1093,7 +1096,7 @@ OWLIndividualAxiom ObjectPropertyAssertion() :
     OWLObjectPropertyExpression prop;
     OWLIndividual obj;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <OBJECTPROPERTYASSERTION><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression() subj=Individual() obj=Individual()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLObjectPropertyAssertionAxiom(prop, subj, obj, axiomAnnos);
@@ -1107,7 +1110,7 @@ OWLIndividualAxiom NegativeObjectPropertyAssertion() :
     OWLObjectPropertyExpression prop;
     OWLIndividual obj;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <NEGATIVEOBJECTPROPERTYASSERTION><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=ObjectPropertyExpression() subj=Individual() obj=Individual()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLNegativeObjectPropertyAssertionAxiom(prop, subj, obj, axiomAnnos);
@@ -1121,7 +1124,7 @@ OWLIndividualAxiom DataPropertyAssertion() :
     OWLDataPropertyExpression prop;
     OWLLiteral obj;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <DATAPROPERTYASSERTION><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=DataPropertyExpression() subj=Individual() obj=Literal()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLDataPropertyAssertionAxiom(prop, subj, obj, axiomAnnos);
@@ -1135,7 +1138,7 @@ OWLIndividualAxiom NegativeDataPropertyAssertion() :
     OWLDataPropertyExpression prop;
     OWLLiteral obj;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <NEGATIVEDATAPROPERTYASSERTION><OPENPAR>axiomAnnos=AxiomAnnotationSet() aspects=AxiomAspectSet() prop=DataPropertyExpression() subj=Individual() obj=Literal()<CLOSEPAR> {
     OWLIndividualAxiom ax = df.getOWLNegativeDataPropertyAssertionAxiom(prop, subj, obj, axiomAnnos);
@@ -1202,7 +1205,7 @@ OWLAnnotationAssertionAxiom AnnotationAssertion() :
     OWLAnnotationSubject subj;
     OWLAnnotationValue val;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <ANNOTATIONASSERTION><OPENPAR>axiomAnnos=AxiomAnnotationSet() aspects=AxiomAspectSet() prop=AnnotationPropertyIRI() subj=AnnotationSubject() val=AnnotationValue()  <CLOSEPAR> {
     OWLAnnotationAssertionAxiom ax = df.getOWLAnnotationAssertionAxiom(prop, subj, val, axiomAnnos);
@@ -1215,7 +1218,7 @@ OWLSubAnnotationPropertyOfAxiom SubAnnotationPropertyOf() :
     OWLAnnotationProperty subProp;
     OWLAnnotationProperty superProperty;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <SUBANNOTATIONPROPERTYOF><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() subProp = AnnotationPropertyIRI() superProperty = AnnotationPropertyIRI()<CLOSEPAR> {
     OWLSubAnnotationPropertyOfAxiom ax = df.getOWLSubAnnotationPropertyOfAxiom(subProp, superProperty, axiomAnnos);
@@ -1228,7 +1231,7 @@ OWLAnnotationPropertyDomainAxiom AnnotationPropertyDomain() :
     IRI domain;
     OWLAnnotationProperty prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <ANNOTATIONPROPERTYDOMAIN><OPENPAR> axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() prop=AnnotationPropertyIRI() domain=IRI()<CLOSEPAR> {
     OWLAnnotationPropertyDomainAxiom ax = df.getOWLAnnotationPropertyDomainAxiom(prop, domain, axiomAnnos);
@@ -1241,7 +1244,7 @@ OWLAnnotationPropertyRangeAxiom AnnotationPropertyRange() :
     IRI range;
     OWLAnnotationProperty prop;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <ANNOTATIONPROPERTYRANGE><OPENPAR> axiomAnnos=AxiomAnnotationSet() aspects=AxiomAspectSet() prop=AnnotationPropertyIRI() range=IRI()<CLOSEPAR> {
     OWLAnnotationPropertyRangeAxiom ax = df.getOWLAnnotationPropertyRangeAxiom(prop, range, axiomAnnos);
@@ -1255,7 +1258,7 @@ OWLHasKeyAxiom HasKey() :
     OWLPropertyExpression prop;
     Set<OWLPropertyExpression> props = new HashSet<OWLPropertyExpression>();
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { <HASKEY><OPENPAR>axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() ce=ClassExpression() <OPENPAR>(prop=ObjectPropertyExpression() {props.add(prop);})*<CLOSEPAR> <OPENPAR>(prop=DataPropertyExpression() {props.add(prop);})*<CLOSEPAR> <CLOSEPAR> {
     OWLHasKeyAxiom ax = df.getOWLHasKeyAxiom(ce, props, axiomAnnos);
@@ -1269,7 +1272,7 @@ OWLAxiom Declaration() :
     IRI iri = null;
     OWLLiteral con = null;
     Set<OWLAnnotation> axiomAnnos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
 }
 { (<DECLARATION><OPENPAR>(axiomAnnos = AxiomAnnotationSet() aspects=AxiomAspectSet() entity = Entity())<CLOSEPAR>) { return ignoreAnnotationsAndDeclarations? null: df.getOWLDeclarationAxiom(entity, axiomAnnos); } }
 
@@ -1320,7 +1323,7 @@ String LangTag() :
 SWRLRule DLSafeRule() :
 {
     Set<OWLAnnotation> annos;
-    Set<OWLAspect> aspects;
+    Set<OWLAspectNestingContainer> aspects;
     SWRLAtom atom;
     Set<SWRLAtom> body;
     Set<SWRLAtom> head;
@@ -1405,15 +1408,23 @@ SWRLDArgument DArg() :
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-OWLAspect Aspect() :
+/**
+* The AspectOWL model supports nesting of aspects by applying an outer aspect assertion axiom
+* to an inner aspect assertion axiom.
+* The functional syntax has no means of selecting an axiom, but instead nests Aspect elements
+* inside the axiom.
+* Therefore, while parsing, we need to collect these aspect nestings in a special container and
+* then later construct aspect assertion axioms from them.
+*/
+OWLAspectNestingContainer Aspect() :
 {
   	OWLClassExpression advice;
 	Set<OWLAnnotation> annos = new HashSet<OWLAnnotation>();
-	Set<OWLAspect> nestedAspects = new HashSet<OWLAspect>(); // nested aspects
+	OWLAspectNestingContainer aspect = new OWLAspectNestingContainer();
 	OWLAnnotation anno;
-	OWLAspect nestedAspect;
+	OWLAspectNestingContainer nestedAspect;
 }
-{ (<ASPECT><OPENPAR> ((anno=Annotation(){annos.add(anno);})*) ((nestedAspect=Aspect(){nestedAspects.add(nestedAspect);})*) advice=Advice()<CLOSEPAR>) { return am.getAspect(advice, annos, nestedAspects); } }
+{ (<ASPECT><OPENPAR> ((anno=Annotation(){annos.add(anno);})*) ((nestedAspect=Aspect(){aspect.addNestedAspect(nestedAspect);})*) advice=Advice()<CLOSEPAR>) { aspect.setAspect(am.getAspect(advice, annos)); return aspect; } }
 
 OWLAspectAssertionAxiom AspectAssertion() :
 {
@@ -1422,14 +1433,14 @@ OWLAspectAssertionAxiom AspectAssertion() :
 	Set<OWLAnnotation> axiomAnnos;
 }
 { <ASPECTASSERTION><OPENPAR>axiomAnnos=AxiomAnnotationSet() joinPoint=JoinPoint() advice=Advice()<CLOSEPAR> {
-    OWLAspect aspect = am.getAspect(advice, axiomAnnos, Collections.EMPTY_SET); // TODO allow nested aspects for stand-alone aspect assertion axioms (as already implemented for inline axiom aspects)
-    return am.getAspectAssertionAxiom(ontology, new OWLEntityPointcut(joinPoint), aspect);
+    OWLAspect aspect = am.getAspect(advice, axiomAnnos); // TODO allow nested aspects for stand-alone aspect assertion axioms (as already implemented for inline axiom aspects)
+    return am.getAspectAssertionAxiom(ontology, new AspectOWLEntityPointcut(joinPoint), aspect);
 } }
 
-Set<OWLAspect> AxiomAspectSet() :
+Set<OWLAspectNestingContainer> AxiomAspectSet() :
 {
-    Set<OWLAspect> aspects = new HashSet<OWLAspect>();
-    OWLAspect aspect;
+    Set<OWLAspectNestingContainer> aspects = new HashSet<OWLAspectNestingContainer>();
+    OWLAspectNestingContainer aspect;
 }
 { (aspect=Aspect(){ aspects.add(aspect); })*{ return aspects; } }
 
@@ -1445,28 +1456,28 @@ OWLClassExpression Advice() :
 }
 { advice=ClassExpression() { return advice; } }
 
-OWLPointcut Pointcut() :
+AspectOWLPointcut Pointcut() :
 {
-	OWLPointcut pointcut;
+	AspectOWLPointcut pointcut;
 }
 { (pointcut = SPARQLPointcut() | pointcut = ModulePointcut() | pointcut = DLQueryPointcut()) { return pointcut; } }
 
-SPARQLPointcut SPARQLPointcut() :
+AspectOWLSPARQLPointcut SPARQLPointcut() :
 {
-	OWLAspect aspect;
+	OWLAspectNestingContainer aspect;
 	String query;
 	Set<OWLAnnotation> annotations; // TODO we actually do not need annotations on the pointcuts, since we already have annotations on the aspects
 }
-{ <SPARQLPOINTCUT><OPENPAR>(annotations=AxiomAnnotationSet() aspect=Aspect() query=QuotedString())<CLOSEPAR> { return new SPARQLPointcut(query); } }
+{ <SPARQLPOINTCUT><OPENPAR>(annotations=AxiomAnnotationSet() aspect=Aspect() query=QuotedString())<CLOSEPAR> { return new AspectOWLSPARQLPointcut(query); } }
 
 
-OWLModulePointcut ModulePointcut() :
+AspectOWLModulePointcut ModulePointcut() :
 {
-	OWLAspect aspect;
+	OWLAspectNestingContainer aspect;
 	Set<OWLEntity> signature;
 	Set<OWLAnnotation> annotations;
 }
-{ <MODULEPOINTCUT><OPENPAR>(annotations=AxiomAnnotationSet() aspect=Aspect() signature=Signature())<CLOSEPAR> { return new OWLModulePointcut(signature); } }
+{ <MODULEPOINTCUT><OPENPAR>(annotations=AxiomAnnotationSet() aspect=Aspect() signature=Signature())<CLOSEPAR> { return new AspectOWLModulePointcut(signature); } }
 
 Set<OWLEntity> Signature() :
 {
@@ -1483,7 +1494,7 @@ OWLEntity EntityIRI() :
 
 DLQueryPointcut DLQueryPointcut() :
 {
-	OWLAspect aspect;
+	OWLAspectNestingContainer aspect;
 	OWLClassExpression dlQuery;
 	Set<OWLAnnotation> annotations;
 }

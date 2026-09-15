@@ -119,7 +119,7 @@ public class OWLAspectAssertionAxiomImpl extends OWLLogicalAxiomImplWithEntityAn
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), ontology, pointcut, aspect);
+        return 8087 * Objects.hash(ontology, pointcut, aspect);
     }
 
     @Override

@@ -8,47 +8,37 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class OWLNamedAspectImpl extends OWLClassImpl implements OWLNamedAspect {
 
-    private final OWLAspectImplDelegate delegate;
-
+    private HashSet<OWLAnnotation> annotations =  new HashSet<>();
+    
     /**
      * @param iri class iri
      * @param annotations
-     * @param aspects
      */
-    public OWLNamedAspectImpl(@Nonnull IRI iri, Set<OWLAnnotation> annotations, Set<OWLAspect> aspects) {
+    public OWLNamedAspectImpl(@Nonnull IRI iri, Set<OWLAnnotation> annotations) {
         super(iri);
-        delegate = new OWLAspectImplDelegate(this, annotations, aspects);
     }
 
     @Override
     public Set<OWLObjectProperty> getAccessibilityRelations() {
-        return Sets.union(delegate.getAccessibilityRelations(), getObjectPropertiesInSignature());
+        return getObjectPropertiesInSignature();
     }
 
     @Override
     public OWLAspect getAspectWithoutAnnotations() {
-        return new OWLNamedAspectImpl(getIRI(), Collections.EMPTY_SET, delegate.getAspects());
+        return new OWLNamedAspectImpl(getIRI(), Collections.EMPTY_SET);
     }
 
     @Nonnull
     @Override
     public Set<OWLAnnotation> getAnnotations() {
-        return delegate.getAnnotations();
+        return annotations;
     }
     
-    /**
-     * @see OWLAspect#getAspects()
-     */
-    @Override
-    @Nonnull
-    public Set<OWLAspect> getAspects() {
-    	return delegate.getAspects();
-    }
-
     @Override
     public OWLClassExpression asClassExpression() {
         return (OWLClassExpression)this;

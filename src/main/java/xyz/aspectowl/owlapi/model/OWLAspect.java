@@ -17,20 +17,9 @@ public interface OWLAspect extends OWLClassExpression, HasAnnotations {
 	public Set<OWLObjectProperty> getAccessibilityRelations();
 	
 	public OWLAspect getAspectWithoutAnnotations();
-	
-	/**
-	 * Aspects can have aspects as well (see
-	 * <a href="http://www-formal.stanford.edu/jmc/context3/node3.html">
-	 * McCarthy's "Notes on Formalizing Context", section 3,
-	 * "Entering and Leaving Contexts".
-	 * </a>
-	 * @return The nested aspects of this aspect.
-	 */
-	public Set<OWLAspect> getAspects();
 
-    /**
-     *
-     * @return This OWLAspect as an OWLClassExpression.
-     */
-	public OWLClassExpression asClassExpression();
+  /**
+   * @return This OWLAspect as an OWLClassExpression.
+   */
+  public OWLClassExpression asClassExpression();
 }

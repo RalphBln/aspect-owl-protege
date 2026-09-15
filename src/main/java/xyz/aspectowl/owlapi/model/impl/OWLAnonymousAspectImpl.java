@@ -9,10 +9,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLAnonymousClassExpressionImpl;
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -32,12 +29,11 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
     private Method compareObjectOfSameTypeMethod;
 
     private OWLAnonymousClassExpressionImpl ceDelegate;
-    private OWLAspectImplDelegate aspectDelegate;
+    
+    private HashSet<OWLAnnotation> annotations =  new HashSet<>();
 
-    public OWLAnonymousAspectImpl(OWLAnonymousClassExpression classExpression, Set<OWLAnnotation> annotations, Set<OWLAspect> aspects) {
+    public OWLAnonymousAspectImpl(OWLAnonymousClassExpression classExpression, Set<OWLAnnotation> annotations) {
         this.ceDelegate = (OWLAnonymousClassExpressionImpl) classExpression;
-        this.aspectDelegate = new OWLAspectImplDelegate(this, annotations, aspects);
-
 
         // We are using the crowbar (aka Java Reflection) in order to make it possible to use the delegate pattern on the
         // OWLAnonymousClassExpressionImpl class, some of whose methods are protected.
@@ -52,7 +48,6 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
         compareObjectOfSameTypeMethod = getMethod(poorInnocentClass,"compareObjectOfSameType", OWLObject.class);
 
         Stream.of(indexMethod, compareObjectOfSameTypeMethod).forEach(method -> method.setAccessible(true));
-
     }
 
     @Override
@@ -62,22 +57,14 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
 
     @Override
     public Set<OWLObjectProperty> getAccessibilityRelations() {
-        return aspectDelegate.getAccessibilityRelations();
+        return ceDelegate.getObjectPropertiesInSignature();
     }
 
     @Override
     public OWLAspect getAspectWithoutAnnotations() {
-        return new OWLAnonymousAspectImpl(ceDelegate, Collections.EMPTY_SET, aspectDelegate.getAspects());
+        return new OWLAnonymousAspectImpl(ceDelegate, Collections.EMPTY_SET);
     }
     
-    /**
-     * @see OWLAspect#getAspects()
-     */
-    @Override
-    public Set<OWLAspect> getAspects() {
-    	return aspectDelegate.getAspects();
-    }
-
     @Override
     public OWLClassExpression asClassExpression() {
         return ceDelegate;
@@ -182,7 +169,7 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
     @Nonnull
     @Override
     public Set<OWLAnnotation> getAnnotations() {
-        return aspectDelegate.getAnnotations();
+        return annotations;
     }
 
     @Override
@@ -191,13 +178,12 @@ public class OWLAnonymousAspectImpl extends OWLAnonymousClassExpressionImpl impl
         if (!(o instanceof OWLAnonymousAspectImpl)) return false;
         if (!super.equals(o)) return false;
         OWLAnonymousAspectImpl that = (OWLAnonymousAspectImpl) o;
-        return Objects.equals(ceDelegate, that.ceDelegate) &&
-                Objects.equals(aspectDelegate, that.aspectDelegate);
+        return Objects.equals(ceDelegate, that.ceDelegate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), ceDelegate, aspectDelegate);
+        return 8039 * ceDelegate.hashCode();
     }
 
     private class NameParameterTypesTuple {
