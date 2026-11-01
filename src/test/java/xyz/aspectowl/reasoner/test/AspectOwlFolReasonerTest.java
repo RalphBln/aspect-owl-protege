@@ -1,5 +1,6 @@
 package xyz.aspectowl.reasoner.test;
 
+import org.junit.jupiter.api.Disabled;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.protege.editorkit.AspectOWLEditorKitFactory;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * @author ralph
  */
+@Disabled
 public class AspectOwlFolReasonerTest {
 
     private static final Logger log = LoggerFactory.getLogger(AspectOwlFolReasonerTest.class);

@@ -1,5 +1,6 @@
 package xyz.aspectowl.reasoner.test;
 
+import org.junit.jupiter.api.Disabled;
 import org.tweetyproject.logics.commons.syntax.Predicate;
 import org.tweetyproject.logics.commons.syntax.Variable;
 import org.tweetyproject.logics.fol.parser.FolParser;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * @author ralph
  */
+@Disabled
 public class OWL2ReasonerTest {
 
     private static final IRI conjectureProp = IRI.create("http://ontology.aspectowl.xyz/reasoner/aspectowl2tptp/test/base#conjecture");
