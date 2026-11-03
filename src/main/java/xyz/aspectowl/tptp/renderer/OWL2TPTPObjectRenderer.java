@@ -1,6 +1,5 @@
 package xyz.aspectowl.tptp.renderer;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.tweetyproject.commons.ParserException;
 import org.tweetyproject.commons.util.Pair;
@@ -18,7 +17,6 @@ import org.semanticweb.owlapi.util.AnnotationValueShortFormProvider;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.OWLObjectVisitorExAdapter;
 import org.semanticweb.owlapi.util.ShortFormProvider;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.aspectowl.owlapi.model.OWLAspect;
@@ -31,14 +29,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-// TODO include ontology import closure (priority HIGH)
-// DONE prevent name clashes (since we only use local names)
-// DONE handle punnings (make unique names)  (priority MEDIUM)
-// TODO prevent name clashes between existing and generated predicate names (unlikely but who knows)  (priority LOW)
-
 
 /**
  * @author ralph
@@ -62,10 +53,10 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     // TPTP only allows for ascii characters in names, so we have to convert iris accordingly.
     // We normally do this by creating an ascii-only UUID for each IRI.
     // This flag makes the OWL2TPTPObjectRenderer convert iris to human-readable names.
-    // This is for debugging purposes and, in contrast to the normal behavior, does not prevent name clashes.
+    // This is for debugging purposes; colliding short forms receive a UUID suffix.
     private boolean humanReadableTptpNames = false;
 
-    private Imports includeImportsClosure;
+    protected final Imports includeImportsClosure;
 
     protected final Optional<OWLOntology> onto;
     private DefaultPrefixManager defaultPrefixManager;
@@ -76,7 +67,6 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     // Since TPTP only allows letters, numbers, and the underscore character in names we have to translate the OWL IRIs
     // to names containing only these characters and keep the mappings for later back translation.
-    private HashMap<String, OWLEntity> nameMappings = new HashMap<>();
 
     private UnsortedTPTPWriter out;
 
@@ -95,8 +85,11 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     // There is a DlBeliefSet and I considered using it (somehow shove the OWL2 KB into a DLBeliefSet and then maybe
     // transform the latter to a FolBeliedSet) but it turned out DLBeliefSet only implements ALC while we need full
     // SROIQ(D).
-    private FolBeliefSet bs;
-    private FolSignature sig;
+    protected FolBeliefSet bs;
+    protected FolSignature sig;
+
+    protected OWLOntology currentOntology;
+    private final Set<OWLObject> definedExpressions = new HashSet<>();
 
     public OWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
 
@@ -112,7 +105,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             OWLOntologyManager manager = o.getOWLOntologyManager();
             OWLDocumentFormat ontologyFormat = manager.getOntologyFormat(o);
             // reuse the setting on the existing format
-            addMissingDeclarations = ontologyFormat.isAddMissingTypes();
+            addMissingDeclarations = ontologyFormat != null && ontologyFormat.isAddMissingTypes();
             if (ontologyFormat instanceof PrefixDocumentFormat) {
                 prefixManager = Optional.of(new DefaultPrefixManager());
                 prefixManager.get().copyPrefixesFrom((PrefixDocumentFormat) ontologyFormat);
@@ -146,9 +139,9 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
      */
     private String translateIRI(HasIRI iri) {
 
-        if (iri.getIRI().isNothing())
+        if (iri instanceof OWLClass && iri.getIRI().isNothing())
             return "owlNothing";
-        if (iri.getIRI().isThing())
+        if (iri instanceof OWLClass && iri.getIRI().isThing())
             return "owlThing";
 
         String cachedName = nameMap.get(iri);
@@ -171,7 +164,10 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             iri.getIRI().getShortForm().replaceFirst("^.*#(.+?)$", "$1")  // regex is a workaround for https://github.com/owlcs/owlapi/issues/699
             : UUID.nameUUIDFromBytes(iri.getIRI().toString().getBytes(StandardCharsets.UTF_8)).toString().replaceAll("-", "");
 
-        String tptpName = String.format("%s_%s", prefix, localName);
+        String tptpName = String.format("%s_%s", prefix, localName.replaceAll("[^a-zA-Z0-9_]", "_"));
+        if (nameMap.containsValue(tptpName))
+            tptpName += "_" + UUID.nameUUIDFromBytes(iri.getIRI().toString().getBytes(StandardCharsets.UTF_8))
+                    .toString().replace("-", "");
         nameMap.put(iri, tptpName);
         return tptpName;
     }
@@ -183,12 +179,16 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLAsymmetricObjectPropertyAxiom axiom) {
-        return makeFormula("forall X: (forall Y: (%1$s(X,Y) <=> !%1$s(Y,X)))", translate(axiom.getProperty()));
+        return makeFormula("forall X: (forall Y: (%1$s(X,Y) => !%1$s(Y,X)))", translate(axiom.getProperty()));
     }
 
     @Override
     public Stream<FolFormula> visit(OWLDisjointClassesAxiom axiom) {
-        List<String> predicateNames = axiom.getClassExpressions().stream().map(ce -> translate(ce)).collect(Collectors.toList());
+        return disjointClasses(axiom.getClassExpressions());
+    }
+
+    private Stream<FolFormula> disjointClasses(Collection<OWLClassExpression> classes) {
+        List<String> predicateNames = classes.stream().map(this::translate).collect(Collectors.toList());
         return combinations(predicateNames, predicateNames).stream().flatMap(pair -> makeFormula("forall X: (!(%s(X) && %s(X)))", pair.getFirst(), pair.getSecond()));
     }
 
@@ -199,17 +199,16 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLEquivalentObjectPropertiesAxiom axiom) {
-        StringBuilder buf = new StringBuilder("forall X: (forall Y: (");
-        axiom.getProperties().stream().findFirst().ifPresent(ope -> buf.append(String.format("%s(X,Y)", translate(ope))));
-        axiom.getProperties().stream().skip(1).forEach(ope -> buf.append(String.format(" <=> %s(X,Y)", translate(ope))));
-        buf.append("))");
-        return makeFormula(buf.toString());
+        List<OWLObjectPropertyExpression> properties = new ArrayList<>(axiom.getProperties());
+        return properties.stream().skip(1).flatMap(property -> makeFormula(
+                "forall X: (forall Y: (%s(X,Y) <=> %s(X,Y)))",
+                translate(properties.get(0)), translate(property)));
     }
 
     @Override
     public Stream<FolFormula> visit(OWLDisjointObjectPropertiesAxiom axiom) {
         List<String> predicateNames = axiom.getProperties().stream().map(ce -> translate(ce)).collect(Collectors.toList());
-        return combinations(predicateNames, predicateNames).stream().flatMap(pair -> makeFormula("forall X: (forall Y: (!(%s(X,Y) && %s(X,Y)))", pair.getFirst(), pair.getSecond()));
+        return combinations(predicateNames, predicateNames).stream().flatMap(pair -> makeFormula("forall X: (forall Y: (!(%s(X,Y) && %s(X,Y))))", pair.getFirst(), pair.getSecond()));
     }
 
     @Override
@@ -229,7 +228,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLDisjointUnionAxiom axiom) {
-        var disjointnessFormulae = visit(axiom.getOWLDisjointClassesAxiom());
+        var disjointnessFormulae = disjointClasses(axiom.getClassExpressions());
         StringBuilder buf = new StringBuilder();
         buf.append(String.format("forall X: ( %s(X) <=> ", translate(axiom.getOWLClass())));
         axiom.getClassExpressions().stream().findFirst().ifPresent(ce -> buf.append(String.format("%s(X)", translate(ce))));
@@ -261,10 +260,9 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLSameIndividualAxiom axiom) {
-        StringBuilder buf = new StringBuilder();
-        axiom.getIndividuals().stream().findFirst().ifPresent(ind -> buf.append(translate(ind)));
-        axiom.getIndividuals().stream().skip(1).forEach(ind -> buf.append(String.format(" == %s", translate(ind))));
-        return makeFormula(buf.toString());
+        List<OWLIndividual> individuals = axiom.getIndividualsAsList();
+        return individuals.stream().skip(1).flatMap(individual -> makeFormula(
+                "%s == %s", translate(individuals.get(0)), translate(individual)));
     }
 
     @Override
@@ -302,8 +300,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLHasKeyAxiom axiom) {
-        // TODO
-        return Stream.empty();
+        throw new UnsupportedOperationException("OWL keys are not supported: " + axiom);
     }
 
     public String translate(OWLIndividual individual) {
@@ -323,17 +320,18 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
      * @return
      */
     public String translate(OWLClassExpression ce) {
+        if (ce instanceof OWLAspect)
+            ce = ((OWLAspect) ce).asClassExpression();
         ClassExpressionType type = ce.getClassExpressionType();
         if (type == ClassExpressionType.OWL_CLASS)
             return translateIRI(ce.asOWLClass());
 
         String tempName = temporaryPredicate(ce);
+        if (!definedExpressions.add(ce))
+            return tempName;
 
         StringBuilder buf = new StringBuilder();
         buf.append("forall X: (%s(X) <=> ");
-
-        if (ce instanceof OWLAspect)
-            ce = ((OWLAspect) ce).asClassExpression();
 
         switch (type) {
             case OBJECT_SOME_VALUES_FROM: {
@@ -352,82 +350,18 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
                 buf.append(String.format("forall Y: (%s(X,Y) => %s(Y))", opeTrans, fillerTrans));
                 break;
             }
-            case OBJECT_MIN_CARDINALITY: {
-                // forall X: (Temp(X) <=> exists Y1: (r(X,Y1) && Filler(Y1) &&
-                //                        exists Y2: (r(X,Y2) && Filler(Y2) &&
-                //                        .. &&
-                //                        exists Yn: (r(X,Yn) && Filler(Yn) &&
-                //                        Y1 /== Y2 /== ... /== Yn
-                //                        ))...) [1..n]
-                // )
-                OWLObjectMinCardinality omc = (OWLObjectMinCardinality) ce;
-                String opeTrans = translate(omc.getProperty());
-                String fillerTrans = translate(omc.getFiller());
-                int cardinality = omc.getCardinality();
-
-                String fragment = "exists Y%d: (%s(X,Y%d) && %s(Y%d)";
-                buf.append(String.format(fragment, 0, opeTrans, 0, fillerTrans, 0));
-                IntStream.range(1, cardinality).forEach(i -> buf.append(" && ").append(String.format(fragment, i, opeTrans, i, fillerTrans, i)));
-
-                List<Integer> indices = IntStream.range(0, cardinality).boxed().collect(Collectors.toList());
-                HashSet<Pair<Integer, Integer>> combinations = combinations(indices, indices);
-                combinations.stream().forEach(pair -> buf.append(String.format(" &&  Y%d /== Y%d", pair.getFirst(), pair.getSecond())));
-
-                IntStream.range(0, cardinality).forEach(i -> buf.append(')')); // closing inner existential quantifications
-                break;
-            }
-            case OBJECT_MAX_CARDINALITY: {
-                // forall X: (Temp(X) <=> exists Y1: (r(X,Y1) && Filler(Y1) &&
-                //                        exists Y2: (r(X,Y2) && Filler(Y2) &&
-                //                        .. &&
-                //                        exists Yn: (r(X,Yn) && Filler(Yn) &&
-                //                        forall Z: (Z /== Y1 /== Y2 /== .. /== Yn => !r(X,Z))
-                //                        ))...) [1..n]
-                // )
-                OWLObjectMaxCardinality omc = (OWLObjectMaxCardinality) ce;
-                String opeTrans = translate(omc.getProperty());
-                String fillerTrans = translate(omc.getFiller());
-                int cardinality = omc.getCardinality();
-
-                String fragment = "exists Y%d: (%s(X,Y%d) && %s(Y%d)";
-                buf.append(String.format(fragment, 0, opeTrans, 0, fillerTrans, 0));
-                IntStream.range(1, cardinality).forEach(i -> buf.append(" && ").append(String.format(fragment, i, opeTrans, i, fillerTrans, i)));
-
-                buf.append(" && forall Z: ((Z /== Y0 ");
-                IntStream.range(1, cardinality).forEach(i -> buf.append(String.format(" && Z /== Y%d", i)));
-                buf.append(String.format(") => !%s(X,Z))", opeTrans));
-
-                IntStream.range(0, cardinality).forEach(i -> buf.append(')')); // closing inner existential quantifications
-                break;
-            }
+            case OBJECT_MIN_CARDINALITY:
+            case OBJECT_MAX_CARDINALITY:
             case OBJECT_EXACT_CARDINALITY: {
-                //
-                // forall X: (Temp(X) <=> exists Y1: (r(X,Y1) && Filler(Y1) &&
-                //                        exists Y2: (r(X,Y2) && Filler(Y2) &&
-                //                        .. &&
-                //                        exists Yn: (r(X,Yn) && Filler(Yn) &&
-                //                        Y1 /== Y2 /== ... /== Yn &&
-                //                        forall Z: (Z /== Y1 /== Y2 /== .. /== Yn => !r(X,Z))
-                //                        ))...) [1..n]
-                // )
-                OWLObjectExactCardinality oec = (OWLObjectExactCardinality) ce;
-                String opeTrans = translate(oec.getProperty());
-                String fillerTrans = translate(oec.getFiller());
-                int cardinality = oec.getCardinality();
-
-                String fragment = "exists Y%d: (%s(X,Y%d) && %s(Y%d)";
-                buf.append(String.format(fragment, 0, opeTrans, 0, fillerTrans, 0));
-                IntStream.range(1, cardinality).forEach(i -> buf.append(" && ").append(String.format(fragment, i, opeTrans, i, fillerTrans, i)));
-
-                List<Integer> indices = IntStream.range(0, cardinality).boxed().collect(Collectors.toList());
-                HashSet<Pair<Integer, Integer>> combinations = combinations(indices, indices);
-                combinations.stream().forEach(pair -> buf.append(String.format(" &&  Y%d /== Y%d", pair.getFirst(), pair.getSecond())));
-
-                buf.append(" && forall Z: ((Z /== Y0 ");
-                IntStream.range(1, cardinality).forEach(i -> buf.append(String.format(" && Z /== Y%d", i)));
-                buf.append(String.format(") => !%s(X,Z))", opeTrans));
-
-                IntStream.range(0, cardinality).forEach(i -> buf.append(')')); // closing inner existential quantifications
+                OWLObjectCardinalityRestriction restriction = (OWLObjectCardinalityRestriction) ce;
+                String property = translate(restriction.getProperty());
+                String filler = translate(restriction.getFiller());
+                int n = restriction.getCardinality();
+                String minimum = minimumCardinality(property, filler, n);
+                String maximum = "!(" + minimumCardinality(property, filler, n + 1) + ")";
+                buf.append(type == ClassExpressionType.OBJECT_MIN_CARDINALITY ? minimum
+                        : type == ClassExpressionType.OBJECT_MAX_CARDINALITY ? maximum
+                        : "(" + minimum + " && " + maximum + ")");
                 break;
             }
             case OBJECT_HAS_VALUE: {
@@ -484,7 +418,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
                 throw new RuntimeException("Unknown class expression type " + type);
         }
         buf.append(')');
-        makeFormula(buf.toString(), tempName).forEach(bs::add);
+        makeFormula(buf.toString(), tempName).forEach(this::addDefinition);
         return tempName;
     }
 
@@ -511,34 +445,48 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
         return a.compareTo(b) < 0 ? pair : new Pair<>(b, a);
     }
 
-    public String temporaryPredicate(OWLObject o) {
-        String tempName = UUID.nameUUIDFromBytes(o.toString().getBytes(StandardCharsets.UTF_8)).toString()
-                .replaceAll("-", "");
-        if(!sig.containsPredicate(tempName)) {
-            if (o instanceof OWLClassExpression) {
-                tempName = String.format("tc_%s", tempName);
-                sig.add(new Predicate(tempName, 1));
-            } else if (o instanceof OWLObjectPropertyExpression) {
-                tempName = String.format("to_%s", tempName);
-                sig.add(new Predicate(tempName, 2));
-            } else {
-                throw new IllegalArgumentException("Can only make temporary predicates out of classes or object properties.");
-            }
-            bs.setSignature(sig);
+    private String minimumCardinality(String property, String filler, int n) {
+        if (n == 0)
+            return "+"; // Tweety's truth constant
+        StringBuilder formula = new StringBuilder();
+        for (int i = 0; i < n; i++)
+            formula.append(String.format("exists Y%d: (", i));
+        List<String> conjuncts = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            conjuncts.add(String.format("%s(X,Y%d)", property, i));
+            conjuncts.add(String.format("%s(Y%d)", filler, i));
+            for (int j = 0; j < i; j++)
+                conjuncts.add(String.format("Y%d /== Y%d", i, j));
         }
-        return tempName;
+        return formula.append(String.join(" && ", conjuncts)).append(")".repeat(n)).toString();
+    }
+
+    public String temporaryPredicate(OWLObject o) {
+        String prefix;
+        int arity;
+        if (o instanceof OWLClassExpression) {
+            prefix = "tc_";
+            arity = 1;
+        } else if (o instanceof OWLObjectPropertyExpression) {
+            prefix = "to_";
+            arity = 2;
+        } else {
+            throw new IllegalArgumentException("Can only make temporary predicates out of classes or object properties.");
+        }
+        String name = prefix + UUID.nameUUIDFromBytes(o.toString().getBytes(StandardCharsets.UTF_8))
+                .toString().replace("-", "");
+        sig.add(new Predicate(name, arity));
+        return name;
     }
 
     public String translate(OWLObjectPropertyExpression ope) {
-        if (ope.isNamed()) {
+        if (ope.isNamed())
             return translateIRI(ope.asOWLObjectProperty());
+        String tempName = temporaryPredicate(ope);
+        if (definedExpressions.add(ope)) {
+            makeFormula("forall X: (forall Y: (%s(X,Y) <=> %s(Y,X)))",
+                    tempName, translate(ope.getNamedProperty())).forEach(this::addDefinition);
         }
-
-        // the only possible anonymous object property expression is an inverse property expression
-        OWLObjectProperty op = ((OWLObjectInverseOf)ope).getInverse().asOWLObjectProperty();
-        String tempName = temporaryPredicate(op);
-        makeFormula("forall X: (forall Y: (%s(X,Y) <=> %s(Y,X)))", translateIRI(op), tempName).forEach(formula -> bs.add(formula));
-
         return tempName;
     }
 
@@ -558,11 +506,13 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLOntology ontology) {
+        nameMap.clear();
+        definedExpressions.clear();
         // signature
         sig = new FolSignature(true);
         sig.add(new Predicate("owlThing", 1));
         sig.add(new Predicate("owlNothing", 1));
-        ontology.getSignature(Imports.INCLUDED).forEach(entity -> entity.accept(this));
+        ontology.getSignature(includeImportsClosure).forEach(entity -> entity.accept(this));
 
         folp = new FolParser(false);
         folp.setSignature(sig);
@@ -577,11 +527,18 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             throw new OWL2TPTPRendererError(String.format("Error configuring %s. Could not parse trivial formula. This should not have happened.", OWL2TPTPObjectRenderer.class.getSimpleName()), e);
         }
 
-        ontology.getAxioms().stream().forEach(
-                axiom ->  Optional.ofNullable(axiom.accept(this)).ifPresent(formulae -> formulae.forEach(
-                        folFormula -> bs.add(folFormula))
-                )
-        );
+        Stream<OWLOntology> ontologies = includeImportsClosure == Imports.INCLUDED
+                ? ontology.getImportsClosure().stream() : Stream.of(ontology);
+        try {
+            ontologies.forEach(source -> {
+                currentOntology = source;
+                source.getAxioms().forEach(axiom -> Optional.ofNullable(axiom.accept(this))
+                        .ifPresent(formulae -> formulae.forEach(bs::add)));
+            });
+        } finally {
+            currentOntology = null;
+        }
+        finishRendering();
 
         try {
             out.printBase(bs);
@@ -589,6 +546,14 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
             throw new RuntimeException(e);
         }
         return bs.stream();
+    }
+
+    protected void addDefinition(FolFormula formula) {
+        bs.add(formula);
+    }
+
+    /** Called after axioms and auxiliary definitions have been collected, before serialization. */
+    protected void finishRendering() {
     }
 
     @Override
@@ -630,7 +595,7 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
     @Override
     public Stream<FolFormula> visit(OWLTransitiveObjectPropertyAxiom axiom) {
         OWLObjectPropertyExpression ope = axiom.getProperty();
-        String predicateName = translateIRI(axiom.getProperty().asOWLObjectProperty());
+        String predicateName = translate(ope);
         return makeFormula("forall X: (forall Y: (forall Z: (%s(X,Y) && %s(Y,Z) => %s(X,Z))))", predicateName, predicateName, predicateName);
     }
 
@@ -650,18 +615,17 @@ public class OWL2TPTPObjectRenderer extends OWLObjectVisitorExAdapter<Stream<Fol
 
     @Override
     public Stream<FolFormula> visit(OWLEquivalentClassesAxiom axiom) {
-        List<OWLClassExpression> ces = axiom.getClassExpressions().stream().collect(Collectors.toList());
-        StringBuilder buf = new StringBuilder();
-        Optional.of(ces.get(0)).ifPresent(ce -> buf.append(String.format("forall X: (%s(X)", translate(ce))));
-        ces.stream().skip(1).forEach(ce -> buf.append(String.format(" <=> %s(X)", translate(ce))));
-        buf.append(')');
-        return makeFormula(buf.toString());
+        List<OWLClassExpression> classes = new ArrayList<>(axiom.getClassExpressions());
+        return classes.stream().skip(1).flatMap(expression -> makeFormula(
+                "forall X: (%s(X) <=> %s(X))", translate(classes.get(0)), translate(expression)));
     }
 
     @Nonnull
     @Override
     protected Stream<FolFormula> doDefault(@Nonnull OWLObject object) {
-        log.warn("Not (yet) implemented: {}\n", object);
+        if (object instanceof OWLAxiom && ((OWLAxiom) object).isLogicalAxiom())
+            throw new UnsupportedOperationException("Unsupported logical axiom: " + object);
+        log.debug("No FOL axiom for metadata: {}", object);
         return Stream.empty();
     }
 }

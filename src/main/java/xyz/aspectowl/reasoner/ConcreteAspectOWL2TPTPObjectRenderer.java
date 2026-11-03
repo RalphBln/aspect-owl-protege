@@ -1,52 +1,53 @@
 package xyz.aspectowl.reasoner;
 
-import org.semanticweb.owlapi.model.parameters.Imports;
-import xyz.aspectowl.owlapi.model.OWLAspectManager;
-import org.tweetyproject.logics.fol.syntax.Equivalence;
-import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.tweetyproject.logics.fol.syntax.FolFormula;
+import xyz.aspectowl.owlapi.model.AspectOWLAxiomVisitorEx;
+import xyz.aspectowl.owlapi.model.OWLAspectAssertionAxiom;
+import xyz.aspectowl.owlapi.model.OWLAspectManager;
 import xyz.aspectowl.tptp.renderer.AspectOWL2TPTPObjectRenderer;
 
 import java.io.Writer;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.Stream;
 
-/**
-    @author ralph
-*/
-public class ConcreteAspectOWL2TPTPObjectRenderer extends AspectOWL2TPTPObjectRenderer {
+/** Renders native AspectOWL assertions, including aspects on aspect assertions. */
+public class ConcreteAspectOWL2TPTPObjectRenderer extends AspectOWL2TPTPObjectRenderer
+        implements AspectOWLAxiomVisitorEx<Stream<FolFormula>> {
 
-    private OWLAspectManager am;
-    private OWLOntology ontology;
+    private final OWLAspectManager aspectManager;
 
-    public ConcreteAspectOWL2TPTPObjectRenderer(OWLAspectManager am, OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
+    public ConcreteAspectOWL2TPTPObjectRenderer(OWLAspectManager aspectManager, OWLOntology ontology,
+                                               Writer writer, Imports includeImportsClosure) {
         super(ontology, writer, includeImportsClosure);
-        this.am = am;
-        this.ontology = ontology;
+        this.aspectManager = aspectManager;
     }
 
     @Override
-    public boolean hasAspect(OWLAxiom axiom) {
-        return am.hasAssertedAspects(ontology, axiom);
+    protected List<AspectContext> getAspectContexts(OWLAxiom axiom) {
+        return getAspectContexts(axiom, new HashSet<>());
     }
 
-    @Override
-    public Stream<FolFormula> handleAspects(OWLAxiom axiom, Stream<FolFormula> nonAspectFormulae) {
-        if (hasAspect(axiom)) {
-            List<FolFormula> nonAspectFormulaList = nonAspectFormulae.collect(Collectors.toList()); // because we need to process the stream several times if there is more than one aspect
-            var result = new ArrayList<FolFormula>();
-            am.getAssertedAspects(ontology, axiom).forEach(
-                    aspect -> makeFormula(String.format("forall A: (%s(A))", translate(aspect))).forEach(
-                            aspectEquivalencePart -> nonAspectFormulaList.forEach(
-                                    joinpointAxiomEquivalencePart -> result.add(new Equivalence(aspectEquivalencePart, joinpointAxiomEquivalencePart))
-                            )
-                    )
-            );
-            return result.stream();
+    private List<AspectContext> getAspectContexts(OWLAxiom axiom, Set<OWLAxiom> path) {
+        if (!path.add(axiom))
+            throw new IllegalArgumentException("Cyclic aspect nesting at " + axiom);
+        try {
+            OWLOntology source = currentOntology != null ? currentOntology : onto.orElseThrow();
+            return aspectManager.getAspectAssertionAxioms(source, axiom).stream()
+                    .map(assertion -> new AspectContext(assertion.getAspect().asClassExpression(),
+                            getAspectContexts(assertion, path))).toList();
+        } finally {
+            path.remove(axiom);
         }
-        return nonAspectFormulae;
+    }
+
+    @Override
+    public Stream<FolFormula> visit(OWLAspectAssertionAxiom axiom) {
+        // Rendered together with its join point, never as an independent OWL axiom.
+        return Stream.empty();
     }
 }

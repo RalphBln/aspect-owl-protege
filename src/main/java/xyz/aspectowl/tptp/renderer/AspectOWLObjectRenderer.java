@@ -1,27 +1,14 @@
 package xyz.aspectowl.tptp.renderer;
 
-import org.tweetyproject.logics.fol.syntax.FolFormula;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
 
-import java.util.stream.Stream;
-
-/**
- *
- * @author ralph
- */
+/** Visitor extension for applying an axiom's aspect contexts to its FOL translation. */
 public interface AspectOWLObjectRenderer<T> extends OWLObjectVisitorEx<T> {
-
     default boolean hasAspect(OWLAxiom axiom) {
         return false;
     }
 
-    /**
-     * Returns
-     * @param axiom
-     * @param nonAspectFormulae
-     * @return
-     */
-    public T handleAspects(OWLAxiom axiom, T nonAspectFormulae);
-
-
+    /** Qualifies the translated axiom parts with the contexts attached to the axiom. */
+    T handleAspects(OWLAxiom axiom, T nonAspectFormulae);
 }

@@ -1,64 +1,52 @@
 package xyz.aspectowl.tptp.renderer;
 
-import org.tweetyproject.logics.fol.syntax.Equivalence;
-import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.semanticweb.owlapi.OWLAPIConfigProvider;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
- * This class renders aspect-oriented OWL ontologies with annotations (unlike AspectOWL) as FOL belief sets serialized
- * in TPTP syntax.
- * Shortcomings of the annotation approach are that
- * 1. annotation subjects cannot be class expressions, so we had to invent a makeshift mechanism: class expressions must
- *    be denoted in Manchester syntax and added as String literal annotations.
- * 2. Annotations on axioms cannot be nested. Therefore, the annotation approach limits the aspect nesting level to 1.
- * @author ralph
+ * Renders hasAspect annotations as contexts. Values are either class IRIs or
+ * Manchester class expressions. Nested hasAspect annotations qualify the context.
  */
 public class AspectAnnotationOWL2TPTPObjectRenderer extends AspectOWL2TPTPObjectRenderer {
 
-    private static final IRI aspectAnnotationProperty = IRI.create("http://ontology.aspectowl.xyz#hasAspect");
-
+    private static final IRI ASPECT_PROPERTY = IRI.create("http://ontology.aspectowl.xyz#hasAspect");
     private final ManchesterOWLSyntaxParserImpl manchesterSyntaxParser;
 
     public AspectAnnotationOWL2TPTPObjectRenderer(OWLOntology ontology, Writer writer, Imports includeImportsClosure) {
         super(ontology, writer, includeImportsClosure);
-        manchesterSyntaxParser = new ManchesterOWLSyntaxParserImpl(new OWLAPIConfigProvider(), ontology.getOWLOntologyManager().getOWLDataFactory());
-        manchesterSyntaxParser.getPrefixManager().setDefaultPrefix("");
-        manchesterSyntaxParser.getPrefixManager().setPrefix("", ontology.getOntologyID().getOntologyIRI().get().toString() + "#");
+        manchesterSyntaxParser = new ManchesterOWLSyntaxParserImpl(new OWLAPIConfigProvider(),
+                ontology.getOWLOntologyManager().getOWLDataFactory());
         manchesterSyntaxParser.setDefaultOntology(ontology);
-    }
-
-
-    @Override
-    public boolean hasAspect(OWLAxiom axiom) {
-        return axiom.isAnnotated() && axiom.getAnnotations().stream().filter(a -> a.getProperty().getIRI().equals(aspectAnnotationProperty)).findAny().map(c -> true).get();
+        manchesterSyntaxParser.setOWLEntityChecker(new ShortFormEntityChecker(
+                new BidirectionalShortFormProviderAdapter(ontology.getImportsClosure(), new SimpleShortFormProvider())));
     }
 
     @Override
-    public Stream<FolFormula> handleAspects(OWLAxiom axiom, Stream<FolFormula> nonAspectFormulae) {
-        if (hasAspect(axiom)) {
-            var result = new ArrayList<FolFormula>();
-            axiom.getAnnotations().stream()
-                    .filter(a -> a.getProperty().getIRI().equals(aspectAnnotationProperty))
-                    .filter(a -> a.annotationValue().isLiteral())
-                    .forEach(a -> {
-                        var literal = a.getValue().asLiteral();
-                        manchesterSyntaxParser.setStringToParse(literal.get().getLiteral());
-                        OWLClassExpression aspect = manchesterSyntaxParser.parseClassExpression();
-                        makeFormula(String.format("forall A: (%s(A))", translate(aspect))).forEach(aspectEquivalencePart -> nonAspectFormulae.forEach(joinpointAxiomEquivalencePart -> result.add(new Equivalence(aspectEquivalencePart, joinpointAxiomEquivalencePart))));
-                    });
+    protected List<AspectContext> getAspectContexts(OWLAxiom axiom) {
+        return contexts(axiom.getAnnotations());
+    }
 
-            return result.stream();
+    private List<AspectContext> contexts(java.util.Set<OWLAnnotation> annotations) {
+        return annotations.stream().filter(a -> a.getProperty().getIRI().equals(ASPECT_PROPERTY))
+                .map(annotation -> new AspectContext(parseAspect(annotation.getValue()),
+                        contexts(annotation.getAnnotations()))).toList();
+    }
+
+    private OWLClassExpression parseAspect(OWLAnnotationValue value) {
+        if (value instanceof IRI)
+            return onto.orElseThrow().getOWLOntologyManager().getOWLDataFactory().getOWLClass((IRI) value);
+        if (value instanceof OWLLiteral literal) {
+            manchesterSyntaxParser.setStringToParse(literal.getLiteral());
+            return manchesterSyntaxParser.parseClassExpression();
         }
-        return nonAspectFormulae;
+        throw new IllegalArgumentException("Aspect annotations require a class IRI or Manchester expression: " + value);
     }
 }
