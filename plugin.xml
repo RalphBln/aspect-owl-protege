@@ -155,6 +155,13 @@
         <headerColor value="@org.protege.ontologycolor"/>
         <category value="@org.protege.ontologycategory"/>
     </extension>
+    <extension id="AspectOWL2FOL"
+               point="org.protege.editor.core.application.ViewComponent">
+        <label value="Aspect OWL FOL translation"/>
+        <class value="xyz.aspectowl.protege.editor.core.ui.view.ontology.OWLAspectFOLRenderingViewComponent"/>
+        <headerColor value="@org.protege.ontologycolor"/>
+        <category value="@org.protege.ontologycategory"/>
+    </extension>
     <extension id="aspectowl.reasoner.factory" point="org.protege.editor.owl.inference_reasonerfactory">
         <name value="AspectOWL Reasoner"/>
         <class value="xyz.aspectowl.protege.reasoner.AspectOWLFOLReasonerInfo"/>
