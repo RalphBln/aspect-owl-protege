@@ -1,10 +1,12 @@
 package xyz.aspectowl.protege.editor.core.ui.view.ontology;
 
+import org.apache.commons.io.output.NullWriter;
 import org.protege.editor.owl.ui.view.ontology.AbstractOntologyRenderingViewComponent;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import xyz.aspectowl.protege.AspectOWLEditorKitHook;
 import xyz.aspectowl.reasoner.ConcreteAspectOWL2TPTPObjectRenderer;
+import xyz.aspectowl.tptp.decidability.TriguardedFragmentChecker;
 
 import java.io.Serial;
 import java.io.Writer;
@@ -16,9 +18,15 @@ public class OWLAspectFOLRenderingViewComponent extends AbstractOntologyRenderin
 
 	@Override
     protected void renderOntology(OWLOntology ontology, Writer writer) throws Exception {
-        ConcreteAspectOWL2TPTPObjectRenderer ren = new ConcreteAspectOWL2TPTPObjectRenderer(AspectOWLEditorKitHook.getAspectManager(ontology.getOWLOntologyManager()), ontology, writer, Imports.INCLUDED);
+        ConcreteAspectOWL2TPTPObjectRenderer ren = new ConcreteAspectOWL2TPTPObjectRenderer(AspectOWLEditorKitHook.getAspectManager(ontology.getOWLOntologyManager()), ontology, NullWriter.INSTANCE, Imports.INCLUDED);
         ren.setHumanReadableTptpNames(true);
         ren.visit(ontology);
-        writer.write(ren.getBeliefSet().toString());
+        TriguardedFragmentChecker tgf = new TriguardedFragmentChecker();
+        for (var f : ren.getBeliefSet()) {
+            writer.write(tgf.isInFragment(f) ? "✅" : "❗");
+            writer.write("\t");
+            writer.write(f.toString());
+            writer.write("\n");
+        }
     }
 }
